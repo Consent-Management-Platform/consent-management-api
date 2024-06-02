@@ -2,6 +2,7 @@ plugins {
     java
     application
     checkstyle
+    jacoco
 }
 
 repositories {
@@ -16,6 +17,10 @@ checkstyle {
 dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation(libs.junit.jupiter)
+
+    testImplementation("org.mockito:mockito-core:5.12.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.12.0")
+    testImplementation("org.mockito:mockito-inline:5.2.0")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
@@ -34,6 +39,26 @@ application {
     mainClass.set("com.consentframework.consentmanagement.api.ConsentManagementApiRequestHandler")
 }
 
-tasks.named<Test>("test") {
-    useJUnitPlatform()
+tasks {
+    withType<Test> {
+        useJUnitPlatform()
+
+        // Always run jacoco test report after tests
+        finalizedBy(jacocoTestReport)
+    }
+
+    jacocoTestCoverageVerification {
+        violationRules {
+            rule {
+                limit {
+                    minimum = BigDecimal.valueOf(0.95)
+                }
+            }
+        }
+    }
+
+    check {
+        // Fail build if under min test coverage thresholds
+        dependsOn(jacocoTestCoverageVerification)
+    }
 }

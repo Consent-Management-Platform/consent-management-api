@@ -15,7 +15,8 @@ public class ConsentManagementApiRequestHandler implements RequestHandler<String
     @Override
     public String handleRequest(final String request, final Context context) {
         final LambdaLogger logger = context.getLogger();
-        logger.log("String found: " + request);
-        return "Mock response for request " + request;
+        logger.log("ConsentManagementApiRequestHandler received request: " + request);
+
+        return String.format("Mock response for request %s", request);
     }
 }
