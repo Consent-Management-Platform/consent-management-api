@@ -7,6 +7,15 @@ plugins {
 
 repositories {
     mavenCentral()
+    repositories {
+        maven {
+            url = uri("https://maven.pkg.github.com/msayson/consent-management-api-models")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_USERNAME")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
 }
 
 checkstyle {
@@ -15,17 +24,18 @@ checkstyle {
 }
 
 dependencies {
+    implementation(libs.guava)
+    implementation("com.amazonaws:aws-lambda-java-core:1.2.3")
+    implementation("com.consentframework.consentmanagement:consentmanagement-api-models:0.2.1")
+
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
     // Use JUnit Jupiter for testing.
     testImplementation(libs.junit.jupiter)
 
     testImplementation("org.mockito:mockito-core:5.12.0")
     testImplementation("org.mockito:mockito-junit-jupiter:5.12.0")
     testImplementation("org.mockito:mockito-inline:5.2.0")
-
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
-    implementation(libs.guava)
-    implementation("com.amazonaws:aws-lambda-java-core:1.2.3")
 }
 
 java {
