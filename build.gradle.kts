@@ -26,7 +26,7 @@ checkstyle {
 dependencies {
     implementation(libs.guava)
     implementation("com.amazonaws:aws-lambda-java-core:1.2.3")
-    implementation("com.consentframework.consentmanagement:consentmanagement-api-models:0.2.1")
+    implementation("com.consentframework.consentmanagement:consentmanagement-api-models:0.2.2")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 

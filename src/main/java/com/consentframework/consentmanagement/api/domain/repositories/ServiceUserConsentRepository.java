@@ -6,6 +6,6 @@ import com.consentframework.consentmanagement.api.models.Consent;
  * Interface specifying supported integrations with
  * service user consent data.
  */
-public interface ServiceUserConsentRepository {
+interface ServiceUserConsentRepository {
     Consent getServiceUserConsent(final String serviceId, final String userId, final String consentId);
 }
