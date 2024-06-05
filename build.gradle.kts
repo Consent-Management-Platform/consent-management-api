@@ -26,10 +26,11 @@ checkstyle {
 dependencies {
     implementation(libs.guava)
     implementation("com.amazonaws:aws-lambda-java-core:1.2.3")
-    implementation("com.consentframework.consentmanagement:consentmanagement-api-models:0.2.4")
-
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.17.1")
     implementation("jakarta.annotation:jakarta.annotation-api:3.0.0")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:2.17.1")
+    implementation("software.amazon.smithy:smithy-utils:1.49.0")
+
+    implementation("com.consentframework.consentmanagement:consentmanagement-api-models:0.2.4")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 

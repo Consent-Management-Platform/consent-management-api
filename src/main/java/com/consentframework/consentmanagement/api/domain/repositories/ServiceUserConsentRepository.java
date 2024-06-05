@@ -1,6 +1,7 @@
 package com.consentframework.consentmanagement.api.domain.repositories;
 
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
+import com.consentframework.consentmanagement.api.domain.exceptions.InvalidConsentDataException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.models.Consent;
 
@@ -16,8 +17,9 @@ public interface ServiceUserConsentRepository {
      *
      * @param consent Consent object to save to the repository
      * @throws ConflictingResourceException exception thrown if consent already exists with same key
+     * @throws InvalidConsentDataException exception thrown if consent violates model constraints
      */
-    void createServiceUserConsent(final Consent consent) throws ConflictingResourceException;
+    void createServiceUserConsent(final Consent consent) throws ConflictingResourceException, InvalidConsentDataException;
 
     /**
      * Retrieve consent from repository if exists.
