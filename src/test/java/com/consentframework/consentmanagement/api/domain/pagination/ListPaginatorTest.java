@@ -1,4 +1,4 @@
-package com.consentframework.consentmanagement.api.utils.pagination;
+package com.consentframework.consentmanagement.api.domain.pagination;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

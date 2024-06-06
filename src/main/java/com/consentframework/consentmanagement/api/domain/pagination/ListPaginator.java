@@ -1,4 +1,4 @@
-package com.consentframework.consentmanagement.api.utils.pagination;
+package com.consentframework.consentmanagement.api.domain.pagination;
 
 import java.util.List;
 import java.util.OptionalInt;

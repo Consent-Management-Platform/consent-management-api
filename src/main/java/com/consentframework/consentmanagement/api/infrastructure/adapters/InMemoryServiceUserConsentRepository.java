@@ -6,10 +6,10 @@ import com.consentframework.consentmanagement.api.domain.entities.ServiceUserKey
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.IllegalArgumentException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
+import com.consentframework.consentmanagement.api.domain.pagination.ListPage;
+import com.consentframework.consentmanagement.api.domain.pagination.ListPaginator;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.models.Consent;
-import com.consentframework.consentmanagement.api.utils.pagination.ListPage;
-import com.consentframework.consentmanagement.api.utils.pagination.ListPaginator;
 
 import java.util.ArrayList;
 import java.util.HashMap;

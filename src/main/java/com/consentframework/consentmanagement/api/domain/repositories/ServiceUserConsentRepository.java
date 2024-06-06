@@ -3,8 +3,8 @@ package com.consentframework.consentmanagement.api.domain.repositories;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.IllegalArgumentException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
+import com.consentframework.consentmanagement.api.domain.pagination.ListPage;
 import com.consentframework.consentmanagement.api.models.Consent;
-import com.consentframework.consentmanagement.api.utils.pagination.ListPage;
 
 /**
  * Interface specifying supported integrations with service user consent data.

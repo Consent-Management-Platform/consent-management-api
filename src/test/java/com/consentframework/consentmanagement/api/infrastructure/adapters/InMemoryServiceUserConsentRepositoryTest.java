@@ -8,11 +8,11 @@ import com.consentframework.consentmanagement.api.domain.entities.ConsentValidat
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.IllegalArgumentException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
+import com.consentframework.consentmanagement.api.domain.pagination.ListPage;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.testcommon.constants.TestConstants;
 import com.consentframework.consentmanagement.api.testcommon.utils.TestUtils;
-import com.consentframework.consentmanagement.api.utils.pagination.ListPage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
