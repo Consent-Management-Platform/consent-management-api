@@ -11,13 +11,16 @@ import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotF
 import com.consentframework.consentmanagement.api.domain.pagination.ListPage;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.models.Consent;
+import com.consentframework.consentmanagement.api.models.ConsentStatus;
 import com.consentframework.consentmanagement.api.testcommon.constants.TestConstants;
 import com.consentframework.consentmanagement.api.testcommon.utils.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 class InMemoryServiceUserConsentRepositoryTest {
     private ServiceUserConsentRepository repository;
@@ -58,7 +61,7 @@ class InMemoryServiceUserConsentRepositoryTest {
             final ConflictingResourceException thrownException = assertThrows(ConflictingResourceException.class, () ->
                 repository.createServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS));
 
-            final String expectedErrorMessage = String.format(ServiceUserConsentRepository.CONFLICTING_CONSENT_MESSAGE,
+            final String expectedErrorMessage = String.format(ServiceUserConsentRepository.CONSENT_ALREADY_EXISTS_MESSAGE,
                 TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID);
             assertEquals(expectedErrorMessage, thrownException.getMessage());
         }
@@ -70,6 +73,45 @@ class InMemoryServiceUserConsentRepositoryTest {
             final IllegalArgumentException thrownException = assertThrows(IllegalArgumentException.class, () ->
                 repository.createServiceUserConsent(consentMissingRequiredFields));
             assertEquals(ConsentValidator.SERVICE_ID_BLANK_MESSAGE, thrownException.getMessage());
+        }
+    }
+
+    @Nested
+    class UpdateServiceUserConsent {
+        @Test
+        void testUpdateWhenDoesNotExist() {
+            final ResourceNotFoundException thrownException = assertThrows(ResourceNotFoundException.class, () ->
+                repository.updateServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS));
+
+            final String expectedErrorMessage = String.format(ServiceUserConsentRepository.CONSENT_NOT_FOUND_MESSAGE,
+                TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID);
+            assertEquals(expectedErrorMessage, thrownException.getMessage());
+        }
+
+        @Test
+        void testUpdateWhenVersionConflict() throws ConflictingResourceException, IllegalArgumentException {
+            repository.createServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS);
+
+            final ConflictingResourceException thrownException = assertThrows(ConflictingResourceException.class, () ->
+                repository.updateServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS));
+            assertEquals(String.format(ConsentValidator.VERSION_CONFLICT_MESSAGE, 2, 1),
+                thrownException.getMessage());
+        }
+
+        @Test
+        void testUpdateWhenValidNewData() throws ConflictingResourceException, IllegalArgumentException, ResourceNotFoundException {
+            repository.createServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS);
+
+            final Consent inputConsent = TestUtils.clone(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS)
+                .consentVersion(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS.getConsentVersion().add(BigDecimal.ONE))
+                .consentData(Map.of("TestAttribute", "TestValue"))
+                .status(ConsentStatus.REVOKED);
+
+            repository.updateServiceUserConsent(inputConsent);
+
+            final Consent retrievedConsent = repository.getServiceUserConsent(TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID,
+                TestConstants.TEST_CONSENT_ID);
+            assertEquals(inputConsent, retrievedConsent);
         }
     }
 

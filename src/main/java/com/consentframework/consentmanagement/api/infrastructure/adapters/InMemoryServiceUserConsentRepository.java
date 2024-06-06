@@ -36,7 +36,7 @@ public class InMemoryServiceUserConsentRepository implements ServiceUserConsentR
     public void createServiceUserConsent(final Consent consent) throws ConflictingResourceException, IllegalArgumentException {
         final ServiceUserConsentKey key = new ServiceUserConsentKey(consent.getServiceId(), consent.getUserId(), consent.getConsentId());
         if (inMemoryConsentStore.containsKey(key)) {
-            throw new ConflictingResourceException(String.format(CONFLICTING_CONSENT_MESSAGE,
+            throw new ConflictingResourceException(String.format(CONSENT_ALREADY_EXISTS_MESSAGE,
                 consent.getServiceId(), consent.getUserId(), consent.getConsentId()));
         }
         ConsentValidator.validate(consent);
@@ -62,6 +62,26 @@ public class InMemoryServiceUserConsentRepository implements ServiceUserConsentR
             throw new ResourceNotFoundException(String.format(CONSENT_NOT_FOUND_MESSAGE, serviceId, userId, consentId));
         }
         return retrievedConsent;
+    }
+
+    /**
+     * Update existing consent with new data.
+     *
+     * @param consent Consent object to save to the repository
+     * @throws ConflictingResourceException exception thrown if stored consent has conflicting data
+     * @throws IllegalArgumentException exception thrown if consent violates model constraints
+     * @throws ResourceNotFoundException exception thrown if no such consent exists
+     */
+    @Override
+    public void updateServiceUserConsent(final Consent consent) throws ConflictingResourceException, IllegalArgumentException,
+            ResourceNotFoundException {
+        ConsentValidator.validate(consent);
+
+        final Consent existingConsent = getServiceUserConsent(consent.getServiceId(), consent.getUserId(), consent.getConsentId());
+        ConsentValidator.validateNextConsentVersion(existingConsent, consent);
+
+        final ServiceUserConsentKey key = new ServiceUserConsentKey(consent.getServiceId(), consent.getUserId(), consent.getConsentId());
+        storeValidatedConsent(key, consent);
     }
 
     /**

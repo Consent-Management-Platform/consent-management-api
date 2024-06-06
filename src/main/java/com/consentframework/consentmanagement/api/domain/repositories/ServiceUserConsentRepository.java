@@ -10,7 +10,7 @@ import com.consentframework.consentmanagement.api.models.Consent;
  * Interface specifying supported integrations with service user consent data.
  */
 public interface ServiceUserConsentRepository {
-    public static final String CONFLICTING_CONSENT_MESSAGE = "Consent already exists with serviceId %s, userId %s, consentId %s";
+    public static final String CONSENT_ALREADY_EXISTS_MESSAGE = "Consent already exists with serviceId %s, userId %s, consentId %s";
     public static final String CONSENT_NOT_FOUND_MESSAGE = "No consent found with serviceId %s, userId %s, consentId %s";
 
     /**
@@ -32,6 +32,17 @@ public interface ServiceUserConsentRepository {
      * @throws ResourceNotFoundException exception thrown if no such consent exists
      */
     Consent getServiceUserConsent(final String serviceId, final String userId, final String consentId) throws ResourceNotFoundException;
+
+    /**
+     * Update existing consent with new data.
+     *
+     * @param consent Consent object to save to the repository
+     * @throws ConflictingResourceException exception thrown if stored consent has conflicting data
+     * @throws IllegalArgumentException exception thrown if consent violates model constraints
+     * @throws ResourceNotFoundException exception thrown if no such consent exists
+     */
+    void updateServiceUserConsent(final Consent consent) throws ConflictingResourceException, IllegalArgumentException,
+        ResourceNotFoundException;
 
     /**
      * List user's consents for a given service.

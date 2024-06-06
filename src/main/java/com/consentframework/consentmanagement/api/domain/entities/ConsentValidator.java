@@ -1,8 +1,11 @@
 package com.consentframework.consentmanagement.api.domain.entities;
 
+import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.IllegalArgumentException;
 import com.consentframework.consentmanagement.api.models.Consent;
 import software.amazon.smithy.utils.StringUtils;
+
+import java.math.BigDecimal;
 
 /**
  * Utility class for validating Consent objects before
@@ -14,11 +17,12 @@ public final class ConsentValidator {
     public static final String CONSENT_ID_BLANK_MESSAGE = "consentId must not be blank";
     public static final String CONSENT_VERSION_NULL_MESSAGE = "consentVersion must not be null";
     public static final String STATUS_NULL_MESSAGE = "status must not be null";
+    public static final String VERSION_CONFLICT_MESSAGE = "Expected consent version %d, received %d, indicating state conflict";
 
     private ConsentValidator() {}
 
     /**
-     * Validate whether Consent satisfies model constraints.
+     * Validate Consent satisfies model constraints.
      *
      * @param consent input consent data
      * @throws IllegalArgumentException exception thrown if consent violates model constraints
@@ -38,6 +42,23 @@ public final class ConsentValidator {
         }
         if (consent.getStatus() == null) {
             throw new IllegalArgumentException(STATUS_NULL_MESSAGE);
+        }
+    }
+
+    /**
+     * Validate updated Consent increments the stored version, to protect against state conflicts.
+     *
+     * @param existingConsent consent currently in data store
+     * @param updatedConsent updated consent being submitted
+     * @throws ConflictingResourceException exception thrown if updated consent does not have expected version
+     */
+    public static void validateNextConsentVersion(final Consent existingConsent, final Consent updatedConsent)
+            throws ConflictingResourceException {
+        final BigDecimal expectedNextVersion = existingConsent.getConsentVersion().add(BigDecimal.ONE);
+        final BigDecimal receivedVersion = updatedConsent.getConsentVersion();
+        if (receivedVersion != expectedNextVersion) {
+            throw new ConflictingResourceException(String.format(VERSION_CONFLICT_MESSAGE, expectedNextVersion.longValue(),
+                receivedVersion.longValue()));
         }
     }
 }
