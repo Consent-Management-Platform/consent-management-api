@@ -16,7 +16,7 @@ public class ListPaginator<T> {
      * @return page of results with next page token if there are additional results
      */
     public ListPage<T> getSinglePage(final List<T> allResults, final Integer limit, final Integer pageToken) {
-        if (allResults.isEmpty() || !isPageTokenInBounds(allResults, pageToken)) {
+        if (allResults == null || allResults.isEmpty() || !isPageTokenInBounds(allResults, pageToken)) {
             return new ListPage<T>(List.of(), OptionalInt.empty());
         }
 

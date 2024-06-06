@@ -1,9 +1,10 @@
 package com.consentframework.consentmanagement.api.domain.repositories;
 
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
-import com.consentframework.consentmanagement.api.domain.exceptions.InvalidConsentDataException;
+import com.consentframework.consentmanagement.api.domain.exceptions.IllegalArgumentException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.models.Consent;
+import com.consentframework.consentmanagement.api.utils.pagination.ListPage;
 
 /**
  * Interface specifying supported integrations with service user consent data.
@@ -17,9 +18,9 @@ public interface ServiceUserConsentRepository {
      *
      * @param consent Consent object to save to the repository
      * @throws ConflictingResourceException exception thrown if consent already exists with same key
-     * @throws InvalidConsentDataException exception thrown if consent violates model constraints
+     * @throws IllegalArgumentException exception thrown if consent violates model constraints
      */
-    void createServiceUserConsent(final Consent consent) throws ConflictingResourceException, InvalidConsentDataException;
+    void createServiceUserConsent(final Consent consent) throws ConflictingResourceException, IllegalArgumentException;
 
     /**
      * Retrieve consent from repository if exists.
@@ -31,4 +32,17 @@ public interface ServiceUserConsentRepository {
      * @throws ResourceNotFoundException exception thrown if no such consent exists
      */
     Consent getServiceUserConsent(final String serviceId, final String userId, final String consentId) throws ResourceNotFoundException;
+
+    /**
+     * List user's consents for a given service.
+     *
+     * @param serviceId service identifier
+     * @param userId user identifier
+     * @param limit maximum number of consents to retrieve
+     * @param pageToken pagination token for backend consents query
+     * @return page of matching Consents with next page token if applicable
+     * @throws IllegalArgumentException exception thrown when receive invalid input
+     */
+    ListPage<Consent> listServiceUserConsents(final String serviceId, final String userId,
+        final Integer limit, final String pageToken) throws IllegalArgumentException;
 }

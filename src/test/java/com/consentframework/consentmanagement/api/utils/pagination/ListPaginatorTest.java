@@ -15,7 +15,13 @@ class ListPaginatorTest {
     private static final List<String> PRESENT_RESULTS = List.of("a", "b", "c", "d");
 
     @Test
-    void testGetSinglePageWhenNoResults() {
+    void testGetSinglePageWhenNullResults() {
+        final ListPage<String> pagedResults = testPaginator.getSinglePage(null, null, null);
+        assertEmpty(pagedResults);
+    }
+
+    @Test
+    void testGetSinglePageWhenEmptyResults() {
         final List<String> emptyResults = List.of();
         final ListPage<String> pagedResults = testPaginator.getSinglePage(emptyResults, null, null);
         assertEmpty(pagedResults);
