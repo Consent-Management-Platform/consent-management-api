@@ -18,7 +18,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -103,7 +102,7 @@ class InMemoryServiceUserConsentRepositoryTest {
             repository.createServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS);
 
             final Consent inputConsent = TestUtils.clone(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS)
-                .consentVersion(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS.getConsentVersion().add(BigDecimal.ONE))
+                .consentVersion(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS.getConsentVersion() + 1)
                 .consentData(Map.of("TestAttribute", "TestValue"))
                 .status(ConsentStatus.REVOKED);
 

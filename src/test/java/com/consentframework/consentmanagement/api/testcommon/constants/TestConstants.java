@@ -3,8 +3,6 @@ package com.consentframework.consentmanagement.api.testcommon.constants;
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.models.ConsentStatus;
 
-import java.math.BigDecimal;
-
 /**
  * Utility class defining common test constants.
  */
@@ -17,6 +15,6 @@ public final class TestConstants {
         .serviceId(TEST_SERVICE_ID)
         .userId(TEST_USER_ID)
         .consentId(TEST_CONSENT_ID)
-        .consentVersion(new BigDecimal(1))
+        .consentVersion(1)
         .status(ConsentStatus.ACTIVE);
 }

@@ -30,7 +30,7 @@ dependencies {
     implementation("jakarta.annotation:jakarta.annotation-api:3.0.0")
     implementation("software.amazon.smithy:smithy-utils:1.49.0")
 
-    implementation("com.consentframework.consentmanagement:consentmanagement-api-models:0.2.4")
+    implementation("com.consentframework.consentmanagement:consentmanagement-api-models:0.2.6")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 

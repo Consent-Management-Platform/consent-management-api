@@ -5,8 +5,6 @@ import com.consentframework.consentmanagement.api.domain.exceptions.IllegalArgum
 import com.consentframework.consentmanagement.api.models.Consent;
 import software.amazon.smithy.utils.StringUtils;
 
-import java.math.BigDecimal;
-
 /**
  * Utility class for validating Consent objects before
  * pushing them to a backend repository.
@@ -54,8 +52,8 @@ public final class ConsentValidator {
      */
     public static void validateNextConsentVersion(final Consent existingConsent, final Consent updatedConsent)
             throws ConflictingResourceException {
-        final BigDecimal expectedNextVersion = existingConsent.getConsentVersion().add(BigDecimal.ONE);
-        final BigDecimal receivedVersion = updatedConsent.getConsentVersion();
+        final Integer expectedNextVersion = existingConsent.getConsentVersion() + 1;
+        final Integer receivedVersion = updatedConsent.getConsentVersion();
         if (receivedVersion != expectedNextVersion) {
             throw new ConflictingResourceException(String.format(VERSION_CONFLICT_MESSAGE, expectedNextVersion.longValue(),
                 receivedVersion.longValue()));
