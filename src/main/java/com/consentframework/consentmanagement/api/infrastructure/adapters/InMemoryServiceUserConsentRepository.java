@@ -1,6 +1,5 @@
 package com.consentframework.consentmanagement.api.infrastructure.adapters;
 
-import com.consentframework.consentmanagement.api.domain.entities.ConsentValidator;
 import com.consentframework.consentmanagement.api.domain.entities.ServiceUserConsentKey;
 import com.consentframework.consentmanagement.api.domain.entities.ServiceUserKey;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
@@ -9,6 +8,7 @@ import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotF
 import com.consentframework.consentmanagement.api.domain.pagination.ListPage;
 import com.consentframework.consentmanagement.api.domain.pagination.ListPaginator;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
+import com.consentframework.consentmanagement.api.domain.validators.ConsentValidator;
 import com.consentframework.consentmanagement.api.models.Consent;
 
 import java.util.ArrayList;

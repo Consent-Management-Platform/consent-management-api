@@ -1,4 +1,4 @@
-package com.consentframework.consentmanagement.api.domain.entities;
+package com.consentframework.consentmanagement.api.domain.validators;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

@@ -3,6 +3,7 @@ package com.consentframework.consentmanagement.api.activities;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.IllegalArgumentException;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
+import com.consentframework.consentmanagement.api.domain.validators.CreateServiceUserConsentRequestValidator;
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.models.CreateServiceUserConsentRequestContent;
 
@@ -34,6 +35,8 @@ public class CreateServiceUserConsentActivity {
      */
     public void handleRequest(final String serviceId, final String userId, final CreateServiceUserConsentRequestContent request)
             throws ConflictingResourceException, IllegalArgumentException {
+        CreateServiceUserConsentRequestValidator.validate(request);
+
         final Consent consent = new Consent()
             .serviceId(serviceId)
             .userId(userId)

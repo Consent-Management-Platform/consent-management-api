@@ -1,4 +1,4 @@
-package com.consentframework.consentmanagement.api.domain.entities;
+package com.consentframework.consentmanagement.api.domain.validators;
 
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.IllegalArgumentException;
