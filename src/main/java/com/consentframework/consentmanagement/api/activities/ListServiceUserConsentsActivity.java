@@ -1,0 +1,53 @@
+package com.consentframework.consentmanagement.api.activities;
+
+import com.consentframework.consentmanagement.api.domain.exceptions.IllegalArgumentException;
+import com.consentframework.consentmanagement.api.domain.pagination.ListPage;
+import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
+import com.consentframework.consentmanagement.api.models.Consent;
+import com.consentframework.consentmanagement.api.models.ListServiceUserConsentResponseContent;
+
+import java.util.List;
+
+/**
+ * ListServiceUserConsents API activity.
+ */
+public class ListServiceUserConsentsActivity {
+    private final ServiceUserConsentRepository consentRepository;
+
+    /**
+     * Constructor for list consent activity.
+     *
+     * @param consentRepository consent data store
+     */
+    public ListServiceUserConsentsActivity(final ServiceUserConsentRepository consentRepository) {
+        this.consentRepository = consentRepository;
+    }
+
+    /**
+     * Handle request to list ServiceUserConsents for a given service and user pair.
+     *
+     * @param serviceId service obtaining consent
+     * @param userId user providing consent
+     * @param limit maximum number of consents to retrieve
+     * @param pageToken pagination token for backend consents query
+     * @return page of matching Consents with next page token if applicable
+     * @throws IllegalArgumentException exception thrown when receive invalid input
+     */
+    public ListServiceUserConsentResponseContent handleRequest(final String serviceId, final String userId,
+            final Integer limit, final String pageToken) throws IllegalArgumentException {
+        final ListPage<Consent> paginatedConsents = this.consentRepository.listServiceUserConsents(serviceId, userId, limit, pageToken);
+
+        final String nextPageToken = parseNextPageToken(paginatedConsents);
+
+        return new ListServiceUserConsentResponseContent()
+            .data(paginatedConsents.resultsOnPage())
+            .nextPageToken(nextPageToken);
+    }
+
+    private String parseNextPageToken(final ListPage<Consent> paginatedConsents) {
+        if (paginatedConsents.nextPageToken().isEmpty()) {
+            return null;
+        }
+        return String.valueOf(paginatedConsents.nextPageToken().getAsInt());
+    }
+}
