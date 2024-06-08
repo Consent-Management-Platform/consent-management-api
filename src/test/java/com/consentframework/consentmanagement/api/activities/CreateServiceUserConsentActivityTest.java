@@ -1,6 +1,7 @@
 package com.consentframework.consentmanagement.api.activities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -16,6 +17,7 @@ import com.consentframework.consentmanagement.api.infrastructure.adapters.InMemo
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.models.ConsentStatus;
 import com.consentframework.consentmanagement.api.models.CreateServiceUserConsentRequestContent;
+import com.consentframework.consentmanagement.api.models.CreateServiceUserConsentResponseContent;
 import com.consentframework.consentmanagement.api.testcommon.constants.TestConstants;
 import com.consentframework.consentmanagement.api.testcommon.matchers.CreatedConsentMatcher;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,7 +54,10 @@ class CreateServiceUserConsentActivityTest {
             .consentData(Map.of("TestKey", "TestValue"))
             .expiryTime(OffsetDateTime.now());
 
-        activity.handleRequest(TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, requestContent);
+        final CreateServiceUserConsentResponseContent response = activity.handleRequest(TestConstants.TEST_SERVICE_ID,
+            TestConstants.TEST_USER_ID, requestContent);
+
+        assertNotNull(response.getConsentId());
 
         final Consent expectedConsent = new Consent()
             .serviceId(TestConstants.TEST_SERVICE_ID)
