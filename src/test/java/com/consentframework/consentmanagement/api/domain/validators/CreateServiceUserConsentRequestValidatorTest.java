@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.consentframework.consentmanagement.api.domain.exceptions.IllegalArgumentException;
 import com.consentframework.consentmanagement.api.models.ConsentStatus;
 import com.consentframework.consentmanagement.api.models.CreateServiceUserConsentRequestContent;
+import com.consentframework.consentmanagement.api.testcommon.constants.TestConstants;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -22,7 +23,7 @@ class CreateServiceUserConsentRequestValidatorTest {
     @Test
     void testValidateWhenMissingStatus() {
         final CreateServiceUserConsentRequestContent requestContent = new CreateServiceUserConsentRequestContent()
-            .consentData(Map.of());
+            .consentData(TestConstants.TEST_CONSENT_DATA_MAP);
 
         final IllegalArgumentException thrownException = assertThrows(IllegalArgumentException.class, () ->
             CreateServiceUserConsentRequestValidator.validate(requestContent));
@@ -34,7 +35,7 @@ class CreateServiceUserConsentRequestValidatorTest {
     void testValidateWhenValid() throws IllegalArgumentException {
         final CreateServiceUserConsentRequestContent requestContent = new CreateServiceUserConsentRequestContent()
             .status(ConsentStatus.ACTIVE)
-            .consentData(Map.of());
+            .consentData(TestConstants.TEST_CONSENT_DATA_MAP);
         CreateServiceUserConsentRequestValidator.validate(requestContent);
     }
 }

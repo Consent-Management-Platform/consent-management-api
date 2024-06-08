@@ -28,6 +28,10 @@ If you do not clean before building, your local environment may continue to use 
 
 ## Troubleshooting
 
+#### My local tests failed but the output doesn't include logs or stack traces needed to debug
+
+Run `./gradlew build --info` to rerun the tests with info logging enabled, which will include logs and stack traces for failed tests.
+
 #### My local builds are not picking up Gradle dependency changes
 
 Run `./gradlew clean build --refresh-dependencies` to ignore your Gradle environment's cached entries for modules and artifacts, and download new versions if they have different published SHA1 hashsums.

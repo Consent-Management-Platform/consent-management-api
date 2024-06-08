@@ -51,7 +51,7 @@ class CreateServiceUserConsentActivityTest {
     void testHandleValidRequest() throws ConflictingResourceException, IllegalArgumentException {
         final CreateServiceUserConsentRequestContent requestContent = new CreateServiceUserConsentRequestContent()
             .status(ConsentStatus.ACTIVE)
-            .consentData(Map.of("TestKey", "TestValue"))
+            .consentData(TestConstants.TEST_CONSENT_DATA_MAP)
             .expiryTime(OffsetDateTime.now());
 
         final CreateServiceUserConsentResponseContent response = activity.handleRequest(TestConstants.TEST_SERVICE_ID,

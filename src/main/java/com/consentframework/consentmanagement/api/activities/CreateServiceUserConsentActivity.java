@@ -31,11 +31,12 @@ public class CreateServiceUserConsentActivity {
      * @param serviceId service obtaining consent
      * @param userId user providing consent
      * @param request consent data
+     * @return response including the UUID of the created consent
      * @throws ConflictingResourceException exception thrown if data store has conflicting data
      * @throws IllegalArgumentException exception thrown if provided invalid input
      */
-    public CreateServiceUserConsentResponseContent handleRequest(final String serviceId, final String userId, final CreateServiceUserConsentRequestContent request)
-            throws ConflictingResourceException, IllegalArgumentException {
+    public CreateServiceUserConsentResponseContent handleRequest(final String serviceId, final String userId,
+            final CreateServiceUserConsentRequestContent request) throws ConflictingResourceException, IllegalArgumentException {
         CreateServiceUserConsentRequestValidator.validate(request);
 
         final String consentId = UUID.randomUUID().toString();
