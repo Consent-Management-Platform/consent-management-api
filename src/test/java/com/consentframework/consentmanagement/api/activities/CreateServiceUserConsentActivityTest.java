@@ -23,9 +23,6 @@ import com.consentframework.consentmanagement.api.testcommon.matchers.CreatedCon
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.OffsetDateTime;
-import java.util.Map;
-
 class CreateServiceUserConsentActivityTest {
     private CreateServiceUserConsentActivity activity;
     private ServiceUserConsentRepository consentRepository;
@@ -52,7 +49,7 @@ class CreateServiceUserConsentActivityTest {
         final CreateServiceUserConsentRequestContent requestContent = new CreateServiceUserConsentRequestContent()
             .status(ConsentStatus.ACTIVE)
             .consentData(TestConstants.TEST_CONSENT_DATA_MAP)
-            .expiryTime(OffsetDateTime.now());
+            .expiryTime(TestConstants.TEST_EXPIRY_TIME);
 
         final CreateServiceUserConsentResponseContent response = activity.handleRequest(TestConstants.TEST_SERVICE_ID,
             TestConstants.TEST_USER_ID, requestContent);
