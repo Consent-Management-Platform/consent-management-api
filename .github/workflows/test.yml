@@ -26,4 +26,4 @@ jobs:
                 distribution: corretto
                 java-version: 21
             - name: Run gradle build
-              run: ./gradlew build
+              run: gradle wrapper build
