@@ -10,8 +10,8 @@ import com.consentframework.consentmanagement.api.models.Consent;
  * Interface specifying supported integrations with service user consent data.
  */
 public interface ServiceUserConsentRepository {
-    public static final String CONSENT_ALREADY_EXISTS_MESSAGE = "Consent already exists with serviceId %s, userId %s, consentId %s";
-    public static final String CONSENT_NOT_FOUND_MESSAGE = "No consent found with serviceId %s, userId %s, consentId %s";
+    public static final String CONSENT_ALREADY_EXISTS_MESSAGE = "Consent already exists with serviceId: %s, userId: %s, consentId: %s";
+    public static final String CONSENT_NOT_FOUND_MESSAGE = "No consent found with serviceId: %s, userId: %s, consentId: %s";
 
     /**
      * Save new consent to repository if does not yet exist.
