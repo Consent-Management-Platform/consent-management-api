@@ -1,5 +1,23 @@
 # Development
 
+## Project structure
+
+* `/activities` - application-level business logic leveraging `/domain` data models and interfaces, independent of framework and infrastructure choices
+* `/domain` - data models and interfaces representing core business rules, independent of framework or infrastructure choices
+* `/infrastructure` - implementations of domain logic based on backend/infrastructure choices
+
+Key concepts borrowed from Clean Architecture:
+
+* Decouple layers: domain logic, use cases, interface adapters, frameworks, and infrastructure.
+  * This allows us to easily test each layer and replace elements with minimal effort.  For example, we could switch frameworks, migrate from SQL to NoSQL, or switch cloud providers without needing to change any domain or activity code.
+* No objects in inner layers should know about outer layers.
+  * Entities in the domain layer should know nothing about use cases, frameworks, or infrastructure choices.
+  * Use cases will reference entities, but should know nothing about frameworks or infrastructure.
+  * Interface adapters will reference use cases, but should know nothing about infrastructure.
+* Use [Dependency Inversion](https://en.wikipedia.org/wiki/Dependency_inversion_principle) for crossing from inner to outer layers, using interfaces that abstract details that outer layers implement.
+  * For example, the `GetServiceUserConsentActivity` should reference a data access interface, eg. `interface ServiceUserConsentRepository`, without having any dependency on how the database is implemented.
+  * We can then make infrastructure decisions later, or migrate to other options with minimal effort, which for complex projects can save months of developer time.
+
 ## Building the project
 
 ### First-time set-up
@@ -25,6 +43,15 @@ In order to clean up stale build artifacts and rebuild the API models based on y
 ```
 
 If you do not clean before building, your local environment may continue to use stale, cached artifacts in builds.
+
+## Helpful commands
+
+* `./gradlew build` - build project, run checkstyle, and run unit tests
+* `./gradlew clean build` - clear build artifacts, rebuild project, run checkstyle, and run unit tests
+* `./gradlew tasks` - list available Gradle tasks
+* `./gradlew test` - run unit tests
+* `./gradlew test --tests TestClass --info` - run unit tests from a specific test class with info-level logging, helpful when debugging errors
+* `./gradlew test --tests TestClass.TestMethod --info` - run a specific unit test with info-level logging, helpful when debugging errors
 
 ## Troubleshooting
 
