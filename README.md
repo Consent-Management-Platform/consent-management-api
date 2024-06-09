@@ -14,9 +14,11 @@ See [v1 API documentation here](https://www.marksayson.com/consent-management-ap
 
 [OpenAPI Generator](https://openapi-generator.tech) is used to automatically generate Java data models and client code from our Smithy-generated OpenAPI spec.
 
-The [AWS SDK for Java 2.x](https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide) is used to write Java application code integrating with AWS services such as Lambda and DynamoDB.
+[AWS SDK for Java 2.x](https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide) is used to write Java application code integrating with AWS services such as Lambda and DynamoDB.
 
-[GitHub Actions](https://docs.github.com/en/actions) are used to automatically generate and deploy HTML API documentation to [GitHub Pages](https://pages.github.com/) after changes are pushed to the main branch.
+[GitHub Actions](https://docs.github.com/en/actions) are used to
+* Automatically generate and deploy HTML API documentation to [GitHub Pages](https://pages.github.com/) when API model changes are pushed to the main branch of [consent-management-api-models](https://github.com/msayson/consent-management-api-models/); and
+* Automatically build and run unit tests against service code changes pushed or submitted through pull requests.
 
 [Gradle](https://docs.gradle.org) is used to build the project and manage package dependencies.
 
