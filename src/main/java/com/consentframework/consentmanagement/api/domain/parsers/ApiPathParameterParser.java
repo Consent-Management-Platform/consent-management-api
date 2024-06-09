@@ -8,7 +8,7 @@ import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestEx
  * Utility class for parsing API path parameters.
  */
 public final class ApiPathParameterParser {
-    static final String PATH_PARAMETER_NOT_FOUND_MESSAGE = "Unable to parse %s path parameter from request";
+    public static final String PATH_PARAMETER_NOT_FOUND_MESSAGE = "Unable to parse %s path parameter from request";
 
     private ApiPathParameterParser() {}
 

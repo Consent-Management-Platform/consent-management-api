@@ -27,7 +27,7 @@ public class GetServiceUserConsentActivity {
      * @param request request content including service/user/consent IDs
      * @throws ResourceNotFoundException exception thrown if no such consent exists
      */
-    public GetServiceUserConsentResponseContent getConsent(final GetServiceUserConsentRequestContent request)
+    public GetServiceUserConsentResponseContent handleRequest(final GetServiceUserConsentRequestContent request)
             throws ResourceNotFoundException {
         final Consent retrievedConsent = consentRepository.getServiceUserConsent(
             request.serviceId(), request.userId(), request.consentId());

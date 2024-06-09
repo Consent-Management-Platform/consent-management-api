@@ -15,7 +15,7 @@ import java.util.Map;
  * @param queryStringParameters query string parameters, eg. "/my/path?limit=5" maps "limit" to 5
  * @param headers request headers, eg. "content-type" mapped to "application/json"
  * @param isBase64Encoded whether request data is Base 64 encoded
- * @param data request data
+ * @param body request body
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)

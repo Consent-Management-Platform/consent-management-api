@@ -21,9 +21,11 @@ public final class TestConstants {
     public static final GetServiceUserConsentRequestContent TEST_GET_CONSENT_REQUEST_CONTENTS =
         new GetServiceUserConsentRequestContent(TEST_SERVICE_ID, TEST_USER_ID, TEST_CONSENT_ID);
 
-    public static final String TEST_GET_CONSENT_PATH = String.format(
-        "/v1/consent-management/services/%s/users/%s/consents/%s",
-        TEST_SERVICE_ID, TEST_USER_ID, TEST_CONSENT_ID);
+    public static final String TEST_CONSENTS_PATH = String.format(
+        "/v1/consent-management/services/%s/users/%s/consents",
+        TEST_SERVICE_ID, TEST_USER_ID);
+
+    public static final String TEST_CONSENT_PATH = String.format("%s/%s", TEST_CONSENTS_PATH, TEST_CONSENT_ID);
 
     public static final OffsetDateTime TEST_EXPIRY_TIME = OffsetDateTime.ofInstant(
         Instant.now().plus(30, ChronoUnit.DAYS),

@@ -1,11 +1,9 @@
 package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
-import com.consentframework.consentmanagement.api.domain.constants.ApiResponseParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.HttpMethod;
 import com.consentframework.consentmanagement.api.domain.constants.HttpStatusCode;
 import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
@@ -22,7 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-class GetServiceUserConsentRequestHandlerTest {
+class GetServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
     private GetServiceUserConsentRequestHandler handler;
     private GetServiceUserConsentActivity activity;
     private ServiceUserConsentRepository consentRepository;
@@ -41,8 +39,7 @@ class GetServiceUserConsentRequestHandlerTest {
 
         final ApiRequest request = buildValidApiRequest();
         final Map<String, Object> response = handler.handleRequest(request);
-        assertNotNull(response);
-        assertStatusCodeEquals(HttpStatusCode.SUCCESS, response);
+        assertSuccessResponse(response);
 
         final Object responseBody = getResponseBody(response);
         assertTrue(responseBody instanceof GetServiceUserConsentResponseContent);
@@ -54,18 +51,16 @@ class GetServiceUserConsentRequestHandlerTest {
         final ApiRequest request = buildValidApiRequest();
 
         final Map<String, Object> response = handler.handleRequest(request);
-        assertNotNull(response);
-        assertStatusCodeEquals(HttpStatusCode.NOT_FOUND, response);
 
         final String expectedErrorMessage = String.format(ServiceUserConsentRepository.CONSENT_NOT_FOUND_MESSAGE,
             TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID);
-        assertEquals(expectedErrorMessage, getResponseBody(response));
+        assertExceptionResponse(HttpStatusCode.NOT_FOUND, expectedErrorMessage, response);
     }
 
     @Test
     void testHandleNullRequest() {
         final Map<String, Object> response = handler.handleRequest(null);
-        assertEqualsMissingPathParametersResponse(response);
+        assertExceptionResponse(HttpStatusCode.BAD_REQUEST, GetServiceUserConsentRequestHandler.MISSING_PATH_PARAMETERS_MESSAGE, response);
     }
 
     @Test
@@ -104,18 +99,7 @@ class GetServiceUserConsentRequestHandlerTest {
         final ApiRequest request = buildApiRequest(pathParameters);
 
         final Map<String, Object> response = handler.handleRequest(request);
-        assertEqualsMissingPathParametersResponse(response);
-    }
-
-    private void assertEqualsMissingPathParametersResponse(final Map<String, Object> response) {
-        assertNotNull(response);
-        assertStatusCodeEquals(HttpStatusCode.BAD_REQUEST, response);
-        assertEquals(GetServiceUserConsentRequestHandler.MISSING_PATH_PARAMETERS_MESSAGE,
-            getResponseBody(response));
-    }
-
-    private void assertStatusCodeEquals(final HttpStatusCode statusCode, final Map<String, Object> response) {
-        assertEquals(statusCode.getValue(), response.get(ApiResponseParameterName.STATUS_CODE.getValue()));
+        assertExceptionResponse(HttpStatusCode.BAD_REQUEST, GetServiceUserConsentRequestHandler.MISSING_PATH_PARAMETERS_MESSAGE, response);
     }
 
     private ApiRequest buildValidApiRequest() {
@@ -128,10 +112,6 @@ class GetServiceUserConsentRequestHandlerTest {
     }
 
     private ApiRequest buildApiRequest(final Map<String, String> pathParameters) {
-        return new ApiRequest(HttpMethod.GET.name(), TestConstants.TEST_GET_CONSENT_PATH, pathParameters, null, null, false, null);
-    }
-
-    private Object getResponseBody(final Map<String, Object> response) {
-        return response.get(ApiResponseParameterName.BODY.getValue());
+        return new ApiRequest(HttpMethod.GET.name(), TestConstants.TEST_CONSENT_PATH, pathParameters, null, null, false, null);
     }
 }
