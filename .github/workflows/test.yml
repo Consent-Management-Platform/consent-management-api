@@ -1,12 +1,16 @@
 # This GitHub workflow will automatically build and test code changes
 name: Gradle build
 on:
+    # Run when pushing code or project config changes to GitHub
     push:
         paths:
             - '**.java'
             - build.gradle.kts
             - settings.gradle.kts
+    # Run automatically for all pull requests
     pull_request:
+    # Enable running workflow manually from GitHub Actions
+    workflow_dispatch:
 
 jobs:
     build:
