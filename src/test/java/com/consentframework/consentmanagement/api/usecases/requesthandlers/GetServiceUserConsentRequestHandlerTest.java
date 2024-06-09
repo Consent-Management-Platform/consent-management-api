@@ -1,10 +1,9 @@
-package com.consentframework.consentmanagement.api.domain.requesthandlers;
+package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.consentframework.consentmanagement.api.activities.GetServiceUserConsentActivity;
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.ApiResponseParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.HttpMethod;
@@ -17,6 +16,7 @@ import com.consentframework.consentmanagement.api.infrastructure.adapters.InMemo
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.models.GetServiceUserConsentResponseContent;
 import com.consentframework.consentmanagement.api.testcommon.constants.TestConstants;
+import com.consentframework.consentmanagement.api.usecases.activities.GetServiceUserConsentActivity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

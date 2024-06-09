@@ -1,6 +1,5 @@
-package com.consentframework.consentmanagement.api.domain.requesthandlers;
+package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 
-import com.consentframework.consentmanagement.api.activities.GetServiceUserConsentActivity;
 import com.consentframework.consentmanagement.api.domain.constants.ApiResponseParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.HttpStatusCode;
 import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
@@ -8,6 +7,7 @@ import com.consentframework.consentmanagement.api.domain.entities.GetServiceUser
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.models.GetServiceUserConsentResponseContent;
+import com.consentframework.consentmanagement.api.usecases.activities.GetServiceUserConsentActivity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

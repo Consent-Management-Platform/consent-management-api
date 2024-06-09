@@ -1,4 +1,4 @@
-package com.consentframework.consentmanagement.api.domain.requesthandlers;
+package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 
 import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
 

@@ -2,9 +2,9 @@
 
 ## Project structure
 
-* `/activities` - application-level business logic leveraging `/domain` data models and interfaces, independent of framework and infrastructure choices
 * `/domain` - data models and interfaces representing core business rules, independent of framework or infrastructure choices
-* `/infrastructure` - implementations of domain logic based on backend/infrastructure choices
+* `/usecases` - application-level business logic leveraging `/domain` data models and interfaces, independent of framework and infrastructure choices
+* `/infrastructure` - implementations of domain logic dependent on backend/infrastructure choices
 
 Key concepts borrowed from Clean Architecture:
 

@@ -1,4 +1,4 @@
-package com.consentframework.consentmanagement.api.activities;
+package com.consentframework.consentmanagement.api.usecases.activities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

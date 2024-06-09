@@ -1,4 +1,4 @@
-package com.consentframework.consentmanagement.api.activities;
+package com.consentframework.consentmanagement.api.usecases.activities;
 
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.pagination.ListPage;
