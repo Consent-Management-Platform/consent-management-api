@@ -3,8 +3,18 @@
 ## Project structure
 
 * `/domain` - data models and interfaces representing core business rules, independent of framework or infrastructure choices
+  * `/domain/constants` - core service constants and enums
+  * `/domain/entities` - core data models for the consent service
+  * `/domain/exceptions` - exception classes
+  * `/domain/pagination` - pagination utility classes
+  * `/domain/parsers` - parser utility classes
+  * `/domain/repositories` - repository interfaces defining supported backend data operations
+  * `/domain/validators` - input validation utility classes
 * `/usecases` - application-level business logic leveraging `/domain` data models and interfaces, independent of framework and infrastructure choices
+  * `/usecases/activities` - API activities interacting with repository interfaces
+  * `/usecases/requesthandlers` - request handlers for each API operation, interacting with API activities
 * `/infrastructure` - implementations of domain logic dependent on backend/infrastructure choices
+  * `/infrastructure/adapters` - interface adapters, eg. infrastructure-specific implementations of repository interfaces
 
 Key concepts borrowed from Clean Architecture:
 
