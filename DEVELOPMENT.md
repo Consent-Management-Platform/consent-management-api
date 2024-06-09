@@ -14,7 +14,7 @@
   * `/usecases/activities` - API activities interacting with repository interfaces
   * `/usecases/requesthandlers` - request handlers for each API operation, interacting with API activities
 * `/infrastructure` - implementations of domain logic dependent on backend/infrastructure choices
-  * `/infrastructure/adapters` - interface adapters, eg. infrastructure-specific implementations of repository interfaces
+  * `/infrastructure/repositories` - infrastructure-specific implementations of repository interfaces
 
 Key concepts borrowed from Clean Architecture:
 

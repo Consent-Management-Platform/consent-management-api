@@ -1,4 +1,4 @@
-package com.consentframework.consentmanagement.api.infrastructure.adapters;
+package com.consentframework.consentmanagement.api.infrastructure.repositories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

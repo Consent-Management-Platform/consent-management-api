@@ -1,4 +1,4 @@
-package com.consentframework.consentmanagement.api.infrastructure.adapters;
+package com.consentframework.consentmanagement.api.infrastructure.repositories;
 
 import com.consentframework.consentmanagement.api.domain.entities.ServiceUserConsentKey;
 import com.consentframework.consentmanagement.api.domain.entities.ServiceUserKey;
