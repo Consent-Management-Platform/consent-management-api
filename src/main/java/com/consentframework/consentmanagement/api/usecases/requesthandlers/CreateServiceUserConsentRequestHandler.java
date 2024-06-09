@@ -35,7 +35,7 @@ public class CreateServiceUserConsentRequestHandler extends ApiRequestHandler {
     }
 
     /**
-     * Handle GetServiceUserConsent API requests.
+     * Handle CreateServiceUserConsent API requests.
      *
      * @param request API request
      * @return API response
