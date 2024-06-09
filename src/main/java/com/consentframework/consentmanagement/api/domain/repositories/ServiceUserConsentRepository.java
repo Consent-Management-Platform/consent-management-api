@@ -1,7 +1,7 @@
 package com.consentframework.consentmanagement.api.domain.repositories;
 
+import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
-import com.consentframework.consentmanagement.api.domain.exceptions.IllegalArgumentException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.domain.pagination.ListPage;
 import com.consentframework.consentmanagement.api.models.Consent;
@@ -17,10 +17,10 @@ public interface ServiceUserConsentRepository {
      * Save new consent to repository if does not yet exist.
      *
      * @param consent Consent object to save to the repository
+     * @throws BadRequestException exception thrown if consent violates model constraints
      * @throws ConflictingResourceException exception thrown if consent already exists with same key
-     * @throws IllegalArgumentException exception thrown if consent violates model constraints
      */
-    void createServiceUserConsent(final Consent consent) throws ConflictingResourceException, IllegalArgumentException;
+    void createServiceUserConsent(final Consent consent) throws BadRequestException, ConflictingResourceException;
 
     /**
      * Retrieve consent from repository if exists.
@@ -37,11 +37,11 @@ public interface ServiceUserConsentRepository {
      * Update existing consent with new data.
      *
      * @param consent Consent object to save to the repository
+     * @throws BadRequestException exception thrown if consent violates model constraints
      * @throws ConflictingResourceException exception thrown if stored consent has conflicting data
-     * @throws IllegalArgumentException exception thrown if consent violates model constraints
      * @throws ResourceNotFoundException exception thrown if no such consent exists
      */
-    void updateServiceUserConsent(final Consent consent) throws ConflictingResourceException, IllegalArgumentException,
+    void updateServiceUserConsent(final Consent consent) throws BadRequestException, ConflictingResourceException,
         ResourceNotFoundException;
 
     /**
@@ -52,8 +52,8 @@ public interface ServiceUserConsentRepository {
      * @param limit maximum number of consents to retrieve
      * @param pageToken pagination token for backend consents query
      * @return page of matching Consents with next page token if applicable
-     * @throws IllegalArgumentException exception thrown when receive invalid input
+     * @throws BadRequestException exception thrown when receive invalid input
      */
     ListPage<Consent> listServiceUserConsents(final String serviceId, final String userId,
-        final Integer limit, final String pageToken) throws IllegalArgumentException;
+        final Integer limit, final String pageToken) throws BadRequestException;
 }

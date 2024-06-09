@@ -3,8 +3,8 @@ package com.consentframework.consentmanagement.api.activities;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
-import com.consentframework.consentmanagement.api.domain.exceptions.IllegalArgumentException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.domain.validators.ConsentValidator;
@@ -27,7 +27,7 @@ class UpdateServiceUserConsentActivityTest {
     }
 
     @Test
-    void testHandleRequestForNonExistingConsent() throws ConflictingResourceException, IllegalArgumentException, ResourceNotFoundException {
+    void testHandleRequestForNonExistingConsent() throws BadRequestException, ConflictingResourceException, ResourceNotFoundException {
         final UpdateServiceUserConsentRequestContent requestContent = new UpdateServiceUserConsentRequestContent()
             .consentVersion(1)
             .status(ConsentStatus.REVOKED);
@@ -42,7 +42,7 @@ class UpdateServiceUserConsentActivityTest {
     }
 
     @Test
-    void testHandleRequestWithConflictingVersion() throws ConflictingResourceException, IllegalArgumentException {
+    void testHandleRequestWithConflictingVersion() throws BadRequestException, ConflictingResourceException {
         this.consentRepository.createServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ALL_FIELDS);
 
         final UpdateServiceUserConsentRequestContent requestContent = new UpdateServiceUserConsentRequestContent()
@@ -58,7 +58,7 @@ class UpdateServiceUserConsentActivityTest {
     }
 
     @Test
-    void testHandleValidRequest() throws ConflictingResourceException, IllegalArgumentException, ResourceNotFoundException {
+    void testHandleValidRequest() throws BadRequestException, ConflictingResourceException, ResourceNotFoundException {
         this.consentRepository.createServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS);
 
         final Integer updatedConsentVersion = TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS.getConsentVersion() + 1;

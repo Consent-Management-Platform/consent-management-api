@@ -1,6 +1,6 @@
 package com.consentframework.consentmanagement.api.domain.validators;
 
-import com.consentframework.consentmanagement.api.domain.exceptions.IllegalArgumentException;
+import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.models.CreateServiceUserConsentRequestContent;
 
 /**
@@ -18,11 +18,11 @@ public final class CreateServiceUserConsentRequestValidator {
      * Validate that request content has all required fields.
      *
      * @param requestContent create consent request body
-     * @throws IllegalArgumentException exception thrown if missing required fields
+     * @throws BadRequestException exception thrown if missing required fields
      */
-    public static void validate(final CreateServiceUserConsentRequestContent requestContent) throws IllegalArgumentException {
+    public static void validate(final CreateServiceUserConsentRequestContent requestContent) throws BadRequestException {
         if (requestContent == null || requestContent.getStatus() == null) {
-            throw new IllegalArgumentException(MISSING_REQUIRED_FIELDS_MESSAGE);
+            throw new BadRequestException(MISSING_REQUIRED_FIELDS_MESSAGE);
         }
     }
 }

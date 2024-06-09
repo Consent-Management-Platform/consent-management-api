@@ -1,7 +1,7 @@
 package com.consentframework.consentmanagement.api.activities;
 
+import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
-import com.consentframework.consentmanagement.api.domain.exceptions.IllegalArgumentException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.models.Consent;
@@ -29,13 +29,13 @@ public class UpdateServiceUserConsentActivity {
      * @param userId user providing consent
      * @param consentId consent to update
      * @param updatedContent updated consent data
+     * @throws BadRequestException exception thrown if provided invalid input
      * @throws ConflictingResourceException exception thrown if data store has conflicting data
-     * @throws IllegalArgumentException exception thrown if provided invalid input
      * @throws ResourceNotFoundException exception thrown if consent does not exist
      */
     public void handleRequest(final String serviceId, final String userId, final String consentId,
             final UpdateServiceUserConsentRequestContent updatedContent)
-            throws ConflictingResourceException, IllegalArgumentException, ResourceNotFoundException {
+            throws BadRequestException, ConflictingResourceException, ResourceNotFoundException {
 
         final Consent updatedConsent = new Consent()
             .serviceId(serviceId)

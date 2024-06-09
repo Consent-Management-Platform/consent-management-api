@@ -3,8 +3,8 @@ package com.consentframework.consentmanagement.api.activities;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
-import com.consentframework.consentmanagement.api.domain.exceptions.IllegalArgumentException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.infrastructure.adapters.InMemoryServiceUserConsentRepository;
@@ -35,7 +35,7 @@ class GetServiceUserConsentActivityTest {
     }
 
     @Test
-    void testRetrieveExistingConsent() throws ConflictingResourceException, IllegalArgumentException, ResourceNotFoundException {
+    void testRetrieveExistingConsent() throws BadRequestException, ConflictingResourceException, ResourceNotFoundException {
         final Consent createdConsent = TestConstants.TEST_CONSENT_WITH_ALL_FIELDS;
         consentRepository.createServiceUserConsent(createdConsent);
 

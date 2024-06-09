@@ -3,17 +3,15 @@ package com.consentframework.consentmanagement.api.activities;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
-import com.consentframework.consentmanagement.api.domain.exceptions.IllegalArgumentException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.infrastructure.adapters.InMemoryServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.models.ConsentStatus;
-import com.consentframework.consentmanagement.api.models.GetServiceUserConsentResponseContent;
 import com.consentframework.consentmanagement.api.models.ListServiceUserConsentResponseContent;
 import com.consentframework.consentmanagement.api.testcommon.constants.TestConstants;
 import com.consentframework.consentmanagement.api.testcommon.utils.TestUtils;
@@ -37,7 +35,7 @@ class ListServiceUserConsentsActivityTest {
     }
 
     @Test
-    void testListWhenNoResults() throws IllegalArgumentException {
+    void testListWhenNoResults() throws BadRequestException {
         final ListServiceUserConsentResponseContent response = activity.handleRequest(TestConstants.TEST_SERVICE_ID,
             TestConstants.TEST_USER_ID, PAGE_LIMIT, null);
 
@@ -47,7 +45,7 @@ class ListServiceUserConsentsActivityTest {
     }
 
     @Test
-    void testListWhenMultiplePagesOfResults() throws ConflictingResourceException, IllegalArgumentException, ResourceNotFoundException {
+    void testListWhenMultiplePagesOfResults() throws BadRequestException, ConflictingResourceException, ResourceNotFoundException {
         final Consent firstConsent = TestConstants.TEST_CONSENT_WITH_ALL_FIELDS;
         final Consent secondConsent = TestUtils.clone(TestConstants.TEST_CONSENT_WITH_ALL_FIELDS)
             .consentId("SecondConsentId")

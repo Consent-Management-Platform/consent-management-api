@@ -1,12 +1,10 @@
 package com.consentframework.consentmanagement.api.activities;
 
-import com.consentframework.consentmanagement.api.domain.exceptions.IllegalArgumentException;
+import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.pagination.ListPage;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.models.ListServiceUserConsentResponseContent;
-
-import java.util.List;
 
 /**
  * ListServiceUserConsents API activity.
@@ -31,10 +29,10 @@ public class ListServiceUserConsentsActivity {
      * @param limit maximum number of consents to retrieve
      * @param pageToken pagination token for backend consents query
      * @return page of matching Consents with next page token if applicable
-     * @throws IllegalArgumentException exception thrown when receive invalid input
+     * @throws BadRequestException exception thrown when receive invalid input
      */
     public ListServiceUserConsentResponseContent handleRequest(final String serviceId, final String userId,
-            final Integer limit, final String pageToken) throws IllegalArgumentException {
+            final Integer limit, final String pageToken) throws BadRequestException {
         final ListPage<Consent> paginatedConsents = this.consentRepository.listServiceUserConsents(serviceId, userId, limit, pageToken);
 
         final String nextPageToken = parseNextPageToken(paginatedConsents);

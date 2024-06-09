@@ -2,8 +2,8 @@ package com.consentframework.consentmanagement.api.infrastructure.adapters;
 
 import com.consentframework.consentmanagement.api.domain.entities.ServiceUserConsentKey;
 import com.consentframework.consentmanagement.api.domain.entities.ServiceUserKey;
+import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
-import com.consentframework.consentmanagement.api.domain.exceptions.IllegalArgumentException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.domain.pagination.ListPage;
 import com.consentframework.consentmanagement.api.domain.pagination.ListPaginator;
@@ -29,11 +29,11 @@ public class InMemoryServiceUserConsentRepository implements ServiceUserConsentR
      * Add consent to in-memory store if does not yet exist.
      *
      * @param consent Consent object to save to the repository
+     * @throws BadRequestException exception thrown if consent violates model constraints
      * @throws ConflictingResourceException exception thrown if consent already exists with same key
-     * @throws IllegalArgumentException exception thrown if consent violates model constraints
      */
     @Override
-    public void createServiceUserConsent(final Consent consent) throws ConflictingResourceException, IllegalArgumentException {
+    public void createServiceUserConsent(final Consent consent) throws BadRequestException, ConflictingResourceException {
         final ServiceUserConsentKey key = new ServiceUserConsentKey(consent.getServiceId(), consent.getUserId(), consent.getConsentId());
         if (inMemoryConsentStore.containsKey(key)) {
             throw new ConflictingResourceException(String.format(CONSENT_ALREADY_EXISTS_MESSAGE,
@@ -68,12 +68,12 @@ public class InMemoryServiceUserConsentRepository implements ServiceUserConsentR
      * Update existing consent with new data.
      *
      * @param consent Consent object to save to the repository
+     * @throws BadRequestException exception thrown if consent violates model constraints
      * @throws ConflictingResourceException exception thrown if stored consent has conflicting data
-     * @throws IllegalArgumentException exception thrown if consent violates model constraints
      * @throws ResourceNotFoundException exception thrown if no such consent exists
      */
     @Override
-    public void updateServiceUserConsent(final Consent consent) throws ConflictingResourceException, IllegalArgumentException,
+    public void updateServiceUserConsent(final Consent consent) throws BadRequestException, ConflictingResourceException,
             ResourceNotFoundException {
         ConsentValidator.validate(consent);
 
@@ -92,11 +92,11 @@ public class InMemoryServiceUserConsentRepository implements ServiceUserConsentR
      * @param limit maximum number of consents to retrieve
      * @param pageToken pagination token for backend consents query
      * @return page of matching consents stored for the service/user pair
-     * @throws IllegalArgumentException exception thrown when receive invalid input
+     * @throws BadRequestException exception thrown when receive invalid input
      */
     @Override
     public ListPage<Consent> listServiceUserConsents(final String serviceId, final String userId,
-            final Integer limit, final String pageToken) throws IllegalArgumentException {
+            final Integer limit, final String pageToken) throws BadRequestException {
         final List<Consent> allMatchingConsents = inMemoryConsentsByServiceUserIndex.get(new ServiceUserKey(serviceId, userId));
 
         final Integer parsedPageToken = parsePageToken(pageToken);
@@ -113,7 +113,7 @@ public class InMemoryServiceUserConsentRepository implements ServiceUserConsentR
         inMemoryConsentsByServiceUserIndex.put(serviceUserIndexKey, serviceUserConsents);
     }
 
-    private Integer parsePageToken(final String pageToken) throws IllegalArgumentException {
+    private Integer parsePageToken(final String pageToken) throws BadRequestException {
         if (pageToken == null) {
             return null;
         }
@@ -121,7 +121,7 @@ public class InMemoryServiceUserConsentRepository implements ServiceUserConsentR
         try {
             return Integer.parseInt(pageToken);
         } catch (final NumberFormatException e) {
-            throw new IllegalArgumentException(String.format(INVALID_PAGE_TOKEN_MESSAGE, pageToken));
+            throw new BadRequestException(String.format(INVALID_PAGE_TOKEN_MESSAGE, pageToken));
         }
     }
 }

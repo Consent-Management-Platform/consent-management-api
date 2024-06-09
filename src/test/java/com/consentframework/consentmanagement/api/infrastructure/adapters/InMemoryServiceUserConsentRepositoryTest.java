@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
-import com.consentframework.consentmanagement.api.domain.exceptions.IllegalArgumentException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.domain.pagination.ListPage;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
@@ -42,7 +42,7 @@ class InMemoryServiceUserConsentRepositoryTest {
         }
 
         @Test
-        void testGetConsentWhenExists() throws ConflictingResourceException, ResourceNotFoundException, IllegalArgumentException {
+        void testGetConsentWhenExists() throws BadRequestException, ConflictingResourceException, ResourceNotFoundException {
             repository.createServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS);
 
             final Consent retrievedConsent = repository.getServiceUserConsent(
@@ -54,7 +54,7 @@ class InMemoryServiceUserConsentRepositoryTest {
     @Nested
     class CreateServiceUserConsent {
         @Test
-        void testCreateConsentWhenAlreadyExists() throws ConflictingResourceException, IllegalArgumentException {
+        void testCreateConsentWhenAlreadyExists() throws BadRequestException, ConflictingResourceException {
             repository.createServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS);
 
             final ConflictingResourceException thrownException = assertThrows(ConflictingResourceException.class, () ->
@@ -66,10 +66,10 @@ class InMemoryServiceUserConsentRepositoryTest {
         }
 
         @Test
-        void testCreateConsentWhenMissingRequiredFields() throws ConflictingResourceException, IllegalArgumentException {
+        void testCreateConsentWhenMissingRequiredFields() throws BadRequestException, ConflictingResourceException {
             final Consent consentMissingRequiredFields = new Consent().consentId(TestConstants.TEST_CONSENT_ID);
 
-            final IllegalArgumentException thrownException = assertThrows(IllegalArgumentException.class, () ->
+            final BadRequestException thrownException = assertThrows(BadRequestException.class, () ->
                 repository.createServiceUserConsent(consentMissingRequiredFields));
             assertEquals(ConsentValidator.SERVICE_ID_BLANK_MESSAGE, thrownException.getMessage());
         }
@@ -88,7 +88,7 @@ class InMemoryServiceUserConsentRepositoryTest {
         }
 
         @Test
-        void testUpdateWhenVersionConflict() throws ConflictingResourceException, IllegalArgumentException {
+        void testUpdateWhenVersionConflict() throws BadRequestException, ConflictingResourceException {
             repository.createServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS);
 
             final ConflictingResourceException thrownException = assertThrows(ConflictingResourceException.class, () ->
@@ -98,7 +98,7 @@ class InMemoryServiceUserConsentRepositoryTest {
         }
 
         @Test
-        void testUpdateWhenValidNewData() throws ConflictingResourceException, IllegalArgumentException, ResourceNotFoundException {
+        void testUpdateWhenValidNewData() throws BadRequestException, ConflictingResourceException, ResourceNotFoundException {
             repository.createServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS);
 
             final Consent inputConsent = TestUtils.clone(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS)
@@ -117,7 +117,7 @@ class InMemoryServiceUserConsentRepositoryTest {
     @Nested
     class ListServiceUserConsent {
         @Test
-        void testListConsentWhenEmpty() throws IllegalArgumentException {
+        void testListConsentWhenEmpty() throws BadRequestException {
             final ListPage<Consent> results = repository.listServiceUserConsents(TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID,
                 null, null);
             assertTrue(results.resultsOnPage().isEmpty());
@@ -125,7 +125,7 @@ class InMemoryServiceUserConsentRepositoryTest {
         }
 
         @Test
-        void testListConsentWithLimitAndPageToken() throws ConflictingResourceException, IllegalArgumentException {
+        void testListConsentWithLimitAndPageToken() throws BadRequestException, ConflictingResourceException {
             final Consent firstConsent = TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS;
             final Consent secondConsent = TestUtils.clone(firstConsent).consentId("TestConsentId2");
             final Consent thirdConsent = TestUtils.clone(firstConsent).consentId("TestConsentId3");
@@ -149,7 +149,7 @@ class InMemoryServiceUserConsentRepositoryTest {
             final List<String> invalidPageTokens = List.of("", "  ", "InvalidPageToken");
 
             for (final String invalidPageToken : invalidPageTokens) {
-                final IllegalArgumentException thrownException = assertThrows(IllegalArgumentException.class, () ->
+                final BadRequestException thrownException = assertThrows(BadRequestException.class, () ->
                     repository.listServiceUserConsents(TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, null, invalidPageToken));
                 assertEquals(String.format(InMemoryServiceUserConsentRepository.INVALID_PAGE_TOKEN_MESSAGE, invalidPageToken),
                     thrownException.getMessage());
