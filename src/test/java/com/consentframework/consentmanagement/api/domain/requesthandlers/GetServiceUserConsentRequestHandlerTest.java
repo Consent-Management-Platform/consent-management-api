@@ -1,16 +1,9 @@
-package com.consentframework.consentmanagement.api.infrastructure.requesthandlers.apigatewaylambda;
+package com.consentframework.consentmanagement.api.domain.requesthandlers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.consentframework.consentmanagement.api.activities.GetServiceUserConsentActivity;
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.ApiResponseParameterName;
@@ -19,7 +12,6 @@ import com.consentframework.consentmanagement.api.domain.constants.HttpStatusCod
 import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
-import com.consentframework.consentmanagement.api.domain.parsers.ApiPathParameterParser;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.infrastructure.adapters.InMemoryServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.models.Consent;
@@ -28,25 +20,18 @@ import com.consentframework.consentmanagement.api.testcommon.constants.TestConst
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Map;
 
-class GetServiceUserConsentLambdaRequestHandlerTest {
-    private GetServiceUserConsentLambdaRequestHandler handler;
+class GetServiceUserConsentRequestHandlerTest {
+    private GetServiceUserConsentRequestHandler handler;
     private GetServiceUserConsentActivity activity;
     private ServiceUserConsentRepository consentRepository;
-    private Context context;
-    private LambdaLogger logger;
 
     @BeforeEach
     void setup() {
         this.consentRepository = new InMemoryServiceUserConsentRepository();
         this.activity = new GetServiceUserConsentActivity(this.consentRepository);
-        this.handler = new GetServiceUserConsentLambdaRequestHandler(this.activity);
-        this.context = mock(Context.class);
-        this.logger = mock(LambdaLogger.class);
-        when(this.context.getLogger()).thenReturn(this.logger);
-        doNothing().when(this.logger).log(anyString());
+        this.handler = new GetServiceUserConsentRequestHandler(this.activity);
     }
 
     @Test
@@ -55,7 +40,7 @@ class GetServiceUserConsentLambdaRequestHandlerTest {
         consentRepository.createServiceUserConsent(existingConsent);
 
         final ApiRequest request = buildValidApiRequest();
-        final Map<String, Object> response = handler.handleRequest(request, context);
+        final Map<String, Object> response = handler.handleRequest(request);
         assertNotNull(response);
         assertStatusCodeEquals(HttpStatusCode.SUCCESS, response);
 
@@ -68,7 +53,7 @@ class GetServiceUserConsentLambdaRequestHandlerTest {
     void testHandleRequestForNonExistingConsent() throws BadRequestException {
         final ApiRequest request = buildValidApiRequest();
 
-        final Map<String, Object> response = handler.handleRequest(request, context);
+        final Map<String, Object> response = handler.handleRequest(request);
         assertNotNull(response);
         assertStatusCodeEquals(HttpStatusCode.NOT_FOUND, response);
 
@@ -79,7 +64,7 @@ class GetServiceUserConsentLambdaRequestHandlerTest {
 
     @Test
     void testHandleNullRequest() {
-        final Map<String, Object> response = handler.handleRequest(null, context);
+        final Map<String, Object> response = handler.handleRequest(null);
         assertEqualsMissingPathParametersResponse(response);
     }
 
@@ -118,14 +103,14 @@ class GetServiceUserConsentLambdaRequestHandlerTest {
     private void assertReturnsMissingPathParametersResponse(final Map<String, String> pathParameters) {
         final ApiRequest request = buildApiRequest(pathParameters);
 
-        final Map<String, Object> response = handler.handleRequest(request, context);
+        final Map<String, Object> response = handler.handleRequest(request);
         assertEqualsMissingPathParametersResponse(response);
     }
 
     private void assertEqualsMissingPathParametersResponse(final Map<String, Object> response) {
         assertNotNull(response);
         assertStatusCodeEquals(HttpStatusCode.BAD_REQUEST, response);
-        assertEquals(GetServiceUserConsentLambdaRequestHandler.MISSING_PATH_PARAMETERS_MESSAGE,
+        assertEquals(GetServiceUserConsentRequestHandler.MISSING_PATH_PARAMETERS_MESSAGE,
             getResponseBody(response));
     }
 

@@ -30,6 +30,11 @@ dependencies {
     implementation("jakarta.annotation:jakarta.annotation-api:3.0.0")
     implementation("software.amazon.smithy:smithy-utils:1.49.0")
 
+    // Logging
+    val log4j2Version = "2.23.1"
+    implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
+    implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
+
     implementation("com.consentframework.consentmanagement:consentmanagement-api-models:0.2.7")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

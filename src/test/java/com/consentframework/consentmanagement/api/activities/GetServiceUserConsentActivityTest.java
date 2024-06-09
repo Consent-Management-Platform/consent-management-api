@@ -27,7 +27,7 @@ class GetServiceUserConsentActivityTest {
     @Test
     void testRetrieveNonExistingConsent() {
         final ResourceNotFoundException thrownException = assertThrows(ResourceNotFoundException.class, () ->
-            activity.handleRequest(TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID));
+            activity.getConsent(TestConstants.TEST_GET_CONSENT_REQUEST_CONTENTS));
 
         final String expectedErrorMessage = String.format(ServiceUserConsentRepository.CONSENT_NOT_FOUND_MESSAGE,
             TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID);
@@ -39,9 +39,7 @@ class GetServiceUserConsentActivityTest {
         final Consent createdConsent = TestConstants.TEST_CONSENT_WITH_ALL_FIELDS;
         consentRepository.createServiceUserConsent(createdConsent);
 
-        final GetServiceUserConsentResponseContent response = activity.handleRequest(createdConsent.getServiceId(),
-            createdConsent.getUserId(), createdConsent.getConsentId());
-
+        final GetServiceUserConsentResponseContent response = activity.getConsent(TestConstants.TEST_GET_CONSENT_REQUEST_CONTENTS);
         assertEquals(createdConsent, response.getData());
     }
 }

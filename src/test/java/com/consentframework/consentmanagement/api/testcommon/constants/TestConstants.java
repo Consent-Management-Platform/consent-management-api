@@ -1,5 +1,6 @@
 package com.consentframework.consentmanagement.api.testcommon.constants;
 
+import com.consentframework.consentmanagement.api.domain.entities.GetServiceUserConsentRequestContent;
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.models.ConsentStatus;
 
@@ -16,6 +17,9 @@ public final class TestConstants {
     public static final String TEST_CONSENT_ID = "TestConsentId";
     public static final String TEST_SERVICE_ID = "TestServiceId";
     public static final String TEST_USER_ID = "TestUserId";
+
+    public static final GetServiceUserConsentRequestContent TEST_GET_CONSENT_REQUEST_CONTENTS =
+        new GetServiceUserConsentRequestContent(TEST_SERVICE_ID, TEST_USER_ID, TEST_CONSENT_ID);
 
     public static final String TEST_GET_CONSENT_PATH = String.format(
         "/v1/consent-management/services/%s/users/%s/consents/%s",

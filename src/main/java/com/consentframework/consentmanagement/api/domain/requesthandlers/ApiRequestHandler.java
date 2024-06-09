@@ -6,16 +6,13 @@ import java.util.Map;
 
 /**
  * Interface for an API request handler.
- *
- * @param <T> the type of context
  */
-public interface ApiRequestHandler<T> {
+public interface ApiRequestHandler {
     /**
      * Handle API request.
      *
      * @param request API request object
-     * @param context request context
      * @return API response
      */
-    Map<String, Object> handleRequest(final ApiRequest request, final T context);
+    Map<String, Object> handleRequest(final ApiRequest request);
 }
