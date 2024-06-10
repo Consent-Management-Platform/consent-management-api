@@ -50,19 +50,15 @@ public class ListServiceUserConsentsRequestHandler extends ApiRequestHandler {
 
         final Integer limit;
         final String pageToken;
+        final ListServiceUserConsentResponseContent responseContent;
         try {
             limit = ApiQueryStringParameterParser.parseIntQueryStringParameter(request, ApiQueryStringParameterName.LIMIT);
             pageToken = ApiQueryStringParameterParser.parseStringQueryStringParameter(request, ApiQueryStringParameterName.PAGE_TOKEN);
-        } catch (final BadRequestException badRequestException) {
-            return handleInvalidRequestAndBuildErrorResponse(badRequestException);
-        }
 
-        logger.info("Retrieving consents for path: " + request.path());
-        final ListServiceUserConsentResponseContent responseContent;
-        try {
+            logger.info("Retrieving consents for path: " + request.path());
             responseContent = listConsentsActivity.handleRequest(serviceId, userId, limit, pageToken);
         } catch (final BadRequestException badRequestException) {
-            return handleInvalidRequestAndBuildErrorResponse(badRequestException);
+            return logAndBuildErrorResponse(badRequestException);
         }
 
         logger.info(String.format("Successfully retrieved %d consents for path: %s, limit: %d, pageToken: %s",

@@ -11,6 +11,7 @@ import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotF
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -69,24 +70,19 @@ abstract class ApiRequestHandler {
     protected Map<String, Object> handleInvalidRequestAndBuildErrorResponse(final Exception exception) {
         logger.warn(String.format("%s received unexpected %s parsing request: %s",
             this.getClass().getName(), exception.getClass(), exception.getMessage()));
-        // Print stack trace for non-standard invalid request exception cases
-        if (!(exception instanceof BadRequestException)) {
-            exception.printStackTrace();
-        }
-
-        final BadRequestException externalException = buildExternalBadRequestException(exception);
-        return buildApiErrorResponse(externalException);
+        exception.printStackTrace();
+        return buildApiErrorResponse(new BadRequestException(REQUEST_PARSE_FAILURE_MESSAGE));
     }
 
     /**
-     * Handle conflicting resource exception and return API error response.
+     * Log exception message and return API error response.
      *
-     * @param conflictException exception thrown saving consent
-     * @return 409 Conflict API error response
+     * @param exception original exception thrown
+     * @return API error response
      */
-    protected Map<String, Object> handleConflictAndBuildErrorResponse(final ConflictingResourceException conflictException) {
-        logger.warn(conflictException.getMessage());
-        return buildApiErrorResponse(conflictException);
+    protected Map<String, Object> logAndBuildErrorResponse(final Exception exception) {
+        logger.warn(exception.getMessage());
+        return buildApiErrorResponse(exception);
     }
 
     /**
@@ -105,7 +101,7 @@ abstract class ApiRequestHandler {
      * @param exception original thrown exception
      * @return API error response
      */
-    protected Map<String, Object> buildApiErrorResponse(final Exception exception) {
+    private Map<String, Object> buildApiErrorResponse(final Exception exception) {
         final HttpStatusCode statusCode = determineStatusCode(exception);
         final ApiExceptionResponseContent exceptionContent = new ApiExceptionResponseContent(exception.getMessage());
 
@@ -120,17 +116,12 @@ abstract class ApiRequestHandler {
      * @return map of response parameter names and values
      */
     private Map<String, Object> buildApiResponse(final HttpStatusCode statusCode, final Object body) {
-        return Map.of(
-            ApiResponseParameterName.STATUS_CODE.getValue(), statusCode.getValue(),
-            ApiResponseParameterName.BODY.getValue(), body
-        );
-    }
-
-    private BadRequestException buildExternalBadRequestException(final Exception exception) {
-        if (exception instanceof BadRequestException) {
-            return (BadRequestException) exception;
+        final Map<String, Object> apiResponse = new HashMap<String, Object>();
+        apiResponse.put(ApiResponseParameterName.STATUS_CODE.getValue(), statusCode.getValue());
+        if (body != null) {
+            apiResponse.put(ApiResponseParameterName.BODY.getValue(), body);
         }
-        return new BadRequestException(REQUEST_PARSE_FAILURE_MESSAGE);
+        return apiResponse;
     }
 
     private HttpStatusCode determineStatusCode(final Exception exception) {

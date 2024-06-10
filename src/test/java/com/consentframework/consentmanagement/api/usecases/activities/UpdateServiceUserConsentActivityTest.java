@@ -27,6 +27,13 @@ class UpdateServiceUserConsentActivityTest {
     }
 
     @Test
+    void testHandleNullConsentData() {
+        final BadRequestException thrownException = assertThrows(BadRequestException.class, () ->
+            activity.handleRequest(TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID, null));
+        assertEquals(UpdateServiceUserConsentActivity.MISSING_CONSENT_DATA_MESSAGE, thrownException.getMessage());
+    }
+
+    @Test
     void testHandleRequestForNonExistingConsent() throws BadRequestException, ConflictingResourceException, ResourceNotFoundException {
         final UpdateServiceUserConsentRequestContent requestContent = new UpdateServiceUserConsentRequestContent()
             .consentVersion(1)

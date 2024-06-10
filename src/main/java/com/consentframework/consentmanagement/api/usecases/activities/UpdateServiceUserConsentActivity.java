@@ -11,6 +11,8 @@ import com.consentframework.consentmanagement.api.models.UpdateServiceUserConsen
  * UpdateServiceUserConsent API activity.
  */
 public class UpdateServiceUserConsentActivity {
+    public static final String MISSING_CONSENT_DATA_MESSAGE = "Missing consent data for update";
+
     private final ServiceUserConsentRepository consentRepository;
 
     /**
@@ -36,6 +38,9 @@ public class UpdateServiceUserConsentActivity {
     public void handleRequest(final String serviceId, final String userId, final String consentId,
             final UpdateServiceUserConsentRequestContent updatedContent)
             throws BadRequestException, ConflictingResourceException, ResourceNotFoundException {
+        if (updatedContent == null) {
+            throw new BadRequestException(MISSING_CONSENT_DATA_MESSAGE);
+        }
 
         final Consent updatedConsent = new Consent()
             .serviceId(serviceId)

@@ -54,8 +54,7 @@ public class GetServiceUserConsentRequestHandler extends ApiRequestHandler {
         try {
             responseContent = getConsentActivity.handleRequest(serviceId, userId, consentId);
         } catch (final ResourceNotFoundException resourceNotFoundException) {
-            logger.warn(resourceNotFoundException.getMessage());
-            return buildApiErrorResponse(resourceNotFoundException);
+            return logAndBuildErrorResponse(resourceNotFoundException);
         }
 
         logger.info("Successfully retrieved consent for path: " + request.path());

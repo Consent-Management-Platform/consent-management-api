@@ -1,5 +1,6 @@
 package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 
+import com.consentframework.consentmanagement.api.JSON;
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
@@ -8,10 +9,10 @@ import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotF
 import com.consentframework.consentmanagement.api.domain.parsers.ApiPathParameterParser;
 import com.consentframework.consentmanagement.api.models.UpdateServiceUserConsentRequestContent;
 import com.consentframework.consentmanagement.api.usecases.activities.UpdateServiceUserConsentActivity;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,19 +49,18 @@ public class UpdateServiceUserConsentRequestHandler extends ApiRequestHandler {
             return handleMissingPathParamsAndBuildErrorResponse(badRequestException);
         }
 
-        // TODO: extract from request
-        final UpdateServiceUserConsentRequestContent updatedContent = null;
-
-        logger.info("Updating consent for path: " + request.path());
         try {
+            final UpdateServiceUserConsentRequestContent updatedContent = new JSON().getMapper()
+                .readValue(request.body(), UpdateServiceUserConsentRequestContent.class);
+            logger.info("Updating consent for path: " + request.path());
             activity.handleRequest(serviceId, userId, consentId, updatedContent);
-        } catch (final BadRequestException | ConflictingResourceException | ResourceNotFoundException exception) {
-            logger.warn(exception.getMessage());
-            return buildApiErrorResponse(exception);
+        } catch (final JsonProcessingException invalidInputException) {
+            return handleInvalidRequestAndBuildErrorResponse(invalidInputException);
+        } catch (final BadRequestException | ConflictingResourceException | ResourceNotFoundException conflictException) {
+            return logAndBuildErrorResponse(conflictException);
         }
 
         logger.info("Successfully updated consent for path: " + request.path());
         return buildApiSuccessResponse(null);
     }
-
 }

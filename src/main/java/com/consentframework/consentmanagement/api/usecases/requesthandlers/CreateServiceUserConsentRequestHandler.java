@@ -59,10 +59,10 @@ public class CreateServiceUserConsentRequestHandler extends ApiRequestHandler {
 
             logger.info(String.format("Creating consent for serviceId: %s, userId: %s", serviceId, userId));
             responseContent = createConsentActivity.handleRequest(serviceId, userId, requestContent);
-        } catch (final BadRequestException | JsonProcessingException invalidInputException) {
+        } catch (final JsonProcessingException invalidInputException) {
             return handleInvalidRequestAndBuildErrorResponse(invalidInputException);
-        } catch (final ConflictingResourceException conflictException) {
-            return handleConflictAndBuildErrorResponse(conflictException);
+        } catch (final BadRequestException | ConflictingResourceException exception) {
+            return logAndBuildErrorResponse(exception);
         }
 
         logger.info(String.format("Successfully created consent for serviceId: %s, userId: %s", serviceId, userId));
