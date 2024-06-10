@@ -1,5 +1,6 @@
 package com.consentframework.consentmanagement.api.testcommon.constants;
 
+import com.consentframework.consentmanagement.api.domain.constants.ApiQueryStringParameterName;
 import com.consentframework.consentmanagement.api.domain.entities.GetServiceUserConsentRequestContent;
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.models.ConsentStatus;
@@ -17,15 +18,22 @@ public final class TestConstants {
     public static final String TEST_CONSENT_ID = "TestConsentId";
     public static final String TEST_SERVICE_ID = "TestServiceId";
     public static final String TEST_USER_ID = "TestUserId";
-
-    public static final GetServiceUserConsentRequestContent TEST_GET_CONSENT_REQUEST_CONTENTS =
-        new GetServiceUserConsentRequestContent(TEST_SERVICE_ID, TEST_USER_ID, TEST_CONSENT_ID);
+    public static final Integer TEST_PAGE_LIMIT = 2;
+    public static final String TEST_PAGE_TOKEN = "1";
 
     public static final String TEST_CONSENTS_PATH = String.format(
         "/v1/consent-management/services/%s/users/%s/consents",
         TEST_SERVICE_ID, TEST_USER_ID);
 
     public static final String TEST_CONSENT_PATH = String.format("%s/%s", TEST_CONSENTS_PATH, TEST_CONSENT_ID);
+
+    public static final GetServiceUserConsentRequestContent TEST_GET_CONSENT_REQUEST_CONTENTS =
+        new GetServiceUserConsentRequestContent(TEST_SERVICE_ID, TEST_USER_ID, TEST_CONSENT_ID);
+
+    public static final Map<String, Object> TEST_PAGINATION_QUERY_PARAMETERS = Map.of(
+        ApiQueryStringParameterName.LIMIT.getValue(), TEST_PAGE_LIMIT,
+        ApiQueryStringParameterName.PAGE_TOKEN.getValue(), TEST_PAGE_TOKEN
+    );
 
     public static final OffsetDateTime TEST_EXPIRY_TIME = OffsetDateTime.ofInstant(
         Instant.now().plus(30, ChronoUnit.DAYS),

@@ -20,7 +20,7 @@ import java.util.Map;
  * In-memory implementation of ServiceUserConsentRepository.
  */
 public class InMemoryServiceUserConsentRepository implements ServiceUserConsentRepository {
-    static final String INVALID_PAGE_TOKEN_MESSAGE = "Received invalid pagination token %s, expected an integer value";
+    public static final String INVALID_PAGE_TOKEN_MESSAGE = "Received invalid pagination token %s, expected an integer value";
 
     private Map<ServiceUserConsentKey, Consent> inMemoryConsentStore = new HashMap<ServiceUserConsentKey, Consent>();
     private Map<ServiceUserKey, List<Consent>> inMemoryConsentsByServiceUserIndex = new HashMap<ServiceUserKey, List<Consent>>();

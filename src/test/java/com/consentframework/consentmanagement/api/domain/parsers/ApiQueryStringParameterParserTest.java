@@ -8,6 +8,7 @@ import com.consentframework.consentmanagement.api.domain.constants.ApiQueryStrin
 import com.consentframework.consentmanagement.api.domain.constants.HttpMethod;
 import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
+import com.consentframework.consentmanagement.api.testcommon.constants.TestConstants;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -16,16 +17,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 class ApiQueryStringParameterParserTest {
-    private static final Integer TEST_LIMIT = 2;
-    private static final String TEST_PAGE_TOKEN = "1";
     private static final Map<String, Object> INCOMPLETE_QUERY_PARAMETERS = Map.of(
         "TestStringParamKey", "TestStringParamValue",
         "TestIntegerParamKey", 100,
         "TestBooleanParamKey", true
-    );
-    private static final Map<String, Object> PAGINATION_QUERY_PARAMETERS = Map.of(
-        ApiQueryStringParameterName.LIMIT.getValue(), TEST_LIMIT,
-        ApiQueryStringParameterName.PAGE_TOKEN.getValue(), TEST_PAGE_TOKEN
     );
 
     @Nested
@@ -49,7 +44,7 @@ class ApiQueryStringParameterParserTest {
 
         @Test
         void testWhenWrongType() {
-            final ApiRequest request = buildRequest(PAGINATION_QUERY_PARAMETERS);
+            final ApiRequest request = buildRequest(TestConstants.TEST_PAGINATION_QUERY_PARAMETERS);
 
             final BadRequestException thrownException = assertThrows(BadRequestException.class, () ->
                 ApiQueryStringParameterParser.parseStringQueryStringParameter(request, ApiQueryStringParameterName.LIMIT));
@@ -61,10 +56,10 @@ class ApiQueryStringParameterParserTest {
 
         @Test
         void testWhenQueryParameterPresent() throws BadRequestException {
-            final ApiRequest request = buildRequest(PAGINATION_QUERY_PARAMETERS);
+            final ApiRequest request = buildRequest(TestConstants.TEST_PAGINATION_QUERY_PARAMETERS);
             final String parameterValue = ApiQueryStringParameterParser.parseStringQueryStringParameter(
                 request, ApiQueryStringParameterName.PAGE_TOKEN);
-            assertEquals(TEST_PAGE_TOKEN, parameterValue);
+            assertEquals(TestConstants.TEST_PAGE_TOKEN, parameterValue);
         }
 
         private void validateReturnsNull(final ApiRequest request, final ApiQueryStringParameterName parameter)
@@ -95,7 +90,7 @@ class ApiQueryStringParameterParserTest {
 
         @Test
         void testWhenWrongType() {
-            final ApiRequest request = buildRequest(PAGINATION_QUERY_PARAMETERS);
+            final ApiRequest request = buildRequest(TestConstants.TEST_PAGINATION_QUERY_PARAMETERS);
 
             final BadRequestException thrownException = assertThrows(BadRequestException.class, () ->
                 ApiQueryStringParameterParser.parseIntQueryStringParameter(request, ApiQueryStringParameterName.PAGE_TOKEN));
@@ -107,10 +102,10 @@ class ApiQueryStringParameterParserTest {
 
         @Test
         void testWhenQueryParameterPresent() throws BadRequestException {
-            final ApiRequest request = buildRequest(PAGINATION_QUERY_PARAMETERS);
+            final ApiRequest request = buildRequest(TestConstants.TEST_PAGINATION_QUERY_PARAMETERS);
             final Integer parameterValue = ApiQueryStringParameterParser.parseIntQueryStringParameter(
                 request, ApiQueryStringParameterName.LIMIT);
-            assertEquals(TEST_LIMIT, parameterValue);
+            assertEquals(TestConstants.TEST_PAGE_LIMIT, parameterValue);
         }
 
         private void validateReturnsNull(final ApiRequest request, final ApiQueryStringParameterName parameter)
