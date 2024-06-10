@@ -1,10 +1,10 @@
 package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 
-import com.consentframework.consentmanagement.api.domain.constants.HttpStatusCode;
+import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
-import com.consentframework.consentmanagement.api.domain.entities.GetServiceUserConsentRequestContent;
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
+import com.consentframework.consentmanagement.api.domain.parsers.ApiPathParameterParser;
 import com.consentframework.consentmanagement.api.models.GetServiceUserConsentResponseContent;
 import com.consentframework.consentmanagement.api.usecases.activities.GetServiceUserConsentActivity;
 import org.apache.logging.log4j.LogManager;
@@ -40,9 +40,13 @@ public class GetServiceUserConsentRequestHandler extends ApiRequestHandler {
      */
     @Override
     public Map<String, Object> handleRequest(final ApiRequest request) {
-        final GetServiceUserConsentRequestContent requestContent;
+        final String serviceId;
+        final String userId;
+        final String consentId;
         try {
-            requestContent = GetServiceUserConsentRequestContent.parseFromRequest(request);
+            serviceId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.SERVICE_ID);
+            userId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.USER_ID);
+            consentId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.CONSENT_ID);
         } catch (final BadRequestException badRequestException) {
             logger.warn(MISSING_PATH_PARAMETERS_MESSAGE);
             return buildApiErrorResponse(new BadRequestException(MISSING_PATH_PARAMETERS_MESSAGE));
@@ -51,7 +55,7 @@ public class GetServiceUserConsentRequestHandler extends ApiRequestHandler {
         logger.info("Retrieving consent for path: " + request.path());
         final GetServiceUserConsentResponseContent responseContent;
         try {
-            responseContent = getConsentActivity.handleRequest(requestContent);
+            responseContent = getConsentActivity.handleRequest(serviceId, userId, consentId);
         } catch (final ResourceNotFoundException resourceNotFoundException) {
             logger.warn(resourceNotFoundException.getMessage());
             return buildApiErrorResponse(resourceNotFoundException);

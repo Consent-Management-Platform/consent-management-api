@@ -1,6 +1,5 @@
 package com.consentframework.consentmanagement.api.usecases.activities;
 
-import com.consentframework.consentmanagement.api.domain.entities.GetServiceUserConsentRequestContent;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.models.Consent;
@@ -24,13 +23,15 @@ public class GetServiceUserConsentActivity {
     /**
      * Handle request to retrieve a given ServiceUserConsent.
      *
-     * @param request request content including service/user/consent IDs
+     * @param serviceId service identifier
+     * @param userId user identifier
+     * @param consentId consent ID, specific to the service-user pair
+     * @return specific consent for the service-user-consent ID tuple if exists
      * @throws ResourceNotFoundException exception thrown if no such consent exists
      */
-    public GetServiceUserConsentResponseContent handleRequest(final GetServiceUserConsentRequestContent request)
+    public GetServiceUserConsentResponseContent handleRequest(final String serviceId, final String userId, final String consentId)
             throws ResourceNotFoundException {
-        final Consent retrievedConsent = consentRepository.getServiceUserConsent(
-            request.serviceId(), request.userId(), request.consentId());
+        final Consent retrievedConsent = consentRepository.getServiceUserConsent(serviceId, userId, consentId);
 
         return new GetServiceUserConsentResponseContent()
             .data(retrievedConsent);

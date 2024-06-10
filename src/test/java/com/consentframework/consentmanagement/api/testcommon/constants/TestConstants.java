@@ -1,7 +1,6 @@
 package com.consentframework.consentmanagement.api.testcommon.constants;
 
 import com.consentframework.consentmanagement.api.domain.constants.ApiQueryStringParameterName;
-import com.consentframework.consentmanagement.api.domain.entities.GetServiceUserConsentRequestContent;
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.models.ConsentStatus;
 
@@ -26,9 +25,6 @@ public final class TestConstants {
         TEST_SERVICE_ID, TEST_USER_ID);
 
     public static final String TEST_CONSENT_PATH = String.format("%s/%s", TEST_CONSENTS_PATH, TEST_CONSENT_ID);
-
-    public static final GetServiceUserConsentRequestContent TEST_GET_CONSENT_REQUEST_CONTENTS =
-        new GetServiceUserConsentRequestContent(TEST_SERVICE_ID, TEST_USER_ID, TEST_CONSENT_ID);
 
     public static final Map<String, Object> TEST_PAGINATION_QUERY_PARAMETERS = Map.of(
         ApiQueryStringParameterName.LIMIT.getValue(), TEST_PAGE_LIMIT,
