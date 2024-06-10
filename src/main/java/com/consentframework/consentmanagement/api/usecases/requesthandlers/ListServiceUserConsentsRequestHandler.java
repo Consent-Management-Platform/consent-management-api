@@ -45,7 +45,7 @@ public class ListServiceUserConsentsRequestHandler extends ApiRequestHandler {
             serviceId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.SERVICE_ID);
             userId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.USER_ID);
         } catch (final BadRequestException badRequestException) {
-            return handleMissingPathParamsAndBuildErrorResponse(badRequestException);
+            return logAndBuildMissingPathParamResponse(badRequestException);
         }
 
         final Integer limit;

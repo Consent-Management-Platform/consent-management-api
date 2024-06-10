@@ -46,7 +46,7 @@ public class GetServiceUserConsentRequestHandler extends ApiRequestHandler {
             userId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.USER_ID);
             consentId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.CONSENT_ID);
         } catch (final BadRequestException badRequestException) {
-            return handleMissingPathParamsAndBuildErrorResponse(badRequestException);
+            return logAndBuildMissingPathParamResponse(badRequestException);
         }
 
         logger.info("Retrieving consent for path: " + request.path());

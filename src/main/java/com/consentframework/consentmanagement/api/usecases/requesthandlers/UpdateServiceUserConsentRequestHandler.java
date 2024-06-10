@@ -46,7 +46,7 @@ public class UpdateServiceUserConsentRequestHandler extends ApiRequestHandler {
             userId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.USER_ID);
             consentId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.CONSENT_ID);
         } catch (final BadRequestException badRequestException) {
-            return handleMissingPathParamsAndBuildErrorResponse(badRequestException);
+            return logAndBuildMissingPathParamResponse(badRequestException);
         }
 
         try {
@@ -54,8 +54,8 @@ public class UpdateServiceUserConsentRequestHandler extends ApiRequestHandler {
                 .readValue(request.body(), UpdateServiceUserConsentRequestContent.class);
             logger.info("Updating consent for path: " + request.path());
             activity.handleRequest(serviceId, userId, consentId, updatedContent);
-        } catch (final JsonProcessingException invalidInputException) {
-            return handleInvalidRequestAndBuildErrorResponse(invalidInputException);
+        } catch (final JsonProcessingException jsonProcessingException) {
+            return logAndBuildJsonProcessingErrorResponse(jsonProcessingException);
         } catch (final BadRequestException | ConflictingResourceException | ResourceNotFoundException conflictException) {
             return logAndBuildErrorResponse(conflictException);
         }

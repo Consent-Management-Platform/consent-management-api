@@ -49,7 +49,7 @@ public class CreateServiceUserConsentRequestHandler extends ApiRequestHandler {
             serviceId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.SERVICE_ID);
             userId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.USER_ID);
         } catch (final BadRequestException badRequestException) {
-            return handleMissingPathParamsAndBuildErrorResponse(badRequestException);
+            return logAndBuildMissingPathParamResponse(badRequestException);
         }
 
         final CreateServiceUserConsentResponseContent responseContent;
@@ -59,8 +59,8 @@ public class CreateServiceUserConsentRequestHandler extends ApiRequestHandler {
 
             logger.info(String.format("Creating consent for serviceId: %s, userId: %s", serviceId, userId));
             responseContent = createConsentActivity.handleRequest(serviceId, userId, requestContent);
-        } catch (final JsonProcessingException invalidInputException) {
-            return handleInvalidRequestAndBuildErrorResponse(invalidInputException);
+        } catch (final JsonProcessingException jsonProcessingException) {
+            return logAndBuildJsonProcessingErrorResponse(jsonProcessingException);
         } catch (final BadRequestException | ConflictingResourceException exception) {
             return logAndBuildErrorResponse(exception);
         }

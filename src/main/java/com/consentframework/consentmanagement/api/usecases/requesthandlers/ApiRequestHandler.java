@@ -8,6 +8,7 @@ import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -45,12 +46,12 @@ abstract class ApiRequestHandler {
     abstract Map<String, Object> handleRequest(final ApiRequest request);
 
     /**
-     * Handle missing path parameter exception and return API error response.
+     * Log missing path parameter exception and return API error response.
      *
      * @param exception original bad request exception
      * @return 400 Bad Request API error response including list of required parameters
      */
-    protected Map<String, Object> handleMissingPathParamsAndBuildErrorResponse(final BadRequestException exception) {
+    protected Map<String, Object> logAndBuildMissingPathParamResponse(final BadRequestException exception) {
         final List<String> requiredPathParameterNames = requiredPathParameters.stream()
             .map(pathParam -> pathParam.getValue())
             .collect(Collectors.toList());
@@ -62,15 +63,14 @@ abstract class ApiRequestHandler {
     }
 
     /**
-     * Handle invalid request exception and return API error response.
+     * Log JSON processing exception and return API error response.
      *
-     * @param exception exception thrown while parsing request
+     * @param jsonProcessingException exception thrown while parsing request body
      * @return 400 Bad Request API error response
      */
-    protected Map<String, Object> handleInvalidRequestAndBuildErrorResponse(final Exception exception) {
-        logger.warn(String.format("%s received unexpected %s parsing request: %s",
-            this.getClass().getName(), exception.getClass(), exception.getMessage()));
-        exception.printStackTrace();
+    protected Map<String, Object> logAndBuildJsonProcessingErrorResponse(final JsonProcessingException jsonProcessingException) {
+        logger.warn(String.format("Received unexpected JsonProcessingException parsing request body", jsonProcessingException));
+        jsonProcessingException.printStackTrace();
         return buildApiErrorResponse(new BadRequestException(REQUEST_PARSE_FAILURE_MESSAGE));
     }
 
