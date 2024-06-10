@@ -47,7 +47,7 @@ class ApiPathParameterParserTest {
         final BadRequestException thrownException = assertThrows(BadRequestException.class, () ->
             ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.SERVICE_ID));
 
-        final String expectedErrorMessage = String.format(ApiPathParameterParser.PATH_PARAMETER_NOT_FOUND_MESSAGE,
+        final String expectedErrorMessage = String.format(ApiPathParameterParser.PARSE_FAILURE_MESSAGE,
             ApiPathParameterName.SERVICE_ID.getValue());
         assertEquals(expectedErrorMessage, thrownException.getMessage());
     }

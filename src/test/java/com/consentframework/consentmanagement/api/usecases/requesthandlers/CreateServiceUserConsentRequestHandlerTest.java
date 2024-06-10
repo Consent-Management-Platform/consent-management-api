@@ -74,7 +74,7 @@ class CreateServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
     @Test
     void testHandleNullRequest() {
         final Map<String, Object> response = handler.handleRequest(null);
-        final String expectedErrorMessage = String.format(ApiPathParameterParser.PATH_PARAMETER_NOT_FOUND_MESSAGE,
+        final String expectedErrorMessage = String.format(ApiPathParameterParser.PARSE_FAILURE_MESSAGE,
             ApiPathParameterName.SERVICE_ID.getValue());
         assertExceptionResponse(HttpStatusCode.BAD_REQUEST, expectedErrorMessage, response);
     }
@@ -88,7 +88,7 @@ class CreateServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
         final ApiRequest request = buildApiRequest(incompletePathParameters, requestContentString);
 
         final Map<String, Object> response = handler.handleRequest(request);
-        final String expectedErrorMessage = String.format(ApiPathParameterParser.PATH_PARAMETER_NOT_FOUND_MESSAGE,
+        final String expectedErrorMessage = String.format(ApiPathParameterParser.PARSE_FAILURE_MESSAGE,
             ApiPathParameterName.USER_ID.getValue());
         assertExceptionResponse(HttpStatusCode.BAD_REQUEST, expectedErrorMessage, response);
     }
