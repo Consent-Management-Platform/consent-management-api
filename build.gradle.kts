@@ -35,7 +35,7 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
     implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
 
-    implementation("com.consentframework.consentmanagement:consentmanagement-api-models:0.2.7")
+    implementation("com.consentframework.consentmanagement:consentmanagement-api-models:0.2.8")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
