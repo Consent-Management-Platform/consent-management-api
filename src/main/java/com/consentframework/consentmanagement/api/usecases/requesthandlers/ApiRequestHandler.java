@@ -1,5 +1,6 @@
 package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 
+import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.ApiResponseParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.HttpStatusCode;
 import com.consentframework.consentmanagement.api.domain.entities.ApiExceptionResponseContent;
@@ -10,15 +11,29 @@ import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotF
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Abstract class for an API request handler.
  */
 abstract class ApiRequestHandler {
+    static final String MISSING_PATH_PARAMETERS_MESSAGE = "Missing required path parameters, expected %s";
     static final String REQUEST_PARSE_FAILURE_MESSAGE = "Unable to parse request";
 
     private static final Logger logger = LogManager.getLogger(ApiRequestHandler.class);
+
+    public final List<ApiPathParameterName> requiredPathParameters;
+
+    /**
+     * Construct ApiRequestHandler with properties shared across subclasses.
+     *
+     * @param requiredPathParameters required path parameters
+     */
+    public ApiRequestHandler(final List<ApiPathParameterName> requiredPathParameters) {
+        this.requiredPathParameters = requiredPathParameters;
+    }
 
     /**
      * Handle API request.
@@ -27,6 +42,23 @@ abstract class ApiRequestHandler {
      * @return API response
      */
     abstract Map<String, Object> handleRequest(final ApiRequest request);
+
+    /**
+     * Handle missing path parameter exception and return API error response.
+     *
+     * @param exception original bad request exception
+     * @return 400 Bad Request API error response including list of required parameters
+     */
+    protected Map<String, Object> handleMissingPathParamsAndBuildErrorResponse(final BadRequestException exception) {
+        final List<String> requiredPathParameterNames = requiredPathParameters.stream()
+            .map(pathParam -> pathParam.getValue())
+            .collect(Collectors.toList());
+        final String errorMessage = String.format(MISSING_PATH_PARAMETERS_MESSAGE,
+            String.join(", ", requiredPathParameterNames));
+
+        logger.warn(errorMessage, exception);
+        return buildApiErrorResponse(new BadRequestException(errorMessage, exception));
+    }
 
     /**
      * Handle invalid request exception and return API error response.

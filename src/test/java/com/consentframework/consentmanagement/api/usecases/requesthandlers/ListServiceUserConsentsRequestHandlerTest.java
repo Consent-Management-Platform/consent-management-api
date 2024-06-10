@@ -1,8 +1,6 @@
 package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
@@ -12,7 +10,7 @@ import com.consentframework.consentmanagement.api.domain.constants.HttpStatusCod
 import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
-import com.consentframework.consentmanagement.api.domain.parsers.ApiPathParameterParser;
+import com.consentframework.consentmanagement.api.domain.parsers.ApiQueryStringParameterParser;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.infrastructure.repositories.InMemoryServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.models.Consent;
@@ -27,11 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 class ListServiceUserConsentsRequestHandlerTest extends RequestHandlerTest {
-    private static final Map<String, String> COMPLETE_PATH_PARAMETERS = Map.of(
-        ApiPathParameterName.SERVICE_ID.getValue(), TestConstants.TEST_SERVICE_ID,
-        ApiPathParameterName.USER_ID.getValue(), TestConstants.TEST_USER_ID
-    );
-
     private ListServiceUserConsentsRequestHandler handler;
     private ListServiceUserConsentsActivity activity;
     private ServiceUserConsentRepository consentRepository;
@@ -46,9 +39,7 @@ class ListServiceUserConsentsRequestHandlerTest extends RequestHandlerTest {
     @Test
     void testHandleNullRequest() {
         final Map<String, Object> response = handler.handleRequest(null);
-        final String expectedErrorMessage = String.format(ApiPathParameterParser.PARSE_FAILURE_MESSAGE,
-            ApiPathParameterName.SERVICE_ID.getValue());
-        assertExceptionResponse(HttpStatusCode.BAD_REQUEST, expectedErrorMessage, response);
+        assertMissingConsentsPathParametersResponse(response);
     }
 
     @Test
@@ -56,18 +47,29 @@ class ListServiceUserConsentsRequestHandlerTest extends RequestHandlerTest {
         final Map<String, String> incompletePathParameters = Map.of(
             ApiPathParameterName.SERVICE_ID.getValue(), TestConstants.TEST_SERVICE_ID);
         final ApiRequest request = buildApiRequest(incompletePathParameters, null);
-        final Map<String, Object> response = handler.handleRequest(request);
 
-        final String expectedErrorMessage = String.format(ApiPathParameterParser.PARSE_FAILURE_MESSAGE,
-            ApiPathParameterName.USER_ID.getValue());
+        final Map<String, Object> response = handler.handleRequest(request);
+        assertMissingConsentsPathParametersResponse(response);
+    }
+
+    @Test
+    void testHandleRequestWithWrongTypeQueryParam() {
+        final long pageTokenWithWrongType = 1234L;
+        final ApiRequest request = buildApiRequest(TestConstants.TEST_CONSENTS_PATH_PARAMS, Map.of(
+            ApiQueryStringParameterName.PAGE_TOKEN.getValue(), pageTokenWithWrongType));
+
+        final Map<String, Object> response = handler.handleRequest(request);
+        final String expectedErrorMessage = String.format(ApiQueryStringParameterParser.PARSE_FAILURE_MESSAGE,
+            ApiQueryStringParameterName.PAGE_TOKEN.getValue());
         assertExceptionResponse(HttpStatusCode.BAD_REQUEST, expectedErrorMessage, response);
     }
 
     @Test
     void testHandleRequestWithInvalidPageToken() {
         final String invalidPageToken = "InvalidPageToken";
-        final ApiRequest request = buildApiRequest(COMPLETE_PATH_PARAMETERS, Map.of(
+        final ApiRequest request = buildApiRequest(TestConstants.TEST_CONSENTS_PATH_PARAMS, Map.of(
             ApiQueryStringParameterName.PAGE_TOKEN.getValue(), invalidPageToken));
+
         final Map<String, Object> response = handler.handleRequest(request);
         final String expectedErrorMessage = String.format(InMemoryServiceUserConsentRepository.INVALID_PAGE_TOKEN_MESSAGE,
             invalidPageToken);
@@ -76,7 +78,8 @@ class ListServiceUserConsentsRequestHandlerTest extends RequestHandlerTest {
 
     @Test
     void testHandleRequestWhenNoConsents() {
-        final ApiRequest request = buildApiRequest(COMPLETE_PATH_PARAMETERS, TestConstants.TEST_PAGINATION_QUERY_PARAMETERS);
+        final ApiRequest request = buildApiRequest(TestConstants.TEST_CONSENTS_PATH_PARAMS,
+            TestConstants.TEST_PAGINATION_QUERY_PARAMETERS);
         final Map<String, Object> response = handler.handleRequest(request);
         assertSuccessResponse(response, List.of(), null);
     }
@@ -93,7 +96,7 @@ class ListServiceUserConsentsRequestHandlerTest extends RequestHandlerTest {
             consentRepository.createServiceUserConsent(consent);
         }
 
-        final ApiRequest firstRequest = buildApiRequest(COMPLETE_PATH_PARAMETERS, Map.of(
+        final ApiRequest firstRequest = buildApiRequest(TestConstants.TEST_CONSENTS_PATH_PARAMS, Map.of(
             ApiQueryStringParameterName.LIMIT.getValue(), 2,
             ApiQueryStringParameterName.PAGE_TOKEN.getValue(), "1"
         ));
@@ -102,7 +105,7 @@ class ListServiceUserConsentsRequestHandlerTest extends RequestHandlerTest {
         final String expectedNextPageToken = "3";
         assertSuccessResponse(firstResponse, List.of(secondConsent, thirdConsent), expectedNextPageToken);
 
-        final ApiRequest secondRequest = buildApiRequest(COMPLETE_PATH_PARAMETERS, Map.of(
+        final ApiRequest secondRequest = buildApiRequest(TestConstants.TEST_CONSENTS_PATH_PARAMS, Map.of(
             ApiQueryStringParameterName.LIMIT.getValue(), 2,
             ApiQueryStringParameterName.PAGE_TOKEN.getValue(), expectedNextPageToken
         ));

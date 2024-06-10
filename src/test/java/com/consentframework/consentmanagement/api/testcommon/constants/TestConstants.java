@@ -1,5 +1,6 @@
 package com.consentframework.consentmanagement.api.testcommon.constants;
 
+import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.ApiQueryStringParameterName;
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.models.ConsentStatus;
@@ -55,4 +56,19 @@ public final class TestConstants {
         .status(ConsentStatus.ACTIVE)
         .consentData(TEST_CONSENT_DATA_MAP)
         .expiryTime(TEST_EXPIRY_TIME);
+
+    public static final Map<String, String> TEST_CONSENTS_PATH_PARAMS = Map.of(
+        ApiPathParameterName.SERVICE_ID.getValue(), TEST_SERVICE_ID,
+        ApiPathParameterName.USER_ID.getValue(), TEST_USER_ID
+    );
+
+    public static final Map<String, String> TEST_CONSENT_PATH_PARAMS = Map.of(
+        ApiPathParameterName.SERVICE_ID.getValue(), TEST_SERVICE_ID,
+        ApiPathParameterName.USER_ID.getValue(), TEST_USER_ID,
+        ApiPathParameterName.CONSENT_ID.getValue(), TEST_CONSENT_ID
+    );
+
+    public static final String CONSENTS_PATH_MISSING_PATH_PARAMS_MESSAGE = "Missing required path parameters, expected serviceId, userId";
+    public static final String CONSENT_PATH_MISSING_PATH_PARAMS_MESSAGE =
+        "Missing required path parameters, expected serviceId, userId, consentId";
 }

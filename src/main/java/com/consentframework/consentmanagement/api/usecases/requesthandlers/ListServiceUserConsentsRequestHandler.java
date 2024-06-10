@@ -19,9 +19,6 @@ import java.util.Map;
 public class ListServiceUserConsentsRequestHandler extends ApiRequestHandler {
     private static final Logger logger = LogManager.getLogger(ListServiceUserConsentsRequestHandler.class);
 
-    static final String MISSING_PATH_PARAMETERS_MESSAGE =
-        "Missing required ListServiceUserConsents path parameters, expected serviceId, userId";
-
     private ListServiceUserConsentsActivity listConsentsActivity;
 
     /**
@@ -30,6 +27,7 @@ public class ListServiceUserConsentsRequestHandler extends ApiRequestHandler {
      * @param listConsentsActivity ListServiceUserConsents API activity
      */
     public ListServiceUserConsentsRequestHandler(final ListServiceUserConsentsActivity listConsentsActivity) {
+        super(ApiPathParameterName.CONSENTS_PATH_PARAMETERS);
         this.listConsentsActivity = listConsentsActivity;
     }
 
@@ -43,11 +41,16 @@ public class ListServiceUserConsentsRequestHandler extends ApiRequestHandler {
     public Map<String, Object> handleRequest(final ApiRequest request) {
         final String serviceId;
         final String userId;
-        final Integer limit;
-        final String pageToken;
         try {
             serviceId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.SERVICE_ID);
             userId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.USER_ID);
+        } catch (final BadRequestException badRequestException) {
+            return handleMissingPathParamsAndBuildErrorResponse(badRequestException);
+        }
+
+        final Integer limit;
+        final String pageToken;
+        try {
             limit = ApiQueryStringParameterParser.parseIntQueryStringParameter(request, ApiQueryStringParameterName.LIMIT);
             pageToken = ApiQueryStringParameterParser.parseStringQueryStringParameter(request, ApiQueryStringParameterName.PAGE_TOKEN);
         } catch (final BadRequestException badRequestException) {

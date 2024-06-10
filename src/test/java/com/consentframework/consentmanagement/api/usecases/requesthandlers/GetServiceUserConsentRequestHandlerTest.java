@@ -18,6 +18,7 @@ import com.consentframework.consentmanagement.api.usecases.activities.GetService
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 
 class GetServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
@@ -37,7 +38,7 @@ class GetServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
         final Consent existingConsent = TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS;
         consentRepository.createServiceUserConsent(existingConsent);
 
-        final ApiRequest request = buildValidApiRequest();
+        final ApiRequest request = buildApiRequest(TestConstants.TEST_CONSENT_PATH_PARAMS);
         final Map<String, Object> response = handler.handleRequest(request);
         assertSuccessResponse(response);
 
@@ -48,7 +49,7 @@ class GetServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
 
     @Test
     void testHandleRequestForNonExistingConsent() throws BadRequestException {
-        final ApiRequest request = buildValidApiRequest();
+        final ApiRequest request = buildApiRequest(TestConstants.TEST_CONSENT_PATH_PARAMS);
 
         final Map<String, Object> response = handler.handleRequest(request);
 
@@ -60,55 +61,39 @@ class GetServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
     @Test
     void testHandleNullRequest() {
         final Map<String, Object> response = handler.handleRequest(null);
-        assertExceptionResponse(HttpStatusCode.BAD_REQUEST, GetServiceUserConsentRequestHandler.MISSING_PATH_PARAMETERS_MESSAGE, response);
+        assertMissingConsentPathParametersResponse(response);
     }
 
     @Test
     void testHandleRequestWithoutPathParameters() {
-        assertReturnsMissingPathParametersResponse(null);
-    }
-
-    @Test
-    void testHandleResponseMissingServiceId() {
-        final Map<String, String> pathParameters = Map.of(
-            ApiPathParameterName.USER_ID.getValue(), TestConstants.TEST_USER_ID,
-            ApiPathParameterName.CONSENT_ID.getValue(), TestConstants.TEST_CONSENT_ID
-        );
-        assertReturnsMissingPathParametersResponse(pathParameters);
-    }
-
-    @Test
-    void testHandleResponseMissingUserId() {
-        final Map<String, String> pathParameters = Map.of(
-            ApiPathParameterName.SERVICE_ID.getValue(), TestConstants.TEST_SERVICE_ID,
-            ApiPathParameterName.CONSENT_ID.getValue(), TestConstants.TEST_CONSENT_ID
-        );
-        assertReturnsMissingPathParametersResponse(pathParameters);
-    }
-
-    @Test
-    void testHandleResponseMissingConsentId() {
-        final Map<String, String> pathParameters = Map.of(
-            ApiPathParameterName.SERVICE_ID.getValue(), TestConstants.TEST_SERVICE_ID,
-            ApiPathParameterName.USER_ID.getValue(), TestConstants.TEST_USER_ID
-        );
-        assertReturnsMissingPathParametersResponse(pathParameters);
-    }
-
-    private void assertReturnsMissingPathParametersResponse(final Map<String, String> pathParameters) {
-        final ApiRequest request = buildApiRequest(pathParameters);
-
+        final ApiRequest request = buildApiRequest(null);
         final Map<String, Object> response = handler.handleRequest(request);
-        assertExceptionResponse(HttpStatusCode.BAD_REQUEST, GetServiceUserConsentRequestHandler.MISSING_PATH_PARAMETERS_MESSAGE, response);
+        assertMissingConsentPathParametersResponse(response);
     }
 
-    private ApiRequest buildValidApiRequest() {
-        final Map<String, String> pathParameters = Map.of(
-            ApiPathParameterName.SERVICE_ID.getValue(), TestConstants.TEST_SERVICE_ID,
-            ApiPathParameterName.USER_ID.getValue(), TestConstants.TEST_USER_ID,
-            ApiPathParameterName.CONSENT_ID.getValue(), TestConstants.TEST_CONSENT_ID
+    @Test
+    void testHandleRequestMissingPathParameters() {
+        final List<Map<String, String>> incompletePathParamConfigs = List.of(
+            Map.of(
+                ApiPathParameterName.USER_ID.getValue(), TestConstants.TEST_USER_ID,
+                ApiPathParameterName.CONSENT_ID.getValue(), TestConstants.TEST_CONSENT_ID
+            ),
+            Map.of(
+                ApiPathParameterName.SERVICE_ID.getValue(), TestConstants.TEST_SERVICE_ID,
+                ApiPathParameterName.CONSENT_ID.getValue(), TestConstants.TEST_CONSENT_ID
+            ),
+            Map.of(
+                ApiPathParameterName.SERVICE_ID.getValue(), TestConstants.TEST_SERVICE_ID,
+                ApiPathParameterName.USER_ID.getValue(), TestConstants.TEST_USER_ID
+            )
         );
-        return buildApiRequest(pathParameters);
+
+        for (final Map<String, String> pathParameters : incompletePathParamConfigs) {
+            final ApiRequest request = buildApiRequest(pathParameters);
+
+            final Map<String, Object> response = handler.handleRequest(request);
+            assertMissingConsentPathParametersResponse(response);
+        }
     }
 
     private ApiRequest buildApiRequest(final Map<String, String> pathParameters) {

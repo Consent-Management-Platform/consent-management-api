@@ -7,13 +7,26 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.consentframework.consentmanagement.api.domain.constants.ApiResponseParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.HttpStatusCode;
 import com.consentframework.consentmanagement.api.domain.entities.ApiExceptionResponseContent;
+import com.consentframework.consentmanagement.api.testcommon.constants.TestConstants;
 
 import java.util.Map;
 
 abstract class RequestHandlerTest {
+    abstract void testHandleNullRequest() throws Exception;
+
+    abstract void testHandleRequestMissingPathParameters() throws Exception;
+
     protected void assertSuccessResponse(final Map<String, Object> response) {
         assertNotNull(response);
         assertStatusCodeEquals(HttpStatusCode.SUCCESS, response);
+    }
+
+    protected void assertMissingConsentPathParametersResponse(final Map<String, Object> response) {
+        assertExceptionResponse(HttpStatusCode.BAD_REQUEST, TestConstants.CONSENT_PATH_MISSING_PATH_PARAMS_MESSAGE, response);
+    }
+
+    protected void assertMissingConsentsPathParametersResponse(final Map<String, Object> response) {
+        assertExceptionResponse(HttpStatusCode.BAD_REQUEST, TestConstants.CONSENTS_PATH_MISSING_PATH_PARAMS_MESSAGE, response);
     }
 
     protected void assertExceptionResponse(final HttpStatusCode expectedStatusCode, final String expectedMessage,

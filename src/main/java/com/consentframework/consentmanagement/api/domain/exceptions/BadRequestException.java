@@ -9,9 +9,19 @@ public class BadRequestException extends Exception {
     /**
      * Construct BadRequestException with an error message.
      *
-     * @param message error message.
+     * @param message error message
      */
     public BadRequestException(final String message) {
         super(message);
+    }
+
+    /**
+     * Construct BadRequestException with an error message and original cause.
+     *
+     * @param message error message
+     * @param cause original exception thrown
+     */
+    public BadRequestException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }

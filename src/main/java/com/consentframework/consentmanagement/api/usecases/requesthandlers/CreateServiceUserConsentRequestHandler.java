@@ -31,6 +31,7 @@ public class CreateServiceUserConsentRequestHandler extends ApiRequestHandler {
      * @param createConsentActivity CreateServiceUserConsent API activity
      */
     public CreateServiceUserConsentRequestHandler(final CreateServiceUserConsentActivity createConsentActivity) {
+        super(ApiPathParameterName.CONSENTS_PATH_PARAMETERS);
         this.createConsentActivity = createConsentActivity;
     }
 
@@ -44,11 +45,15 @@ public class CreateServiceUserConsentRequestHandler extends ApiRequestHandler {
     public Map<String, Object> handleRequest(final ApiRequest request) {
         final String serviceId;
         final String userId;
-        final CreateServiceUserConsentResponseContent responseContent;
-
         try {
             serviceId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.SERVICE_ID);
             userId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.USER_ID);
+        } catch (final BadRequestException badRequestException) {
+            return handleMissingPathParamsAndBuildErrorResponse(badRequestException);
+        }
+
+        final CreateServiceUserConsentResponseContent responseContent;
+        try {
             final CreateServiceUserConsentRequestContent requestContent = new JSON().getMapper()
                 .readValue(request.body(), CreateServiceUserConsentRequestContent.class);
 

@@ -18,9 +18,6 @@ import java.util.Map;
 public class GetServiceUserConsentRequestHandler extends ApiRequestHandler {
     private static final Logger logger = LogManager.getLogger(GetServiceUserConsentRequestHandler.class);
 
-    static final String MISSING_PATH_PARAMETERS_MESSAGE =
-        "Missing required GetServiceUserConsent path parameters, expected serviceId, userId, consentId";
-
     private GetServiceUserConsentActivity getConsentActivity;
 
     /**
@@ -29,6 +26,7 @@ public class GetServiceUserConsentRequestHandler extends ApiRequestHandler {
      * @param getConsentActivity GetServiceUserConsent API activity
      */
     public GetServiceUserConsentRequestHandler(final GetServiceUserConsentActivity getConsentActivity) {
+        super(ApiPathParameterName.CONSENT_PATH_PARAMETERS);
         this.getConsentActivity = getConsentActivity;
     }
 
@@ -48,8 +46,7 @@ public class GetServiceUserConsentRequestHandler extends ApiRequestHandler {
             userId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.USER_ID);
             consentId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.CONSENT_ID);
         } catch (final BadRequestException badRequestException) {
-            logger.warn(MISSING_PATH_PARAMETERS_MESSAGE);
-            return buildApiErrorResponse(new BadRequestException(MISSING_PATH_PARAMETERS_MESSAGE));
+            return handleMissingPathParamsAndBuildErrorResponse(badRequestException);
         }
 
         logger.info("Retrieving consent for path: " + request.path());

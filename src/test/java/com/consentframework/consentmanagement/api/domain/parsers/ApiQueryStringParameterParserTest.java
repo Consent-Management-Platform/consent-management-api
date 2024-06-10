@@ -12,8 +12,6 @@ import com.consentframework.consentmanagement.api.testcommon.constants.TestConst
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 class ApiQueryStringParameterParserTest {

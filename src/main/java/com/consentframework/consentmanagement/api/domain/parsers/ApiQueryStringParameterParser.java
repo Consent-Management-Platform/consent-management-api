@@ -11,7 +11,8 @@ import org.apache.logging.log4j.Logger;
  */
 public final class ApiQueryStringParameterParser {
     public static final String PARSE_FAILURE_MESSAGE = "Unable to parse %s query parameter from request";
-    public static final String WRONG_TYPE_MESSAGE = "Expected %s query parameter to be a %s but was a %s: %s";
+
+    private static final String WRONG_TYPE_LOG_MESSAGE = "Expected %s query parameter to be a %s but was a %s: %s";
 
     private static final Logger logger = LogManager.getLogger(ApiQueryStringParameterParser.class);
 
@@ -30,7 +31,7 @@ public final class ApiQueryStringParameterParser {
         if (pathParameterValue == null || pathParameterValue instanceof String) {
             return (String) pathParameterValue;
         }
-        logger.warn(String.format(WRONG_TYPE_MESSAGE, parameter.getValue(), String.class, pathParameterValue.getClass(),
+        logger.warn(String.format(WRONG_TYPE_LOG_MESSAGE, parameter.getValue(), String.class, pathParameterValue.getClass(),
             pathParameterValue.toString()));
         throw buildBadRequestException(parameter);
     }
@@ -48,7 +49,7 @@ public final class ApiQueryStringParameterParser {
         if (pathParameterValue == null || pathParameterValue instanceof Integer) {
             return (Integer) pathParameterValue;
         }
-        logger.warn(String.format(WRONG_TYPE_MESSAGE, parameter.getValue(), Integer.class, pathParameterValue.getClass(),
+        logger.warn(String.format(WRONG_TYPE_LOG_MESSAGE, parameter.getValue(), Integer.class, pathParameterValue.getClass(),
             pathParameterValue.toString()));
         throw buildBadRequestException(parameter);
     }

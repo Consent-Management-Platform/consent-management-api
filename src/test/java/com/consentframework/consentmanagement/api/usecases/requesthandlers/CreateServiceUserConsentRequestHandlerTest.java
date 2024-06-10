@@ -12,7 +12,6 @@ import com.consentframework.consentmanagement.api.domain.constants.HttpStatusCod
 import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
-import com.consentframework.consentmanagement.api.domain.parsers.ApiPathParameterParser;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.infrastructure.repositories.InMemoryServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.models.Consent;
@@ -74,13 +73,11 @@ class CreateServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
     @Test
     void testHandleNullRequest() {
         final Map<String, Object> response = handler.handleRequest(null);
-        final String expectedErrorMessage = String.format(ApiPathParameterParser.PARSE_FAILURE_MESSAGE,
-            ApiPathParameterName.SERVICE_ID.getValue());
-        assertExceptionResponse(HttpStatusCode.BAD_REQUEST, expectedErrorMessage, response);
+        assertMissingConsentsPathParametersResponse(response);
     }
 
     @Test
-    void testHandleRequestMissingUserId() throws JsonProcessingException {
+    void testHandleRequestMissingPathParameters() throws JsonProcessingException {
         final Map<String, String> incompletePathParameters = Map.of(
             ApiPathParameterName.SERVICE_ID.getValue(), TestConstants.TEST_SERVICE_ID
         );
@@ -88,9 +85,7 @@ class CreateServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
         final ApiRequest request = buildApiRequest(incompletePathParameters, requestContentString);
 
         final Map<String, Object> response = handler.handleRequest(request);
-        final String expectedErrorMessage = String.format(ApiPathParameterParser.PARSE_FAILURE_MESSAGE,
-            ApiPathParameterName.USER_ID.getValue());
-        assertExceptionResponse(HttpStatusCode.BAD_REQUEST, expectedErrorMessage, response);
+        assertMissingConsentsPathParametersResponse(response);
     }
 
     @Test
