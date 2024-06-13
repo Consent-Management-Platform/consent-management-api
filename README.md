@@ -1,9 +1,9 @@
 # consent-management-api
 This package defines service code for the Consent Management API.
 
-See [API models here](https://github.com/msayson/consent-management-api-models/).
+See [API models here](https://github.com/Consent-Management-Platform/consent-management-api-models).
 
-See [v1 API documentation here](https://www.marksayson.com/consent-management-api-models/v1/docs.html).
+See [v1 API documentation here](https://consent-management-platform.github.io/consent-management-api-models/v1/docs.html).
 
 ## Technologies
 [Smithy](https://smithy.io) is used to produce protocol and technology agnostic API models that can be used to automatically generate:
