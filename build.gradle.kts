@@ -55,7 +55,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass.set("com.consentframework.consentmanagement.api.ConsentManagementApiRequestHandler")
+    mainClass.set("com.consentframework.consentmanagement.api.ConsentManagementApiService")
 }
 
 tasks {
