@@ -53,11 +53,6 @@ java {
     }
 }
 
-application {
-    // Define the main class for the application.
-    mainClass.set("com.consentframework.consentmanagement.api.ConsentManagementApiService")
-}
-
 tasks {
     withType<Test> {
         useJUnitPlatform()
@@ -80,4 +75,16 @@ tasks {
         // Fail build if under min test coverage thresholds
         dependsOn(jacocoTestCoverageVerification)
     }
+}
+
+// Build jar which will later be consumed to run the API service
+tasks.register<Zip>("packageJar") {
+    into("lib") {
+        from(tasks.jar)
+        from(configurations.runtimeClasspath)
+    }
+}
+
+tasks.build {
+    dependsOn("packageJar")
 }
