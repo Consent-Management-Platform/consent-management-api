@@ -2,7 +2,7 @@ package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.consentframework.consentmanagement.api.JSON;
+import com.consentframework.consentmanagement.api.domain.constants.ApiHttpResource;
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.HttpMethod;
 import com.consentframework.consentmanagement.api.domain.constants.HttpStatusCode;
@@ -13,7 +13,6 @@ import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotF
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.infrastructure.repositories.InMemoryServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.models.Consent;
-import com.consentframework.consentmanagement.api.models.UpdateServiceUserConsentRequestContent;
 import com.consentframework.consentmanagement.api.testcommon.constants.TestConstants;
 import com.consentframework.consentmanagement.api.testcommon.utils.TestUtils;
 import com.consentframework.consentmanagement.api.usecases.activities.UpdateServiceUserConsentActivity;
@@ -36,13 +35,13 @@ class UpdateServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
     }
 
     @Test
-    void testHandleNullRequest() {
+    protected void testHandleNullRequest() {
         final Map<String, Object> response = handler.handleRequest(null);
         assertMissingConsentPathParametersResponse(response);
     }
 
     @Test
-    void testHandleRequestMissingPathParameters() {
+    protected void testHandleRequestMissingPathParameters() {
         final Map<String, String> incompletePathParameters = Map.of(
             ApiPathParameterName.SERVICE_ID.getValue(), TestConstants.TEST_SERVICE_ID,
             ApiPathParameterName.USER_ID.getValue(), TestConstants.TEST_USER_ID);
@@ -63,7 +62,7 @@ class UpdateServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
     @Test
     void testHandleRequestForNonExistingConsent() throws JsonProcessingException {
         final ApiRequest request = buildApiRequest(TestConstants.TEST_CONSENT_PATH_PARAMS,
-            toRequestContentString(TestConstants.TEST_CONSENT_WITH_ALL_FIELDS));
+            TestUtils.toUpdateRequestContentString(TestConstants.TEST_CONSENT_WITH_ALL_FIELDS));
         final Map<String, Object> response = handler.handleRequest(request);
         final String expectedErrorMessage = String.format(ServiceUserConsentRepository.CONSENT_NOT_FOUND_MESSAGE,
             TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID);
@@ -76,7 +75,8 @@ class UpdateServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
         consentRepository.createServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS);
 
         final Consent updatedConsent = TestUtils.clone(TestConstants.TEST_CONSENT_WITH_ALL_FIELDS).consentVersion(2);
-        final ApiRequest request = buildApiRequest(TestConstants.TEST_CONSENT_PATH_PARAMS, toRequestContentString(updatedConsent));
+        final ApiRequest request = buildApiRequest(TestConstants.TEST_CONSENT_PATH_PARAMS,
+            TestUtils.toUpdateRequestContentString(updatedConsent));
 
         final Map<String, Object> response = handler.handleRequest(request);
         assertSuccessResponse(response);
@@ -89,15 +89,7 @@ class UpdateServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
     }
 
     private ApiRequest buildApiRequest(final Map<String, String> pathParameters, final String body) {
-        return new ApiRequest(HttpMethod.POST.name(), TestConstants.TEST_CONSENT_PATH, pathParameters, null, null, false, body);
-    }
-
-    private String toRequestContentString(final Consent consent) throws JsonProcessingException {
-        final UpdateServiceUserConsentRequestContent requestContent = new UpdateServiceUserConsentRequestContent()
-            .consentVersion(consent.getConsentVersion())
-            .consentData(consent.getConsentData())
-            .status(consent.getStatus())
-            .expiryTime(consent.getExpiryTime());
-        return new JSON().getMapper().writeValueAsString(requestContent);
+        return new ApiRequest(HttpMethod.POST.name(), ApiHttpResource.SERVICE_USER_CONSENT.getValue(), TestConstants.TEST_CONSENT_PATH,
+            pathParameters, null, null, false, body);
     }
 }

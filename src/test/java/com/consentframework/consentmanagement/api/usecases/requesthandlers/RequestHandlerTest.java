@@ -11,10 +11,13 @@ import com.consentframework.consentmanagement.api.testcommon.constants.TestConst
 
 import java.util.Map;
 
-abstract class RequestHandlerTest {
-    abstract void testHandleNullRequest() throws Exception;
+/**
+ * Abstract request handler test with common assertion helper methods.
+ */
+public abstract class RequestHandlerTest {
+    protected abstract void testHandleNullRequest() throws Exception;
 
-    abstract void testHandleRequestMissingPathParameters() throws Exception;
+    protected abstract void testHandleRequestMissingPathParameters() throws Exception;
 
     protected void assertSuccessResponse(final Map<String, Object> response) {
         assertNotNull(response);

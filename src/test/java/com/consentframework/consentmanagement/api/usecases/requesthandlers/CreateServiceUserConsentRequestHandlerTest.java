@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-import com.consentframework.consentmanagement.api.JSON;
+import com.consentframework.consentmanagement.api.domain.constants.ApiHttpResource;
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.HttpMethod;
 import com.consentframework.consentmanagement.api.domain.constants.HttpStatusCode;
@@ -18,6 +18,7 @@ import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.models.CreateServiceUserConsentRequestContent;
 import com.consentframework.consentmanagement.api.models.CreateServiceUserConsentResponseContent;
 import com.consentframework.consentmanagement.api.testcommon.constants.TestConstants;
+import com.consentframework.consentmanagement.api.testcommon.utils.TestUtils;
 import com.consentframework.consentmanagement.api.usecases.activities.CreateServiceUserConsentActivity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,13 +46,13 @@ class CreateServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
     @Test
     void testHandleRequestWhenConsentAlreadyExists() throws BadRequestException, ConflictingResourceException, JsonProcessingException {
         final Consent existingConsent = TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS;
-        final CreateServiceUserConsentRequestContent requestContent = toRequestContent(existingConsent);
+        final CreateServiceUserConsentRequestContent requestContent = TestUtils.toCreateRequestContent(existingConsent);
 
         final String testExceptionMessage = "TestConflictException";
         when(activity.handleRequest(existingConsent.getServiceId(), existingConsent.getUserId(), requestContent))
             .thenThrow(new ConflictingResourceException(testExceptionMessage));
 
-        final ApiRequest request = buildApiRequest(VALID_PATH_PARAMETERS, toString(requestContent));
+        final ApiRequest request = buildApiRequest(VALID_PATH_PARAMETERS, TestUtils.toString(requestContent));
 
         final Map<String, Object> response = handler.handleRequest(request);
         assertExceptionResponse(HttpStatusCode.CONFLICT, testExceptionMessage, response);
@@ -59,7 +60,7 @@ class CreateServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
 
     @Test
     void testHandleValidRequest() throws BadRequestException, JsonProcessingException {
-        final String requestContentString = toRequestContentString(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS);
+        final String requestContentString = TestUtils.toCreateRequestContentString(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS);
         final ApiRequest request = buildApiRequest(VALID_PATH_PARAMETERS, requestContentString);
 
         final Map<String, Object> response = handler.handleRequest(request);
@@ -71,17 +72,17 @@ class CreateServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
     }
 
     @Test
-    void testHandleNullRequest() {
+    protected void testHandleNullRequest() {
         final Map<String, Object> response = handler.handleRequest(null);
         assertMissingConsentsPathParametersResponse(response);
     }
 
     @Test
-    void testHandleRequestMissingPathParameters() throws JsonProcessingException {
+    protected void testHandleRequestMissingPathParameters() throws JsonProcessingException {
         final Map<String, String> incompletePathParameters = Map.of(
             ApiPathParameterName.SERVICE_ID.getValue(), TestConstants.TEST_SERVICE_ID
         );
-        final String requestContentString = toRequestContentString(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS);
+        final String requestContentString = TestUtils.toCreateRequestContentString(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS);
         final ApiRequest request = buildApiRequest(incompletePathParameters, requestContentString);
 
         final Map<String, Object> response = handler.handleRequest(request);
@@ -97,22 +98,7 @@ class CreateServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
     }
 
     private ApiRequest buildApiRequest(final Map<String, String> pathParameters, final String body) {
-        return new ApiRequest(HttpMethod.POST.name(), TestConstants.TEST_CONSENTS_PATH, pathParameters, null, null, false, body);
-    }
-
-    private String toRequestContentString(final Consent consent) throws JsonProcessingException {
-        final CreateServiceUserConsentRequestContent requestContent = toRequestContent(consent);
-        return toString(requestContent);
-    }
-
-    private CreateServiceUserConsentRequestContent toRequestContent(final Consent consent) {
-        return new CreateServiceUserConsentRequestContent()
-            .consentData(consent.getConsentData())
-            .status(consent.getStatus())
-            .expiryTime(consent.getExpiryTime());
-    }
-
-    private String toString(final CreateServiceUserConsentRequestContent requestContent) throws JsonProcessingException {
-        return new JSON().getMapper().writeValueAsString(requestContent);
+        return new ApiRequest(HttpMethod.POST.name(), ApiHttpResource.SERVICE_USER_CONSENTS.getValue(), TestConstants.TEST_CONSENTS_PATH,
+            pathParameters, null, null, false, body);
     }
 }

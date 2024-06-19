@@ -114,6 +114,6 @@ class ApiQueryStringParameterParserTest {
     }
 
     private ApiRequest buildRequest(final Map<String, Object> queryParameters) {
-        return new ApiRequest(HttpMethod.GET.name(), "/", null, queryParameters, null, false, null);
+        return new ApiRequest(HttpMethod.GET.name(), "/", "/", null, queryParameters, null, false, null);
     }
 }

@@ -9,7 +9,8 @@ import java.util.Map;
  * Representation of an API request.
  *
  * @param httpMethod HTTP method, eg. "GET" or "POST"
- * @param path HTTP path, eg. "/my/path"
+ * @param resource HTTP resource, eg. "/v1/consent-management/services/{serviceId}/users/{userId}/consents"
+ * @param path HTTP path, eg. "/v1/consent-management/services/SomeService/users/1234/consents"
  * @param pathParameters path parameter mappings, eg. a "/service/{serviceId}" path
  *     value of "/service/Service1234" maps "serviceId" to "Service1234"
  * @param queryStringParameters query string parameters, eg. "/my/path?limit=5" maps "limit" to 5
@@ -21,6 +22,7 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record ApiRequest(
     String httpMethod,
+    String resource,
     String path,
     Map<String, String> pathParameters,
     Map<String, Object> queryStringParameters,

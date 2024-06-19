@@ -3,6 +3,7 @@ package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.consentframework.consentmanagement.api.domain.constants.ApiHttpResource;
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.ApiQueryStringParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.HttpMethod;
@@ -37,13 +38,13 @@ class ListServiceUserConsentsRequestHandlerTest extends RequestHandlerTest {
     }
 
     @Test
-    void testHandleNullRequest() {
+    protected void testHandleNullRequest() {
         final Map<String, Object> response = handler.handleRequest(null);
         assertMissingConsentsPathParametersResponse(response);
     }
 
     @Test
-    void testHandleRequestMissingPathParameters() {
+    protected void testHandleRequestMissingPathParameters() {
         final Map<String, String> incompletePathParameters = Map.of(
             ApiPathParameterName.SERVICE_ID.getValue(), TestConstants.TEST_SERVICE_ID);
         final ApiRequest request = buildApiRequest(incompletePathParameters, null);
@@ -126,7 +127,7 @@ class ListServiceUserConsentsRequestHandlerTest extends RequestHandlerTest {
     }
 
     private ApiRequest buildApiRequest(final Map<String, String> pathParameters, final Map<String, Object> queryStringParameters) {
-        return new ApiRequest(HttpMethod.GET.name(), TestConstants.TEST_CONSENTS_PATH, pathParameters, queryStringParameters,
-            null, false, null);
+        return new ApiRequest(HttpMethod.GET.name(), ApiHttpResource.SERVICE_USER_CONSENTS.getValue(), TestConstants.TEST_CONSENTS_PATH,
+            pathParameters, queryStringParameters, null, false, null);
     }
 }

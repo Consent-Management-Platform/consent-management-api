@@ -3,6 +3,7 @@ package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.consentframework.consentmanagement.api.domain.constants.ApiHttpResource;
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.HttpMethod;
 import com.consentframework.consentmanagement.api.domain.constants.HttpStatusCode;
@@ -59,7 +60,7 @@ class GetServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
     }
 
     @Test
-    void testHandleNullRequest() {
+    protected void testHandleNullRequest() {
         final Map<String, Object> response = handler.handleRequest(null);
         assertMissingConsentPathParametersResponse(response);
     }
@@ -72,7 +73,7 @@ class GetServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
     }
 
     @Test
-    void testHandleRequestMissingPathParameters() {
+    protected void testHandleRequestMissingPathParameters() {
         final List<Map<String, String>> incompletePathParamConfigs = List.of(
             Map.of(
                 ApiPathParameterName.USER_ID.getValue(), TestConstants.TEST_USER_ID,
@@ -97,6 +98,7 @@ class GetServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
     }
 
     private ApiRequest buildApiRequest(final Map<String, String> pathParameters) {
-        return new ApiRequest(HttpMethod.GET.name(), TestConstants.TEST_CONSENT_PATH, pathParameters, null, null, false, null);
+        return new ApiRequest(HttpMethod.GET.name(), ApiHttpResource.SERVICE_USER_CONSENT.getValue(), TestConstants.TEST_CONSENT_PATH,
+            pathParameters, null, null, false, null);
     }
 }
