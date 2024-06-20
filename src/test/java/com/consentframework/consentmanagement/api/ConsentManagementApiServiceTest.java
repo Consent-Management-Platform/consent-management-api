@@ -120,26 +120,6 @@ class ConsentManagementApiServiceTest extends RequestHandlerTest {
     }
 
     @Test
-    void testHandleUnsupportedResourceOperation() {
-        final String unsupportedHttpOperation = "DELETE";
-        final ApiRequest request = new ApiRequest(
-            unsupportedHttpOperation,
-            ApiHttpResource.SERVICE_USER_CONSENT.getValue(),
-            TestConstants.TEST_CONSENT_PATH,
-            TestConstants.TEST_CONSENT_PATH_PARAMS,
-            null,
-            null,
-            false,
-            null
-        );
-
-        final Map<String, Object> response = service.handleRequest(request, null);
-        final String expectedErrorMessage = String.format(ConsentManagementApiService.UNSUPPORTED_OPERATION_MESSAGE,
-            ApiHttpResource.SERVICE_USER_CONSENT.getValue(), unsupportedHttpOperation);
-        assertExceptionResponse(HttpStatusCode.BAD_REQUEST, expectedErrorMessage, response);
-    }
-
-    @Test
     protected void testHandleNullRequest() throws Exception {
         final Map<String, Object> response = service.handleRequest(null, null);
         final String expectedErrorMessage = String.format(ConsentManagementApiService.UNSUPPORTED_OPERATION_MESSAGE, null, null);
@@ -153,5 +133,39 @@ class ConsentManagementApiServiceTest extends RequestHandlerTest {
 
         final Map<String, Object> response = service.handleRequest(request, null);
         assertMissingConsentPathParametersResponse(response);
+    }
+
+    @Test
+    void testHandleUnsupportedConsentOperation() {
+        validateHandlesUnsupportedResourceOperation(ApiHttpResource.SERVICE_USER_CONSENT.getValue());
+    }
+
+    @Test
+    void testHandleUnsupportedConsentsOperation() {
+        validateHandlesUnsupportedResourceOperation(ApiHttpResource.SERVICE_USER_CONSENTS.getValue());
+    }
+
+    @Test
+    void testHandleUnsupportedResource() {
+        validateHandlesUnsupportedResourceOperation("/v1/consent-management/unsupported-resource");
+    }
+
+    private void validateHandlesUnsupportedResourceOperation(final String httpResourceString) {
+        final String unsupportedHttpOperation = "DELETE";
+        final ApiRequest request = new ApiRequest(
+            unsupportedHttpOperation,
+            httpResourceString,
+            TestConstants.TEST_CONSENT_PATH,
+            TestConstants.TEST_CONSENT_PATH_PARAMS,
+            null,
+            null,
+            false,
+            null
+        );
+
+        final Map<String, Object> response = service.handleRequest(request, null);
+        final String expectedErrorMessage = String.format(ConsentManagementApiService.UNSUPPORTED_OPERATION_MESSAGE,
+            httpResourceString, unsupportedHttpOperation);
+        assertExceptionResponse(HttpStatusCode.BAD_REQUEST, expectedErrorMessage, response);
     }
 }
