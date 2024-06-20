@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.consentframework.consentmanagement.api.domain.constants.ApiResponseParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.HttpStatusCode;
-import com.consentframework.consentmanagement.api.domain.entities.ApiExceptionResponseContent;
 import com.consentframework.consentmanagement.api.testcommon.constants.TestConstants;
 
 import java.util.Map;
@@ -49,9 +48,8 @@ public abstract class RequestHandlerTest {
 
     private void assertExceptionResponseEquals(final String expectedMessage, final Map<String, Object> response) {
         final Object responseBody = getResponseBody(response);
-        assertTrue(responseBody instanceof ApiExceptionResponseContent,
-            String.format("Expected response body to be ApiExceptionResponseContent but was %s", responseBody.getClass().getName()));
-        assertEquals(expectedMessage,
-            ((ApiExceptionResponseContent) responseBody).message());
+        assertTrue(responseBody instanceof String,
+            String.format("Expected response body to be String but was %s", responseBody.getClass().getName()));
+        assertEquals(String.format(ApiRequestHandler.ERROR_RESPONSE_BODY, expectedMessage), responseBody);
     }
 }

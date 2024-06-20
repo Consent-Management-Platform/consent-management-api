@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import com.consentframework.consentmanagement.api.JSON;
 import com.consentframework.consentmanagement.api.domain.constants.ApiHttpResource;
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.HttpMethod;
@@ -67,8 +68,11 @@ class CreateServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
         assertSuccessResponse(response);
 
         final Object responseBody = getResponseBody(response);
-        assertTrue(responseBody instanceof CreateServiceUserConsentResponseContent);
-        assertNotNull(((CreateServiceUserConsentResponseContent) responseBody).getConsentId());
+        assertTrue(responseBody instanceof String);
+
+        final CreateServiceUserConsentResponseContent parsedResponse = new JSON().getMapper()
+            .readValue((String) responseBody, CreateServiceUserConsentResponseContent.class);
+        assertNotNull(parsedResponse.getConsentId());
     }
 
     @Test

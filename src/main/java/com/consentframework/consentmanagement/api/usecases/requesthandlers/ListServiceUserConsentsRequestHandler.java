@@ -1,5 +1,6 @@
 package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 
+import com.consentframework.consentmanagement.api.JSON;
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.ApiQueryStringParameterName;
 import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
@@ -8,6 +9,7 @@ import com.consentframework.consentmanagement.api.domain.parsers.ApiPathParamete
 import com.consentframework.consentmanagement.api.domain.parsers.ApiQueryStringParameterParser;
 import com.consentframework.consentmanagement.api.models.ListServiceUserConsentResponseContent;
 import com.consentframework.consentmanagement.api.usecases.activities.ListServiceUserConsentsActivity;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,18 +53,21 @@ public class ListServiceUserConsentsRequestHandler extends ApiRequestHandler {
         final Integer limit;
         final String pageToken;
         final ListServiceUserConsentResponseContent responseContent;
+        final String responseBodyString;
         try {
             limit = ApiQueryStringParameterParser.parseIntQueryStringParameter(request, ApiQueryStringParameterName.LIMIT);
             pageToken = ApiQueryStringParameterParser.parseStringQueryStringParameter(request, ApiQueryStringParameterName.PAGE_TOKEN);
 
             logger.info("Retrieving consents for path: " + request.path());
-            responseContent = listConsentsActivity.handleRequest(serviceId, userId, limit, pageToken);
-        } catch (final BadRequestException badRequestException) {
-            return logAndBuildErrorResponse(badRequestException);
+            responseContent = listConsentsActivity.handleRequest(
+                serviceId, userId, limit, pageToken);
+            responseBodyString = toJsonString(responseContent);
+        } catch (final BadRequestException | JsonProcessingException exception) {
+            return logAndBuildErrorResponse(exception);
         }
 
         logger.info(String.format("Successfully retrieved %d consents for path: %s, limit: %d, pageToken: %s",
             responseContent.getData().size(), request.path(), limit, pageToken));
-        return buildApiSuccessResponse(responseContent);
+        return buildApiSuccessResponse(responseBodyString);
     }
 }

@@ -52,13 +52,15 @@ public class CreateServiceUserConsentRequestHandler extends ApiRequestHandler {
             return logAndBuildMissingPathParamResponse(badRequestException);
         }
 
-        final CreateServiceUserConsentResponseContent responseContent;
+        final String responseContentString;
         try {
             final CreateServiceUserConsentRequestContent requestContent = new JSON().getMapper()
                 .readValue(request.body(), CreateServiceUserConsentRequestContent.class);
 
             logger.info(String.format("Creating consent for serviceId: %s, userId: %s", serviceId, userId));
-            responseContent = createConsentActivity.handleRequest(serviceId, userId, requestContent);
+            final CreateServiceUserConsentResponseContent responseContent = createConsentActivity.handleRequest(
+                serviceId, userId, requestContent);
+            responseContentString = toJsonString(responseContent);
         } catch (final JsonProcessingException jsonProcessingException) {
             return logAndBuildJsonProcessingErrorResponse(jsonProcessingException);
         } catch (final BadRequestException | ConflictingResourceException exception) {
@@ -66,6 +68,6 @@ public class CreateServiceUserConsentRequestHandler extends ApiRequestHandler {
         }
 
         logger.info(String.format("Successfully created consent for serviceId: %s, userId: %s", serviceId, userId));
-        return buildApiSuccessResponse(responseContent);
+        return buildApiSuccessResponse(responseContentString);
     }
 }

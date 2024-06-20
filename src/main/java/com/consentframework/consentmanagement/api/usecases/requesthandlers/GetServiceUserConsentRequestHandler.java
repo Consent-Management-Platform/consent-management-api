@@ -1,5 +1,6 @@
 package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 
+import com.consentframework.consentmanagement.api.JSON;
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
@@ -7,6 +8,7 @@ import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotF
 import com.consentframework.consentmanagement.api.domain.parsers.ApiPathParameterParser;
 import com.consentframework.consentmanagement.api.models.GetServiceUserConsentResponseContent;
 import com.consentframework.consentmanagement.api.usecases.activities.GetServiceUserConsentActivity;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -50,14 +52,15 @@ public class GetServiceUserConsentRequestHandler extends ApiRequestHandler {
         }
 
         logger.info("Retrieving consent for path: " + request.path());
-        final GetServiceUserConsentResponseContent responseContent;
+        final String responseBodyString;
         try {
-            responseContent = getConsentActivity.handleRequest(serviceId, userId, consentId);
-        } catch (final ResourceNotFoundException resourceNotFoundException) {
-            return logAndBuildErrorResponse(resourceNotFoundException);
+            final GetServiceUserConsentResponseContent responseContent = getConsentActivity.handleRequest(serviceId, userId, consentId);
+            responseBodyString = toJsonString(responseContent);
+        } catch (final JsonProcessingException | ResourceNotFoundException exception) {
+            return logAndBuildErrorResponse(exception);
         }
 
         logger.info("Successfully retrieved consent for path: " + request.path());
-        return buildApiSuccessResponse(responseContent);
+        return buildApiSuccessResponse(responseBodyString);
     }
 }

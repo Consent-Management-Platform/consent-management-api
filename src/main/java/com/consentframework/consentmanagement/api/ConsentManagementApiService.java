@@ -6,15 +6,14 @@ import com.consentframework.consentmanagement.api.domain.constants.ApiHttpResour
 import com.consentframework.consentmanagement.api.domain.constants.ApiResponseParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.HttpMethod;
 import com.consentframework.consentmanagement.api.domain.constants.HttpStatusCode;
-import com.consentframework.consentmanagement.api.domain.entities.ApiExceptionResponseContent;
 import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
-import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.infrastructure.repositories.InMemoryServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.usecases.activities.CreateServiceUserConsentActivity;
 import com.consentframework.consentmanagement.api.usecases.activities.GetServiceUserConsentActivity;
 import com.consentframework.consentmanagement.api.usecases.activities.ListServiceUserConsentsActivity;
 import com.consentframework.consentmanagement.api.usecases.activities.UpdateServiceUserConsentActivity;
+import com.consentframework.consentmanagement.api.usecases.requesthandlers.ApiRequestHandler;
 import com.consentframework.consentmanagement.api.usecases.requesthandlers.CreateServiceUserConsentRequestHandler;
 import com.consentframework.consentmanagement.api.usecases.requesthandlers.GetServiceUserConsentRequestHandler;
 import com.consentframework.consentmanagement.api.usecases.requesthandlers.ListServiceUserConsentsRequestHandler;
@@ -96,7 +95,7 @@ public class ConsentManagementApiService implements RequestHandler<ApiRequest, M
 
         final Map<String, Object> apiErrorResponse = new HashMap<String, Object>();
         apiErrorResponse.put(ApiResponseParameterName.STATUS_CODE.getValue(), HttpStatusCode.BAD_REQUEST.getValue());
-        apiErrorResponse.put(ApiResponseParameterName.BODY.getValue(), new ApiExceptionResponseContent(errorMessage));
+        apiErrorResponse.put(ApiResponseParameterName.BODY.getValue(), String.format(ApiRequestHandler.ERROR_RESPONSE_BODY, errorMessage));
         return apiErrorResponse;
     }
 }

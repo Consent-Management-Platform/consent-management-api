@@ -3,6 +3,7 @@ package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.consentframework.consentmanagement.api.JSON;
 import com.consentframework.consentmanagement.api.domain.constants.ApiHttpResource;
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.ApiQueryStringParameterName;
@@ -19,6 +20,7 @@ import com.consentframework.consentmanagement.api.models.ListServiceUserConsentR
 import com.consentframework.consentmanagement.api.testcommon.constants.TestConstants;
 import com.consentframework.consentmanagement.api.testcommon.utils.TestUtils;
 import com.consentframework.consentmanagement.api.usecases.activities.ListServiceUserConsentsActivity;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -78,7 +80,7 @@ class ListServiceUserConsentsRequestHandlerTest extends RequestHandlerTest {
     }
 
     @Test
-    void testHandleRequestWhenNoConsents() {
+    void testHandleRequestWhenNoConsents() throws JsonProcessingException {
         final ApiRequest request = buildApiRequest(TestConstants.TEST_CONSENTS_PATH_PARAMS,
             TestConstants.TEST_PAGINATION_QUERY_PARAMETERS);
         final Map<String, Object> response = handler.handleRequest(request);
@@ -86,7 +88,7 @@ class ListServiceUserConsentsRequestHandlerTest extends RequestHandlerTest {
     }
 
     @Test
-    void testHandlePaginatedRequests() throws BadRequestException, ConflictingResourceException {
+    void testHandlePaginatedRequests() throws BadRequestException, ConflictingResourceException, JsonProcessingException {
         final Consent firstConsent = TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS;
         final Consent secondConsent = TestUtils.clone(firstConsent).consentId("SecondConsentId");
         final Consent thirdConsent = TestUtils.clone(firstConsent).consentId("ThirdConsentId");
@@ -115,15 +117,17 @@ class ListServiceUserConsentsRequestHandlerTest extends RequestHandlerTest {
     }
 
     private void assertSuccessResponse(final Map<String, Object> response, final List<Consent> expectedConsents,
-            final String expectedNextPageToken) {
+            final String expectedNextPageToken) throws JsonProcessingException {
         super.assertSuccessResponse(response);
 
         final Object responseBody = getResponseBody(response);
-        assertTrue(responseBody instanceof ListServiceUserConsentResponseContent);
-        final ListServiceUserConsentResponseContent listResponseContent = (ListServiceUserConsentResponseContent) responseBody;
+        assertTrue(responseBody instanceof String);
 
-        assertEquals(expectedConsents, listResponseContent.getData());
-        assertEquals(expectedNextPageToken, listResponseContent.getNextPageToken());
+        final ListServiceUserConsentResponseContent parsedResponse = new JSON().getMapper()
+            .readValue((String) responseBody, ListServiceUserConsentResponseContent.class);
+
+        assertEquals(expectedConsents, parsedResponse.getData());
+        assertEquals(expectedNextPageToken, parsedResponse.getNextPageToken());
     }
 
     private ApiRequest buildApiRequest(final Map<String, String> pathParameters, final Map<String, Object> queryStringParameters) {

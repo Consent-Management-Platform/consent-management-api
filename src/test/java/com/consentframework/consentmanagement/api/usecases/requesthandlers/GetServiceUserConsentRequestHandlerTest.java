@@ -3,6 +3,7 @@ package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.consentframework.consentmanagement.api.JSON;
 import com.consentframework.consentmanagement.api.domain.constants.ApiHttpResource;
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.HttpMethod;
@@ -16,6 +17,7 @@ import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.models.GetServiceUserConsentResponseContent;
 import com.consentframework.consentmanagement.api.testcommon.constants.TestConstants;
 import com.consentframework.consentmanagement.api.usecases.activities.GetServiceUserConsentActivity;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +37,7 @@ class GetServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
     }
 
     @Test
-    void testHandleRequestWhenConsentExists() throws BadRequestException, ConflictingResourceException {
+    void testHandleRequestWhenConsentExists() throws BadRequestException, ConflictingResourceException, JsonProcessingException {
         final Consent existingConsent = TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS;
         consentRepository.createServiceUserConsent(existingConsent);
 
@@ -44,8 +46,11 @@ class GetServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
         assertSuccessResponse(response);
 
         final Object responseBody = getResponseBody(response);
-        assertTrue(responseBody instanceof GetServiceUserConsentResponseContent);
-        assertEquals(existingConsent, ((GetServiceUserConsentResponseContent) responseBody).getData());
+        assertTrue(responseBody instanceof String);
+
+        final GetServiceUserConsentResponseContent parsedResponse = new JSON().getMapper()
+            .readValue((String) responseBody, GetServiceUserConsentResponseContent.class);
+        assertEquals(existingConsent, parsedResponse.getData());
     }
 
     @Test

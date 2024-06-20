@@ -1,9 +1,9 @@
 package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 
+import com.consentframework.consentmanagement.api.JSON;
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.ApiResponseParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.HttpStatusCode;
-import com.consentframework.consentmanagement.api.domain.entities.ApiExceptionResponseContent;
 import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
@@ -20,7 +20,8 @@ import java.util.stream.Collectors;
 /**
  * Abstract class for an API request handler.
  */
-abstract class ApiRequestHandler {
+public abstract class ApiRequestHandler {
+    public static final String ERROR_RESPONSE_BODY = "{\"message\":\"%s\"}";
     static final String MISSING_PATH_PARAMETERS_MESSAGE = "Missing required path parameters, expected %s";
     static final String REQUEST_PARSE_FAILURE_MESSAGE = "Unable to parse request";
 
@@ -44,6 +45,17 @@ abstract class ApiRequestHandler {
      * @return API response
      */
     abstract Map<String, Object> handleRequest(final ApiRequest request);
+
+    /**
+     * Convert response content to a JSON string as required for API Gateway to interpret the response body.
+     *
+     * @param responseContent response content object
+     * @return response content as a JSON string
+     * @throws JsonProcessingException exception thrown if unable to convert object into a JSON string
+     */
+    protected String toJsonString(final Object responseContent) throws JsonProcessingException {
+        return new JSON().getMapper().writeValueAsString(responseContent);
+    }
 
     /**
      * Log missing path parameter exception and return API error response.
@@ -91,7 +103,7 @@ abstract class ApiRequestHandler {
      * @param responseBody API response body
      * @return 200 Success API response
      */
-    protected Map<String, Object> buildApiSuccessResponse(final Object responseBody) {
+    protected Map<String, Object> buildApiSuccessResponse(final String responseBody) {
         return buildApiResponse(HttpStatusCode.SUCCESS, responseBody);
     }
 
@@ -103,9 +115,7 @@ abstract class ApiRequestHandler {
      */
     private Map<String, Object> buildApiErrorResponse(final Exception exception) {
         final HttpStatusCode statusCode = determineStatusCode(exception);
-        final ApiExceptionResponseContent exceptionContent = new ApiExceptionResponseContent(exception.getMessage());
-
-        return buildApiResponse(statusCode, exceptionContent);
+        return buildApiResponse(statusCode, String.format(ERROR_RESPONSE_BODY, exception.getMessage()));
     }
 
     /**
@@ -115,7 +125,7 @@ abstract class ApiRequestHandler {
      * @param body response body
      * @return map of response parameter names and values
      */
-    private Map<String, Object> buildApiResponse(final HttpStatusCode statusCode, final Object body) {
+    private Map<String, Object> buildApiResponse(final HttpStatusCode statusCode, final String body) {
         final Map<String, Object> apiResponse = new HashMap<String, Object>();
         apiResponse.put(ApiResponseParameterName.STATUS_CODE.getValue(), statusCode.getValue());
         if (body != null) {
