@@ -28,14 +28,29 @@ dependencies {
     implementation("com.amazonaws:aws-lambda-java-core:1.2.3")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.1")
     implementation("jakarta.annotation:jakarta.annotation-api:3.0.0")
-    implementation("software.amazon.smithy:smithy-utils:1.49.0")
 
     // Logging
     val log4j2Version = "2.23.1"
     implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
     implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
 
+    // DynamoDB client
+    val dynamoDbClientVersion = "2.26.7"
+    implementation("software.amazon.awssdk:dynamodb:$dynamoDbClientVersion")
+    implementation("software.amazon.awssdk:dynamodb-enhanced:$dynamoDbClientVersion")
+
+    // Smithy
+    implementation("software.amazon.smithy:smithy-utils:1.49.0")
+
+    // Consent service models
     implementation("com.consentframework.consentmanagement:consentmanagement-api-models:0.2.8")
+
+    // Immutables
+    val immutablesDependency = "org.immutables:value:2.10.1"
+    compileOnly(immutablesDependency)
+    annotationProcessor(immutablesDependency)
+    testCompileOnly(immutablesDependency)
+    testAnnotationProcessor(immutablesDependency)
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
