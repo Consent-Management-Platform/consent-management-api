@@ -10,7 +10,6 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import java.time.OffsetDateTime;
 import java.util.AbstractMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
