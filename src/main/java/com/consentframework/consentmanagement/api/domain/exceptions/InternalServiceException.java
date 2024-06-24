@@ -14,4 +14,14 @@ public class InternalServiceException extends Exception {
     public InternalServiceException(final String message) {
         super(message);
     }
+
+    /**
+     * Construct InternalServiceException with an error message and original cause.
+     *
+     * @param message error message
+     * @param cause original exception thrown
+     */
+    public InternalServiceException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 }
