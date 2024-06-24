@@ -1,6 +1,8 @@
 package com.consentframework.consentmanagement.api;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -10,6 +12,7 @@ import com.consentframework.consentmanagement.api.domain.constants.HttpStatusCod
 import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
+import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.infrastructure.repositories.InMemoryServiceUserConsentRepository;
@@ -34,7 +37,8 @@ class ConsentManagementApiServiceTest extends RequestHandlerTest {
     }
 
     @Test
-    void testHandleGetRequest() throws BadRequestException, ConflictingResourceException, ResourceNotFoundException {
+    void testHandleGetRequest() throws BadRequestException, ConflictingResourceException,
+            InternalServiceException, ResourceNotFoundException {
         final Consent existingConsent = TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS;
         consentRepository.createServiceUserConsent(existingConsent);
 
@@ -53,6 +57,31 @@ class ConsentManagementApiServiceTest extends RequestHandlerTest {
 
         verify(consentRepository).getServiceUserConsent(TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID,
             TestConstants.TEST_CONSENT_ID);
+    }
+
+    @Test
+    void testHandleGetRequestWhenInternalServiceException() throws InternalServiceException, ResourceNotFoundException {
+        final ServiceUserConsentRepository mockRepository = mock(ServiceUserConsentRepository.class);
+        final ConsentManagementApiService mockService = new ConsentManagementApiService(mockRepository);
+
+        final String testExceptionMessage = "TestInternalServiceException";
+        doThrow(new InternalServiceException(testExceptionMessage))
+            .when(mockRepository)
+            .getServiceUserConsent(TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID);
+
+        final ApiRequest request = new ApiRequest(
+            HttpMethod.GET.name(),
+            ApiHttpResource.SERVICE_USER_CONSENT.getValue(),
+            TestConstants.TEST_CONSENT_PATH,
+            TestConstants.TEST_CONSENT_PATH_PARAMS,
+            null,
+            null,
+            false,
+            null
+        );
+
+        final Map<String, Object> response = mockService.handleRequest(request, null);
+        assertExceptionResponse(HttpStatusCode.INTERNAL_SERVER_ERROR, testExceptionMessage, response);
     }
 
     @Test

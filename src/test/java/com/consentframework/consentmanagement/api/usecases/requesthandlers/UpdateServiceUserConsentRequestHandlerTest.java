@@ -9,6 +9,7 @@ import com.consentframework.consentmanagement.api.domain.constants.HttpStatusCod
 import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
+import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.infrastructure.repositories.InMemoryServiceUserConsentRepository;
@@ -70,8 +71,8 @@ class UpdateServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
     }
 
     @Test
-    void testHandleValidRequest() throws BadRequestException, ConflictingResourceException, JsonProcessingException,
-            ResourceNotFoundException {
+    void testHandleValidRequest() throws BadRequestException, ConflictingResourceException, InternalServiceException,
+            JsonProcessingException, ResourceNotFoundException {
         consentRepository.createServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS);
 
         final Consent updatedConsent = TestUtils.clone(TestConstants.TEST_CONSENT_WITH_ALL_FIELDS).consentVersion(2);

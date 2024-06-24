@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
+import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.domain.validators.ConsentValidator;
@@ -65,7 +66,8 @@ class UpdateServiceUserConsentActivityTest {
     }
 
     @Test
-    void testHandleValidRequest() throws BadRequestException, ConflictingResourceException, ResourceNotFoundException {
+    void testHandleValidRequest() throws BadRequestException, ConflictingResourceException,
+            InternalServiceException, ResourceNotFoundException {
         this.consentRepository.createServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS);
 
         final Integer updatedConsentVersion = TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS.getConsentVersion() + 1;

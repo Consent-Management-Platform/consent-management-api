@@ -1,5 +1,6 @@
 package com.consentframework.consentmanagement.api.usecases.activities;
 
+import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.models.Consent;
@@ -27,10 +28,11 @@ public class GetServiceUserConsentActivity {
      * @param userId user identifier
      * @param consentId consent ID, specific to the service-user pair
      * @return specific consent for the service-user-consent ID tuple if exists
+     * @throws InternalServiceException exception thrown if unexpected error querying repository
      * @throws ResourceNotFoundException exception thrown if no such consent exists
      */
     public GetServiceUserConsentResponseContent handleRequest(final String serviceId, final String userId, final String consentId)
-            throws ResourceNotFoundException {
+            throws InternalServiceException, ResourceNotFoundException {
         final Consent retrievedConsent = consentRepository.getServiceUserConsent(serviceId, userId, consentId);
 
         return new GetServiceUserConsentResponseContent()

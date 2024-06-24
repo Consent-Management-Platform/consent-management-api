@@ -1,9 +1,9 @@
 package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 
-import com.consentframework.consentmanagement.api.JSON;
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
+import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.domain.parsers.ApiPathParameterParser;
 import com.consentframework.consentmanagement.api.models.GetServiceUserConsentResponseContent;
@@ -56,7 +56,7 @@ public class GetServiceUserConsentRequestHandler extends ApiRequestHandler {
         try {
             final GetServiceUserConsentResponseContent responseContent = getConsentActivity.handleRequest(serviceId, userId, consentId);
             responseBodyString = toJsonString(responseContent);
-        } catch (final JsonProcessingException | ResourceNotFoundException exception) {
+        } catch (final InternalServiceException | JsonProcessingException | ResourceNotFoundException exception) {
             return logAndBuildErrorResponse(exception);
         }
 

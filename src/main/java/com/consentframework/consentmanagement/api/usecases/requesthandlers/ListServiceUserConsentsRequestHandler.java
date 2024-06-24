@@ -1,6 +1,5 @@
 package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 
-import com.consentframework.consentmanagement.api.JSON;
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.ApiQueryStringParameterName;
 import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;

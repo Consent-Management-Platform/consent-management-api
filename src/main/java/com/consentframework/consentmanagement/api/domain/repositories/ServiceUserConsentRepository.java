@@ -2,6 +2,7 @@ package com.consentframework.consentmanagement.api.domain.repositories;
 
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
+import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.domain.pagination.ListPage;
 import com.consentframework.consentmanagement.api.models.Consent;
@@ -29,9 +30,11 @@ public interface ServiceUserConsentRepository {
      * @param userId user identifier
      * @param consentId consent ID, specific to the service-user pair
      * @return specific consent for the service-user-consent ID tuple if exists
+     * @throws InternalServiceException exception thrown if unexpected error querying repository
      * @throws ResourceNotFoundException exception thrown if no such consent exists
      */
-    Consent getServiceUserConsent(final String serviceId, final String userId, final String consentId) throws ResourceNotFoundException;
+    Consent getServiceUserConsent(final String serviceId, final String userId, final String consentId)
+        throws InternalServiceException, ResourceNotFoundException;
 
     /**
      * Update existing consent with new data.

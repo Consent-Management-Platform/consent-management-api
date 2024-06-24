@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
+import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.domain.pagination.ListPage;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
@@ -42,7 +43,8 @@ class InMemoryServiceUserConsentRepositoryTest {
         }
 
         @Test
-        void testGetConsentWhenExists() throws BadRequestException, ConflictingResourceException, ResourceNotFoundException {
+        void testGetConsentWhenExists() throws BadRequestException, ConflictingResourceException,
+                InternalServiceException, ResourceNotFoundException {
             repository.createServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS);
 
             final Consent retrievedConsent = repository.getServiceUserConsent(
@@ -98,7 +100,8 @@ class InMemoryServiceUserConsentRepositoryTest {
         }
 
         @Test
-        void testUpdateWhenValidNewData() throws BadRequestException, ConflictingResourceException, ResourceNotFoundException {
+        void testUpdateWhenValidNewData() throws BadRequestException, ConflictingResourceException,
+                InternalServiceException, ResourceNotFoundException {
             repository.createServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS);
 
             final Consent inputConsent = TestUtils.clone(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS)
