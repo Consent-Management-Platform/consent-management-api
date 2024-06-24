@@ -16,7 +16,14 @@ class ConsentValidatorTest {
     }
 
     @Test
-    void testValidateWhenMissingServiceId() throws BadRequestException {
+    void testValidateNullConsent() {
+        final BadRequestException thrownException = assertThrows(BadRequestException.class, () ->
+            ConsentValidator.validate(null));
+        assertEquals(ConsentValidator.CONSENT_NULL_MESSAGE, thrownException.getMessage());
+    }
+
+    @Test
+    void testValidateWhenMissingServiceId() {
         final Consent testConsent = TestUtils.clone(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS).serviceId(null);
 
         final BadRequestException thrownException = assertThrows(BadRequestException.class, () ->
@@ -25,7 +32,7 @@ class ConsentValidatorTest {
     }
 
     @Test
-    void testValidateWhenMissingUserId() throws BadRequestException {
+    void testValidateWhenMissingUserId() {
         final Consent testConsent = TestUtils.clone(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS).userId(null);
 
         final BadRequestException thrownException = assertThrows(BadRequestException.class, () ->
@@ -34,7 +41,7 @@ class ConsentValidatorTest {
     }
 
     @Test
-    void testValidateWhenMissingConsentId() throws BadRequestException {
+    void testValidateWhenMissingConsentId() {
         final Consent testConsent = TestUtils.clone(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS).consentId(null);
 
         final BadRequestException thrownException = assertThrows(BadRequestException.class, () ->
@@ -43,7 +50,7 @@ class ConsentValidatorTest {
     }
 
     @Test
-    void testValidateWhenMissingConsentVersion() throws BadRequestException {
+    void testValidateWhenMissingConsentVersion() {
         final Consent testConsent = TestUtils.clone(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS).consentVersion(null);
 
         final BadRequestException thrownException = assertThrows(BadRequestException.class, () ->
@@ -52,7 +59,7 @@ class ConsentValidatorTest {
     }
 
     @Test
-    void testValidateWhenMissingStatus() throws BadRequestException {
+    void testValidateWhenMissingStatus() {
         final Consent testConsent = TestUtils.clone(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS).status(null);
 
         final BadRequestException thrownException = assertThrows(BadRequestException.class, () ->

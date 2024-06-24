@@ -1,6 +1,7 @@
 package com.consentframework.consentmanagement.api.infrastructure.mappers;
 
 import com.consentframework.consentmanagement.api.infrastructure.constants.DynamoDbServiceUserConsentAttributeName;
+import com.consentframework.consentmanagement.api.infrastructure.entities.DynamoDbServiceUserConsent;
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.models.ConsentStatus;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -34,6 +35,24 @@ public final class DynamoDbServiceUserConsentMapper {
             .status(parseConsentStatus(ddbConsentItem))
             .consentData(parseConsentData(ddbConsentItem))
             .expiryTime(parseExpiryTime(ddbConsentItem));
+    }
+
+    /**
+     * Build ServiceUserConsent DynamoDB table partition key value.
+     *
+     * @param serviceId service ID
+     * @param userId user ID
+     * @param consentId consent ID
+     * @return consent partition key value
+     */
+    public static Map<String, AttributeValue> toServiceUserConsentPartitionKey(final String serviceId, final String userId,
+            final String consentId) {
+        return Map.of(
+            DynamoDbServiceUserConsent.PARTITION_KEY,
+            AttributeValue.builder()
+                .s(String.format("%s|%s|%s", serviceId, userId, consentId))
+                .build()
+        );
     }
 
     private static String parseStringAttribute(final Map<String, AttributeValue> ddbConsentItem,

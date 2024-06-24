@@ -2,8 +2,10 @@ package com.consentframework.consentmanagement.api.testcommon.constants;
 
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.ApiQueryStringParameterName;
+import com.consentframework.consentmanagement.api.infrastructure.constants.DynamoDbServiceUserConsentAttributeName;
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.models.ConsentStatus;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -18,6 +20,8 @@ public final class TestConstants {
     public static final String TEST_CONSENT_ID = "TestConsentId";
     public static final String TEST_SERVICE_ID = "TestServiceId";
     public static final String TEST_USER_ID = "TestUserId";
+    public static final Integer TEST_CONSENT_VERSION = 1;
+    public static final ConsentStatus TEST_CONSENT_STATUS = ConsentStatus.ACTIVE;
     public static final Integer TEST_PAGE_LIMIT = 2;
     public static final String TEST_PAGE_TOKEN = "1";
 
@@ -40,22 +44,38 @@ public final class TestConstants {
         "TestKey1", "TestValue1",
         "TestKey2", "TestValue2"
     );
+    public static final Map<String, AttributeValue> TEST_CONSENT_DATA_ATTRIBUTE_MAP = Map.of(
+        "TestKey1", AttributeValue.fromS("TestValue1"),
+        "TestKey2", AttributeValue.fromS("TestValue2")
+    );
 
     public static final Consent TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS = new Consent()
         .serviceId(TEST_SERVICE_ID)
         .userId(TEST_USER_ID)
         .consentId(TEST_CONSENT_ID)
-        .consentVersion(1)
-        .status(ConsentStatus.ACTIVE);
+        .consentVersion(TEST_CONSENT_VERSION)
+        .status(TEST_CONSENT_STATUS);
 
     public static final Consent TEST_CONSENT_WITH_ALL_FIELDS = new Consent()
         .serviceId(TEST_SERVICE_ID)
         .userId(TEST_USER_ID)
         .consentId(TEST_CONSENT_ID)
-        .consentVersion(1)
-        .status(ConsentStatus.ACTIVE)
+        .consentVersion(TEST_CONSENT_VERSION)
+        .status(TEST_CONSENT_STATUS)
         .consentData(TEST_CONSENT_DATA_MAP)
         .expiryTime(TEST_EXPIRY_TIME);
+
+    public static final Map<String, AttributeValue> TEST_CONSENT_DDB_ATTRIBUTES = Map.of(
+        DynamoDbServiceUserConsentAttributeName.ID.getValue(), AttributeValue.fromS(
+            String.format("%s|%s|%s", TEST_SERVICE_ID, TEST_USER_ID, TEST_CONSENT_ID)),
+        DynamoDbServiceUserConsentAttributeName.SERVICE_ID.getValue(), AttributeValue.fromS(TEST_SERVICE_ID),
+        DynamoDbServiceUserConsentAttributeName.USER_ID.getValue(), AttributeValue.fromS(TEST_USER_ID),
+        DynamoDbServiceUserConsentAttributeName.CONSENT_ID.getValue(), AttributeValue.fromS(TEST_CONSENT_ID),
+        DynamoDbServiceUserConsentAttributeName.CONSENT_VERSION.getValue(), AttributeValue.fromN(TEST_CONSENT_VERSION.toString()),
+        DynamoDbServiceUserConsentAttributeName.CONSENT_STATUS.getValue(), AttributeValue.fromS(TEST_CONSENT_STATUS.getValue()),
+        DynamoDbServiceUserConsentAttributeName.CONSENT_DATA.getValue(), AttributeValue.fromM(TEST_CONSENT_DATA_ATTRIBUTE_MAP),
+        DynamoDbServiceUserConsentAttributeName.EXPIRY_TIME.getValue(), AttributeValue.fromS(TEST_EXPIRY_TIME.toString())
+    );
 
     public static final Map<String, String> TEST_CONSENTS_PATH_PARAMS = Map.of(
         ApiPathParameterName.SERVICE_ID.getValue(), TEST_SERVICE_ID,

@@ -1,15 +1,11 @@
 package com.consentframework.consentmanagement.api.infrastructure.repositories;
 
-import com.consentframework.consentmanagement.api.domain.entities.ServiceUserConsentKey;
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.domain.pagination.ListPage;
-import com.consentframework.consentmanagement.api.domain.pagination.ListPaginator;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
-import com.consentframework.consentmanagement.api.domain.validators.ConsentValidator;
-import com.consentframework.consentmanagement.api.infrastructure.constants.DynamoDbServiceUserConsentAttributeName;
 import com.consentframework.consentmanagement.api.infrastructure.entities.DynamoDbServiceUserConsent;
 import com.consentframework.consentmanagement.api.infrastructure.mappers.DynamoDbServiceUserConsentMapper;
 import com.consentframework.consentmanagement.api.models.Consent;
@@ -19,10 +15,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.PutItemResponse;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,9 +42,8 @@ public class DynamoDbServiceUserConsentRepository implements ServiceUserConsentR
      */
     @Override
     public void createServiceUserConsent(final Consent consent) throws BadRequestException, ConflictingResourceException {
-        final ServiceUserConsentKey key = new ServiceUserConsentKey(consent.getServiceId(), consent.getUserId(), consent.getConsentId());
-        ConsentValidator.validate(consent);
-        // TODO: implement create consent operation
+        // TODO: implement create operation
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     /**
@@ -61,39 +53,36 @@ public class DynamoDbServiceUserConsentRepository implements ServiceUserConsentR
      * @param userId user identifier
      * @param consentId consent ID, specific to the service-user pair
      * @return specific consent for the service-user-consent ID tuple if exists
-     * @throws InternalServiceException exception thrown if receive unexpected error retrieving consent
+     * @throws InternalServiceException exception thrown if receive error from DynamoDB when retrieving consent
      * @throws ResourceNotFoundException exception thrown if no such consent exists
      */
     @Override
     public Consent getServiceUserConsent(final String serviceId, final String userId, final String consentId)
             throws InternalServiceException, ResourceNotFoundException {
-        logger.info(String.format("Submitting DynamoDB GetItem request for consent with serviceId: '%s', userId: '%s', consentId: '%s'",
-            serviceId, userId, consentId));
-        final Map<String, AttributeValue> itemKey = Map.of(
-            DynamoDbServiceUserConsent.PARTITION_KEY,
-            AttributeValue.builder()
-                .s(String.format("%s|%s|%s", serviceId, userId, consentId))
-                .build()
-        );
-        final GetItemRequest getItemRequest = GetItemRequest.builder()
-            .tableName(DynamoDbServiceUserConsent.TABLE_NAME)
-            .key(itemKey)
-            .build();
-        final Map<String, AttributeValue> returnedItem;
+        final String consentContext = String.format("consent with serviceId: '%s', userId: '%s', consentId: '%s'",
+            serviceId, userId, consentId);
+        logger.info(String.format("Submitting DynamoDB GetItem request for %s", consentContext));
+        final GetItemRequest getItemRequest = buildGetItemRequest(serviceId, userId, consentId);
+        final Map<String, AttributeValue> consentItem = getServiceUserConsent(getItemRequest, serviceId, userId, consentId);
+
+        logger.info(String.format("Successfully retrieved %s, converting to Consent data model", consentContext));
+        return DynamoDbServiceUserConsentMapper.ddbItemToConsent(consentItem);
+    }
+
+    private Map<String, AttributeValue> getServiceUserConsent(final GetItemRequest getItemRequest, final String serviceId,
+            final String userId, final String consentId) throws InternalServiceException, ResourceNotFoundException {
+        final Map<String, AttributeValue> consentItem;
         try {
-            returnedItem = dynamoDbClient.getItem(getItemRequest).item();
+            consentItem = dynamoDbClient.getItem(getItemRequest).item();
         } catch (final DynamoDbException ddbException) {
-            final String errorMessage = String.format(
-                "Received DynamoDbException retrieving consent with serviceId: '%s', userId: '%s', consentId: '%s': %s",
-                serviceId, userId, consentId, ddbException.getMessage());
-            logger.error(errorMessage);
-            ddbException.printStackTrace();
-            throw new InternalServiceException(errorMessage, ddbException);
+            final String exceptionContext = String.format("retrieving consent with serviceId: '%s', userId: '%s', consentId: '%s'",
+                serviceId, userId, consentId);
+            throw logAndGetNormalizedServiceError(ddbException, exceptionContext);
         }
-        if (returnedItem == null) {
+        if (consentItem == null || consentItem.isEmpty()) {
             throw new ResourceNotFoundException(String.format(CONSENT_NOT_FOUND_MESSAGE, serviceId, userId, consentId));
         }
-        return DynamoDbServiceUserConsentMapper.ddbItemToConsent(returnedItem);
+        return consentItem;
     }
 
     /**
@@ -107,8 +96,8 @@ public class DynamoDbServiceUserConsentRepository implements ServiceUserConsentR
     @Override
     public void updateServiceUserConsent(final Consent consent) throws BadRequestException, ConflictingResourceException,
             ResourceNotFoundException {
-        ConsentValidator.validate(consent);
-        // TODO: implement update consent operation
+        // TODO: implement update operation
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     /**
@@ -125,7 +114,23 @@ public class DynamoDbServiceUserConsentRepository implements ServiceUserConsentR
     public ListPage<Consent> listServiceUserConsents(final String serviceId, final String userId,
             final Integer limit, final String pageToken) throws BadRequestException {
         // TODO: implement list operation
-        final List<Consent> allMatchingConsents = List.of();
-        return new ListPaginator<Consent>().getSinglePage(allMatchingConsents, limit, null);
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    private GetItemRequest buildGetItemRequest(final String serviceId, final String userId, final String consentId) {
+        final Map<String, AttributeValue> itemKey = DynamoDbServiceUserConsentMapper.toServiceUserConsentPartitionKey(
+            serviceId, userId, consentId);
+
+        return GetItemRequest.builder()
+            .tableName(DynamoDbServiceUserConsent.TABLE_NAME)
+            .key(itemKey)
+            .build();
+    }
+
+    private InternalServiceException logAndGetNormalizedServiceError(final DynamoDbException ddbException, final String exceptionContext) {
+        final String errorMessage = String.format("Received DynamoDbException %s: %s", exceptionContext, ddbException.getMessage());
+        logger.error(errorMessage);
+        ddbException.printStackTrace();
+        return new InternalServiceException(errorMessage, ddbException);
     }
 }

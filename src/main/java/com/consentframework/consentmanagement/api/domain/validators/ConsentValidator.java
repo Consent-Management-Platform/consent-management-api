@@ -10,6 +10,7 @@ import software.amazon.smithy.utils.StringUtils;
  * pushing them to a backend repository.
  */
 public final class ConsentValidator {
+    public static final String CONSENT_NULL_MESSAGE = "consent must not be null";
     public static final String SERVICE_ID_BLANK_MESSAGE = "serviceId must not be blank";
     public static final String USER_ID_BLANK_MESSAGE = "userId must not be blank";
     public static final String CONSENT_ID_BLANK_MESSAGE = "consentId must not be blank";
@@ -26,6 +27,9 @@ public final class ConsentValidator {
      * @throws BadRequestException exception thrown if consent violates model constraints
      */
     public static void validate(final Consent consent) throws BadRequestException {
+        if (consent == null) {
+            throw new BadRequestException(CONSENT_NULL_MESSAGE);
+        }
         if (StringUtils.isBlank(consent.getServiceId())) {
             throw new BadRequestException(SERVICE_ID_BLANK_MESSAGE);
         }
