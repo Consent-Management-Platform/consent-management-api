@@ -1,5 +1,6 @@
 package com.consentframework.consentmanagement.api;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -35,6 +36,12 @@ class ConsentManagementApiServiceTest extends RequestHandlerTest {
     void setup() {
         consentRepository = spy(new InMemoryServiceUserConsentRepository());
         service = new ConsentManagementApiService(consentRepository);
+    }
+
+    @Test
+    void testDefaultConstructor() {
+        final ConsentManagementApiService service = new ConsentManagementApiService();
+        assertNotNull(service);
     }
 
     @Test
