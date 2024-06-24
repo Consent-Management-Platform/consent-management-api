@@ -19,6 +19,7 @@ import com.consentframework.consentmanagement.api.infrastructure.repositories.In
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.testcommon.constants.TestConstants;
 import com.consentframework.consentmanagement.api.testcommon.utils.TestUtils;
+import com.consentframework.consentmanagement.api.usecases.requesthandlers.ApiRequestHandler;
 import com.consentframework.consentmanagement.api.usecases.requesthandlers.RequestHandlerTest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
