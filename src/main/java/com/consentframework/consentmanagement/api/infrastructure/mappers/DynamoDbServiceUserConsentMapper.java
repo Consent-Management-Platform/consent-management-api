@@ -4,11 +4,13 @@ import com.consentframework.consentmanagement.api.infrastructure.constants.Dynam
 import com.consentframework.consentmanagement.api.infrastructure.entities.DynamoDbServiceUserConsent;
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.models.ConsentStatus;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.time.OffsetDateTime;
 import java.util.AbstractMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -22,7 +24,32 @@ public final class DynamoDbServiceUserConsentMapper {
      *
      * @return normalized Consent data model
      */
-    public static Consent ddbItemToConsent(final Map<String, AttributeValue> ddbConsentItem) {
+    public static Consent dynamoDbItemToConsent(final DynamoDbServiceUserConsent ddbConsentItem) {
+        if (ddbConsentItem == null) {
+            return null;
+        }
+
+        final Consent consent = new Consent()
+            .serviceId(ddbConsentItem.serviceId())
+            .userId(ddbConsentItem.userId())
+            .consentId(ddbConsentItem.consentId())
+            .consentVersion(ddbConsentItem.consentVersion())
+            .status(ddbConsentItem.consentStatus())
+            .consentData(ddbConsentItem.consentData());
+
+        if (ddbConsentItem.expiryTime() != null) {
+            consent.expiryTime(OffsetDateTime.parse(ddbConsentItem.expiryTime()));
+        }
+
+        return consent;
+    }
+
+    /**
+     * Convert ServiceUserConsent DynamoDB attribute value map to Consent object.
+     *
+     * @return normalized Consent data model
+     */
+    public static Consent dynamoDbAttributeMapToConsent(final Map<String, AttributeValue> ddbConsentItem) {
         if (ddbConsentItem == null) {
             return null;
         }
@@ -45,14 +72,10 @@ public final class DynamoDbServiceUserConsentMapper {
      * @param consentId consent ID
      * @return consent partition key value
      */
-    public static Map<String, AttributeValue> toServiceUserConsentPartitionKey(final String serviceId, final String userId,
-            final String consentId) {
-        return Map.of(
-            DynamoDbServiceUserConsent.PARTITION_KEY,
-            AttributeValue.builder()
-                .s(String.format("%s|%s|%s", serviceId, userId, consentId))
-                .build()
-        );
+    public static Key toServiceUserConsentPartitionKey(final String serviceId, final String userId, final String consentId) {
+        return Key.builder()
+            .partitionValue(String.format("%s|%s|%s", serviceId, userId, consentId))
+            .build();
     }
 
     private static String parseStringAttribute(final Map<String, AttributeValue> ddbConsentItem,

@@ -10,25 +10,26 @@ import static org.mockito.Mockito.when;
 import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
+import com.consentframework.consentmanagement.api.infrastructure.entities.DynamoDbServiceUserConsent;
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.testcommon.constants.TestConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.model.GetItemEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
-import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 
 class DynamoDbServiceUserConsentRepositoryTest {
-    private DynamoDbClient dynamoDbClient;
+    private DynamoDbTable<DynamoDbServiceUserConsent> consentTable;
     private DynamoDbServiceUserConsentRepository repository;
 
+    @SuppressWarnings("unchecked")
     @BeforeEach
     void setup() {
-        dynamoDbClient = mock(DynamoDbClient.class);
-        repository = new DynamoDbServiceUserConsentRepository(dynamoDbClient);
+        consentTable = (DynamoDbTable<DynamoDbServiceUserConsent>) mock(DynamoDbTable.class);
+        repository = new DynamoDbServiceUserConsentRepository(consentTable);
     }
 
     @Nested
@@ -37,7 +38,7 @@ class DynamoDbServiceUserConsentRepositoryTest {
         void testGetConsentWhenDynamoDbThrowsException() {
             final String originalErrorMessage = "TestDynamoDBError";
             final AwsServiceException testException = DynamoDbException.builder().message(originalErrorMessage).build();
-            doThrow(testException).when(dynamoDbClient).getItem(any(GetItemRequest.class));
+            doThrow(testException).when(consentTable).getItem(any(GetItemEnhancedRequest.class));
 
             final InternalServiceException thrownException = assertThrows(InternalServiceException.class, () ->
                 repository.getServiceUserConsent(TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID));
@@ -50,7 +51,7 @@ class DynamoDbServiceUserConsentRepositoryTest {
 
         @Test
         void testGetConsentWhenDoesNotExist() {
-            when(dynamoDbClient.getItem(any(GetItemRequest.class))).thenReturn(GetItemResponse.builder().build());
+            when(consentTable.getItem(any(GetItemEnhancedRequest.class))).thenReturn(null);
 
             final ResourceNotFoundException thrownException = assertThrows(ResourceNotFoundException.class, () ->
                 repository.getServiceUserConsent(TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID));
@@ -62,10 +63,7 @@ class DynamoDbServiceUserConsentRepositoryTest {
 
         @Test
         void testGetConsentWhenExists() throws InternalServiceException, ResourceNotFoundException {
-            final GetItemResponse getItemResponse = GetItemResponse.builder()
-                .item(TestConstants.TEST_CONSENT_DDB_ATTRIBUTES)
-                .build();
-            when(dynamoDbClient.getItem(any(GetItemRequest.class))).thenReturn(getItemResponse);
+            when(consentTable.getItem(any(GetItemEnhancedRequest.class))).thenReturn(TestConstants.TEST_DDB_CONSENT_WITH_ALL_FIELDS);
 
             final Consent returnedConsent = repository.getServiceUserConsent(TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID,
                 TestConstants.TEST_CONSENT_ID);

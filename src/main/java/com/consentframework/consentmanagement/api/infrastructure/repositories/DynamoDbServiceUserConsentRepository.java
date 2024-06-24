@@ -11,7 +11,11 @@ import com.consentframework.consentmanagement.api.infrastructure.mappers.DynamoD
 import com.consentframework.consentmanagement.api.models.Consent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
+import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.model.GetItemEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
@@ -24,13 +28,13 @@ import java.util.Map;
 public class DynamoDbServiceUserConsentRepository implements ServiceUserConsentRepository {
     private static final Logger logger = LogManager.getLogger(DynamoDbServiceUserConsentRepository.class);
 
-    private final DynamoDbClient dynamoDbClient;
+    private final DynamoDbTable<DynamoDbServiceUserConsent> consentTable;
 
     /**
      * Construct DynamoDB consent repository.
      */
-    public DynamoDbServiceUserConsentRepository(final DynamoDbClient dynamoDbClient) {
-        this.dynamoDbClient = dynamoDbClient;
+    public DynamoDbServiceUserConsentRepository(final DynamoDbTable<DynamoDbServiceUserConsent> consentTable) {
+        this.consentTable = consentTable;
     }
 
     /**
@@ -62,24 +66,24 @@ public class DynamoDbServiceUserConsentRepository implements ServiceUserConsentR
         final String consentContext = String.format("consent with serviceId: '%s', userId: '%s', consentId: '%s'",
             serviceId, userId, consentId);
         logger.info(String.format("Submitting DynamoDB GetItem request for %s", consentContext));
-        final GetItemRequest getItemRequest = buildGetItemRequest(serviceId, userId, consentId);
-        final Map<String, AttributeValue> consentItem = getServiceUserConsent(getItemRequest, serviceId, userId, consentId);
+        final GetItemEnhancedRequest getItemRequest = buildGetItemRequest(serviceId, userId, consentId);
+        final DynamoDbServiceUserConsent consentItem = getServiceUserConsent(getItemRequest, serviceId, userId, consentId);
 
         logger.info(String.format("Successfully retrieved %s, converting to Consent data model", consentContext));
-        return DynamoDbServiceUserConsentMapper.ddbItemToConsent(consentItem);
+        return DynamoDbServiceUserConsentMapper.dynamoDbItemToConsent(consentItem);
     }
 
-    private Map<String, AttributeValue> getServiceUserConsent(final GetItemRequest getItemRequest, final String serviceId,
+    private DynamoDbServiceUserConsent getServiceUserConsent(final GetItemEnhancedRequest getItemRequest, final String serviceId,
             final String userId, final String consentId) throws InternalServiceException, ResourceNotFoundException {
-        final Map<String, AttributeValue> consentItem;
+        final DynamoDbServiceUserConsent consentItem;
         try {
-            consentItem = dynamoDbClient.getItem(getItemRequest).item();
+            consentItem = consentTable.getItem(getItemRequest);
         } catch (final DynamoDbException ddbException) {
             final String exceptionContext = String.format("retrieving consent with serviceId: '%s', userId: '%s', consentId: '%s'",
                 serviceId, userId, consentId);
             throw logAndGetNormalizedServiceError(ddbException, exceptionContext);
         }
-        if (consentItem == null || consentItem.isEmpty()) {
+        if (consentItem == null) {
             throw new ResourceNotFoundException(String.format(CONSENT_NOT_FOUND_MESSAGE, serviceId, userId, consentId));
         }
         return consentItem;
@@ -117,13 +121,11 @@ public class DynamoDbServiceUserConsentRepository implements ServiceUserConsentR
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    private GetItemRequest buildGetItemRequest(final String serviceId, final String userId, final String consentId) {
-        final Map<String, AttributeValue> itemKey = DynamoDbServiceUserConsentMapper.toServiceUserConsentPartitionKey(
-            serviceId, userId, consentId);
-
-        return GetItemRequest.builder()
-            .tableName(DynamoDbServiceUserConsent.TABLE_NAME)
-            .key(itemKey)
+    private GetItemEnhancedRequest buildGetItemRequest(final String serviceId, final String userId, final String consentId) {
+        final Key partitionKey = DynamoDbServiceUserConsentMapper.toServiceUserConsentPartitionKey(serviceId, userId, consentId);
+        return GetItemEnhancedRequest.builder()
+            .key(partitionKey)
+            .consistentRead(true)
             .build();
     }
 
