@@ -5,6 +5,7 @@ import com.consentframework.consentmanagement.api.domain.constants.ApiPathParame
 import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
+import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.domain.parsers.ApiPathParameterParser;
 import com.consentframework.consentmanagement.api.models.CreateServiceUserConsentRequestContent;
 import com.consentframework.consentmanagement.api.models.CreateServiceUserConsentResponseContent;
@@ -63,7 +64,7 @@ public class CreateServiceUserConsentRequestHandler extends ApiRequestHandler {
             responseContentString = toJsonString(responseContent);
         } catch (final JsonProcessingException jsonProcessingException) {
             return logAndBuildJsonProcessingErrorResponse(jsonProcessingException);
-        } catch (final BadRequestException | ConflictingResourceException exception) {
+        } catch (final BadRequestException | ConflictingResourceException | InternalServiceException exception) {
             return logAndBuildErrorResponse(exception);
         }
 

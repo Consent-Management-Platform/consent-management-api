@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
+import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.infrastructure.repositories.InMemoryServiceUserConsentRepository;
@@ -45,7 +46,8 @@ class ListServiceUserConsentsActivityTest {
     }
 
     @Test
-    void testListWhenMultiplePagesOfResults() throws BadRequestException, ConflictingResourceException, ResourceNotFoundException {
+    void testListWhenMultiplePagesOfResults() throws BadRequestException, ConflictingResourceException, InternalServiceException,
+            ResourceNotFoundException {
         final Consent firstConsent = TestConstants.TEST_CONSENT_WITH_ALL_FIELDS;
         final Consent secondConsent = TestUtils.clone(TestConstants.TEST_CONSENT_WITH_ALL_FIELDS)
             .consentId("SecondConsentId")

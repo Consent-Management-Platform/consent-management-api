@@ -56,7 +56,7 @@ class InMemoryServiceUserConsentRepositoryTest {
     @Nested
     class CreateServiceUserConsent {
         @Test
-        void testCreateConsentWhenAlreadyExists() throws BadRequestException, ConflictingResourceException {
+        void testCreateConsentWhenAlreadyExists() throws BadRequestException, ConflictingResourceException, InternalServiceException {
             repository.createServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS);
 
             final ConflictingResourceException thrownException = assertThrows(ConflictingResourceException.class, () ->
@@ -90,7 +90,7 @@ class InMemoryServiceUserConsentRepositoryTest {
         }
 
         @Test
-        void testUpdateWhenVersionConflict() throws BadRequestException, ConflictingResourceException {
+        void testUpdateWhenVersionConflict() throws BadRequestException, ConflictingResourceException, InternalServiceException {
             repository.createServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS);
 
             final ConflictingResourceException thrownException = assertThrows(ConflictingResourceException.class, () ->
@@ -128,7 +128,7 @@ class InMemoryServiceUserConsentRepositoryTest {
         }
 
         @Test
-        void testListConsentWithLimitAndPageToken() throws BadRequestException, ConflictingResourceException {
+        void testListConsentWithLimitAndPageToken() throws BadRequestException, ConflictingResourceException, InternalServiceException {
             final Consent firstConsent = TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS;
             final Consent secondConsent = TestUtils.clone(firstConsent).consentId("TestConsentId2");
             final Consent thirdConsent = TestUtils.clone(firstConsent).consentId("TestConsentId3");

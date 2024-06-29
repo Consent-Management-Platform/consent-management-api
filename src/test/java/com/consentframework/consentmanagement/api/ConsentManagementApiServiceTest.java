@@ -111,7 +111,8 @@ class ConsentManagementApiServiceTest extends RequestHandlerTest {
     }
 
     @Test
-    void testHandleCreateRequest() throws BadRequestException, ConflictingResourceException, JsonProcessingException {
+    void testHandleCreateRequest() throws BadRequestException, ConflictingResourceException, InternalServiceException,
+            JsonProcessingException {
         final String requestContentString = TestUtils.toCreateRequestContentString(TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS);
         final ApiRequest request = new ApiRequest(
             HttpMethod.POST.name(),
@@ -130,8 +131,8 @@ class ConsentManagementApiServiceTest extends RequestHandlerTest {
     }
 
     @Test
-    void testHandleUpdateRequest() throws BadRequestException, ConflictingResourceException, JsonProcessingException,
-            ResourceNotFoundException {
+    void testHandleUpdateRequest() throws BadRequestException, ConflictingResourceException, InternalServiceException,
+            JsonProcessingException, ResourceNotFoundException {
         final Consent existingConsent = TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS;
         consentRepository.createServiceUserConsent(existingConsent);
 

@@ -2,6 +2,7 @@ package com.consentframework.consentmanagement.api.usecases.activities;
 
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
+import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.domain.validators.CreateServiceUserConsentRequestValidator;
 import com.consentframework.consentmanagement.api.models.Consent;
@@ -34,9 +35,11 @@ public class CreateServiceUserConsentActivity {
      * @return response including the UUID of the created consent
      * @throws BadRequestException exception thrown if provided invalid input
      * @throws ConflictingResourceException exception thrown if data store has conflicting data
+     * @throws InternalServiceException
      */
     public CreateServiceUserConsentResponseContent handleRequest(final String serviceId, final String userId,
-            final CreateServiceUserConsentRequestContent request) throws BadRequestException, ConflictingResourceException {
+            final CreateServiceUserConsentRequestContent request)
+            throws BadRequestException, ConflictingResourceException, InternalServiceException {
         CreateServiceUserConsentRequestValidator.validate(request);
 
         final String consentId = UUID.randomUUID().toString();

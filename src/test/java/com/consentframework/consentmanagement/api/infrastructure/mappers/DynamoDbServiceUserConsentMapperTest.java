@@ -2,6 +2,7 @@ package com.consentframework.consentmanagement.api.infrastructure.mappers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.consentframework.consentmanagement.api.infrastructure.entities.DynamoDbServiceUserConsent;
 import com.consentframework.consentmanagement.api.models.Consent;
@@ -39,6 +40,41 @@ class DynamoDbServiceUserConsentMapperTest {
             final Consent parsedConsent = DynamoDbServiceUserConsentMapper.dynamoDbItemToConsent(
                 TestConstants.TEST_DDB_CONSENT_WITH_ALL_FIELDS);
             assertEquals(TestConstants.TEST_CONSENT_WITH_ALL_FIELDS, parsedConsent);
+        }
+    }
+
+    @Nested
+    class ConsentToDynamoDbConsentTest {
+        @Test
+        void testMapToDynamoDbConsentWhenNull() {
+            final Consent consent = null;
+            final DynamoDbServiceUserConsent ddbItem = DynamoDbServiceUserConsentMapper.toDynamoDbServiceUserConsent(consent);
+            assertNull(ddbItem);
+        }
+
+        @Test
+        void testMapToDynamoDbConsentWhenOnlyRequiredFieldsPresent() {
+            final Consent consent = TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS;
+            final DynamoDbServiceUserConsent parsedDdbItem = DynamoDbServiceUserConsentMapper.toDynamoDbServiceUserConsent(consent);
+            assertRequiredFieldsEqual(consent, parsedDdbItem);
+            assertNull(parsedDdbItem.expiryTime());
+        }
+
+        @Test
+        void testMapToDynamoDbConsentWhenAllFieldsPresent() {
+            final Consent consent = TestConstants.TEST_CONSENT_WITH_ALL_FIELDS;
+            final DynamoDbServiceUserConsent parsedDdbItem = DynamoDbServiceUserConsentMapper.toDynamoDbServiceUserConsent(consent);
+            assertRequiredFieldsEqual(consent, parsedDdbItem);
+            assertEquals(consent.getConsentData(), parsedDdbItem.consentData());
+            assertEquals(consent.getExpiryTime().toString(), parsedDdbItem.expiryTime());
+        }
+
+        private void assertRequiredFieldsEqual(final Consent originalConsent, final DynamoDbServiceUserConsent parsedDynamoDbItem) {
+            assertEquals(originalConsent.getServiceId(), parsedDynamoDbItem.serviceId());
+            assertEquals(originalConsent.getUserId(), parsedDynamoDbItem.userId());
+            assertEquals(originalConsent.getConsentId(), parsedDynamoDbItem.consentId());
+            assertEquals(originalConsent.getConsentVersion(), parsedDynamoDbItem.consentVersion());
+            assertEquals(originalConsent.getStatus(), parsedDynamoDbItem.consentStatus());
         }
     }
 

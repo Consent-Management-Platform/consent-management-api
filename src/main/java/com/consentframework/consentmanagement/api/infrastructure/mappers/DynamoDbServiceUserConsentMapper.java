@@ -21,6 +21,7 @@ public final class DynamoDbServiceUserConsentMapper {
     /**
      * Convert ServiceUserConsent DynamoDB item to Consent object.
      *
+     * @param ddbConsentItem DynamoDB consent data model
      * @return normalized Consent data model
      */
     public static Consent dynamoDbItemToConsent(final DynamoDbServiceUserConsent ddbConsentItem) {
@@ -41,6 +42,33 @@ public final class DynamoDbServiceUserConsentMapper {
         }
 
         return consent;
+    }
+
+    /**
+     * Convert Consent object to DynamoDbServiceUserConsent.
+     *
+     * @param consent normalized consent model
+     * @return DynamoDB consent data model
+     */
+    public static DynamoDbServiceUserConsent toDynamoDbServiceUserConsent(final Consent consent) {
+        if (consent == null) {
+            return null;
+        }
+
+        final DynamoDbServiceUserConsent.Builder dbConsentBuilder = DynamoDbServiceUserConsent.builder()
+            .id(toDynamoDbId(consent.getServiceId(), consent.getUserId(), consent.getConsentId()))
+            .serviceId(consent.getServiceId())
+            .userId(consent.getUserId())
+            .consentId(consent.getConsentId())
+            .consentVersion(consent.getConsentVersion())
+            .consentStatus(consent.getStatus())
+            .consentData(consent.getConsentData());
+
+        if (consent.getExpiryTime() != null) {
+            dbConsentBuilder.expiryTime(consent.getExpiryTime().toString());
+        }
+
+        return dbConsentBuilder.build();
     }
 
     /**
@@ -73,8 +101,20 @@ public final class DynamoDbServiceUserConsentMapper {
      */
     public static Key toServiceUserConsentPartitionKey(final String serviceId, final String userId, final String consentId) {
         return Key.builder()
-            .partitionValue(String.format("%s|%s|%s", serviceId, userId, consentId))
+            .partitionValue(toDynamoDbId(serviceId, userId, consentId))
             .build();
+    }
+
+    /**
+     * Build ServiceUserConsent DynamoDB id value.
+     *
+     * @param serviceId service ID
+     * @param userId user ID
+     * @param consentId consent ID
+     * @return combined DynamoDB item id
+     */
+    public static String toDynamoDbId(final String serviceId, final String userId, final String consentId) {
+        return String.format("%s|%s|%s", serviceId, userId, consentId);
     }
 
     private static String parseStringAttribute(final Map<String, AttributeValue> ddbConsentItem,

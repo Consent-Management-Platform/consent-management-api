@@ -12,6 +12,7 @@ import com.consentframework.consentmanagement.api.domain.constants.HttpStatusCod
 import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
+import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.domain.parsers.ApiQueryStringParameterParser;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.infrastructure.repositories.InMemoryServiceUserConsentRepository;
@@ -88,7 +89,8 @@ class ListServiceUserConsentsRequestHandlerTest extends RequestHandlerTest {
     }
 
     @Test
-    void testHandlePaginatedRequests() throws BadRequestException, ConflictingResourceException, JsonProcessingException {
+    void testHandlePaginatedRequests() throws BadRequestException, ConflictingResourceException, InternalServiceException,
+            JsonProcessingException {
         final Consent firstConsent = TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS;
         final Consent secondConsent = TestUtils.clone(firstConsent).consentId("SecondConsentId");
         final Consent thirdConsent = TestUtils.clone(firstConsent).consentId("ThirdConsentId");

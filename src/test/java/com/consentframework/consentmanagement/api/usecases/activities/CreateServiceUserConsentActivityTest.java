@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
+import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.domain.validators.CreateServiceUserConsentRequestValidator;
 import com.consentframework.consentmanagement.api.infrastructure.repositories.InMemoryServiceUserConsentRepository;
@@ -34,7 +35,7 @@ class CreateServiceUserConsentActivityTest {
     }
 
     @Test
-    void testHandleInvalidRequest() throws BadRequestException, ConflictingResourceException {
+    void testHandleInvalidRequest() throws BadRequestException, ConflictingResourceException, InternalServiceException {
         final BadRequestException thrownException = assertThrows(BadRequestException.class, () ->
             activity.handleRequest(TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID,
                 new CreateServiceUserConsentRequestContent()));
@@ -45,7 +46,7 @@ class CreateServiceUserConsentActivityTest {
     }
 
     @Test
-    void testHandleValidRequest() throws BadRequestException, ConflictingResourceException {
+    void testHandleValidRequest() throws BadRequestException, ConflictingResourceException, InternalServiceException {
         final CreateServiceUserConsentRequestContent requestContent = new CreateServiceUserConsentRequestContent()
             .status(ConsentStatus.ACTIVE)
             .consentData(TestConstants.TEST_CONSENT_DATA_MAP)

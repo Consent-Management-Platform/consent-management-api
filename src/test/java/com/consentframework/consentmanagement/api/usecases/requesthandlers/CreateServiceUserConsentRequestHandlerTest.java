@@ -13,6 +13,7 @@ import com.consentframework.consentmanagement.api.domain.constants.HttpStatusCod
 import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
+import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.infrastructure.repositories.InMemoryServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.models.Consent;
@@ -45,7 +46,8 @@ class CreateServiceUserConsentRequestHandlerTest extends RequestHandlerTest {
     }
 
     @Test
-    void testHandleRequestWhenConsentAlreadyExists() throws BadRequestException, ConflictingResourceException, JsonProcessingException {
+    void testHandleRequestWhenConsentAlreadyExists() throws BadRequestException, ConflictingResourceException, InternalServiceException,
+            JsonProcessingException {
         final Consent existingConsent = TestConstants.TEST_CONSENT_WITH_ONLY_REQUIRED_FIELDS;
         final CreateServiceUserConsentRequestContent requestContent = TestUtils.toCreateRequestContent(existingConsent);
 

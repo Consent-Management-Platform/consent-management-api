@@ -50,7 +50,7 @@ class UpdateServiceUserConsentActivityTest {
     }
 
     @Test
-    void testHandleRequestWithConflictingVersion() throws BadRequestException, ConflictingResourceException {
+    void testHandleRequestWithConflictingVersion() throws BadRequestException, ConflictingResourceException, InternalServiceException {
         this.consentRepository.createServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ALL_FIELDS);
 
         final UpdateServiceUserConsentRequestContent requestContent = new UpdateServiceUserConsentRequestContent()
