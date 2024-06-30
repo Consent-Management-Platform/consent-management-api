@@ -151,10 +151,9 @@ public class DynamoDbServiceUserConsentRepository implements ServiceUserConsentR
 
     private PutItemEnhancedRequest<DynamoDbServiceUserConsent> buildPutRequest(final Consent consent, final String conditionExpression) {
         final DynamoDbServiceUserConsent ddbConsent = DynamoDbServiceUserConsentMapper.toDynamoDbServiceUserConsent(consent);
-        final Expression itemDoesNotYetExistExpression = Expression.builder().expression(conditionExpression).build();
         return PutItemEnhancedRequest.builder(DynamoDbServiceUserConsent.class)
             .item(ddbConsent)
-            .conditionExpression(itemDoesNotYetExistExpression)
+            .conditionExpression(Expression.builder().expression(conditionExpression).build())
             .build();
     }
 
