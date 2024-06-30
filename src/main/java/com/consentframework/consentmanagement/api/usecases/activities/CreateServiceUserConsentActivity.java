@@ -35,7 +35,7 @@ public class CreateServiceUserConsentActivity {
      * @return response including the UUID of the created consent
      * @throws BadRequestException exception thrown if provided invalid input
      * @throws ConflictingResourceException exception thrown if data store has conflicting data
-     * @throws InternalServiceException
+     * @throws InternalServiceException exception thrown when unexpected server error creating consent
      */
     public CreateServiceUserConsentResponseContent handleRequest(final String serviceId, final String userId,
             final CreateServiceUserConsentRequestContent request)

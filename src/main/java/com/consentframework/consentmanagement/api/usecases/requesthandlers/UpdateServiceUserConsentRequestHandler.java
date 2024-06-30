@@ -5,6 +5,7 @@ import com.consentframework.consentmanagement.api.domain.constants.ApiPathParame
 import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
+import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.domain.parsers.ApiPathParameterParser;
 import com.consentframework.consentmanagement.api.models.UpdateServiceUserConsentRequestContent;
@@ -56,7 +57,8 @@ public class UpdateServiceUserConsentRequestHandler extends ApiRequestHandler {
             activity.handleRequest(serviceId, userId, consentId, updatedContent);
         } catch (final JsonProcessingException jsonProcessingException) {
             return logAndBuildJsonProcessingErrorResponse(jsonProcessingException);
-        } catch (final BadRequestException | ConflictingResourceException | ResourceNotFoundException conflictException) {
+        } catch (final BadRequestException | ConflictingResourceException | InternalServiceException
+                | ResourceNotFoundException conflictException) {
             return logAndBuildErrorResponse(conflictException);
         }
 

@@ -20,7 +20,7 @@ public interface ServiceUserConsentRepository {
      * @param consent Consent object to save to the repository
      * @throws BadRequestException exception thrown if consent violates model constraints
      * @throws ConflictingResourceException exception thrown if consent already exists with same key
-     * @throws InternalServiceException
+     * @throws InternalServiceException exception thrown if unexpected server error creating consent
      */
     void createServiceUserConsent(final Consent consent) throws BadRequestException, ConflictingResourceException,
         InternalServiceException;
@@ -44,10 +44,11 @@ public interface ServiceUserConsentRepository {
      * @param consent Consent object to save to the repository
      * @throws BadRequestException exception thrown if consent violates model constraints
      * @throws ConflictingResourceException exception thrown if stored consent has conflicting data
+     * @throws InternalServiceException exception thrown if unexpected server-side error updating consent
      * @throws ResourceNotFoundException exception thrown if no such consent exists
      */
     void updateServiceUserConsent(final Consent consent) throws BadRequestException, ConflictingResourceException,
-        ResourceNotFoundException;
+        ResourceNotFoundException, InternalServiceException;
 
     /**
      * List user's consents for a given service.

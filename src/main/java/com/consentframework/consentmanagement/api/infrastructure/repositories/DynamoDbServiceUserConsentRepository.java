@@ -26,6 +26,9 @@ import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 public class DynamoDbServiceUserConsentRepository implements ServiceUserConsentRepository {
     private static final Logger logger = LogManager.getLogger(DynamoDbServiceUserConsentRepository.class);
 
+    static final String CONSENT_EXISTS_CONDITION = "attribute_exists(id)";
+    static final String CONSENT_NOT_EXISTS_CONDITION = "attribute_not_exists(id)";
+
     private final DynamoDbTable<DynamoDbServiceUserConsent> consentTable;
 
     /**
@@ -41,27 +44,17 @@ public class DynamoDbServiceUserConsentRepository implements ServiceUserConsentR
      * @param consent Consent object to save to the repository
      * @throws BadRequestException exception thrown if consent violates model constraints
      * @throws ConflictingResourceException exception thrown if consent already exists with same key
-     * @throws InternalServiceException
+     * @throws InternalServiceException exception thrown if unexpected server error creating consent
      */
     @Override
     public void createServiceUserConsent(final Consent consent) throws BadRequestException, ConflictingResourceException,
             InternalServiceException {
         ConsentValidator.validate(consent);
 
-        final String consentContext = String.format("consent with serviceId: '%s', userId: '%s', consentId: '%s'",
+        final String consentContext = String.format("creating consent with serviceId: '%s', userId: '%s', consentId: '%s'",
             consent.getServiceId(), consent.getUserId(), consent.getConsentId());
         logger.info(String.format("Submitting CreateServiceUserConsent request for %s", consentContext));
-
-        final PutItemEnhancedRequest<DynamoDbServiceUserConsent> putRequest = buildPutRequestForCreate(consent);
-        try {
-            consentTable.putItem(putRequest);
-        } catch (final ConditionalCheckFailedException conditionFailedException) {
-            final String errorMessage = String.format("Failed to create consent, %s already exists", consentContext);
-            logger.warn(errorMessage, conditionFailedException);
-            throw new ConflictingResourceException(errorMessage);
-        } catch (final DynamoDbException ddbException) {
-            throw logAndGetNormalizedServiceError(ddbException, String.format("creating %s", consentContext));
-        }
+        putConsent(consent, CONSENT_NOT_EXISTS_CONDITION, consentContext);
         logger.info(String.format("Successfully created %s", consentContext));
     }
 
@@ -110,13 +103,19 @@ public class DynamoDbServiceUserConsentRepository implements ServiceUserConsentR
      * @param consent Consent object to save to the repository
      * @throws BadRequestException exception thrown if consent violates model constraints
      * @throws ConflictingResourceException exception thrown if stored consent has conflicting data
+     * @throws InternalServiceException exception thrown if receive unexpected server-side exception
      * @throws ResourceNotFoundException exception thrown if no such consent exists
      */
     @Override
     public void updateServiceUserConsent(final Consent consent) throws BadRequestException, ConflictingResourceException,
-            ResourceNotFoundException {
-        // TODO: implement update operation
-        throw new UnsupportedOperationException("Not yet implemented");
+            InternalServiceException, ResourceNotFoundException {
+        ConsentValidator.validate(consent);
+
+        final String consentContext = String.format("updating consent with serviceId: '%s', userId: '%s', consentId: '%s'",
+            consent.getServiceId(), consent.getUserId(), consent.getConsentId());
+        logger.info(String.format("Submitting UpdateServiceUserConsent request for %s", consentContext));
+        putConsent(consent, CONSENT_EXISTS_CONDITION, consentContext);
+        logger.info(String.format("Successfully updated %s", consentContext));
     }
 
     /**
@@ -136,9 +135,23 @@ public class DynamoDbServiceUserConsentRepository implements ServiceUserConsentR
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    private PutItemEnhancedRequest<DynamoDbServiceUserConsent> buildPutRequestForCreate(final Consent consent) {
+    private void putConsent(final Consent consent, final String conditionExpression, final String consentContext)
+            throws ConflictingResourceException, InternalServiceException {
+        final PutItemEnhancedRequest<DynamoDbServiceUserConsent> putRequest = buildPutRequest(consent, conditionExpression);
+        try {
+            consentTable.putItem(putRequest);
+        } catch (final ConditionalCheckFailedException conditionFailedException) {
+            final String errorMessage = String.format("Error %s, consent already exists", consentContext);
+            logger.warn(errorMessage, conditionFailedException);
+            throw new ConflictingResourceException(errorMessage);
+        } catch (final DynamoDbException ddbException) {
+            throw logAndGetNormalizedServiceError(ddbException, consentContext);
+        }
+    }
+
+    private PutItemEnhancedRequest<DynamoDbServiceUserConsent> buildPutRequest(final Consent consent, final String conditionExpression) {
         final DynamoDbServiceUserConsent ddbConsent = DynamoDbServiceUserConsentMapper.toDynamoDbServiceUserConsent(consent);
-        final Expression itemDoesNotYetExistExpression = Expression.builder().expression("attribute_not_exists(id)").build();
+        final Expression itemDoesNotYetExistExpression = Expression.builder().expression(conditionExpression).build();
         return PutItemEnhancedRequest.builder(DynamoDbServiceUserConsent.class)
             .item(ddbConsent)
             .conditionExpression(itemDoesNotYetExistExpression)

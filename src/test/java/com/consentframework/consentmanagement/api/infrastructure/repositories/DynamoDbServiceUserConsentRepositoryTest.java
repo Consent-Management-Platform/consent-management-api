@@ -32,6 +32,16 @@ class DynamoDbServiceUserConsentRepositoryTest {
     private DynamoDbTable<DynamoDbServiceUserConsent> consentTable;
     private DynamoDbServiceUserConsentRepository repository;
 
+    private static final String TEST_CONDITIONAL_CHECK_FAILED_EXCEPTION_MESSAGE = "TestConditionalCheckFailedException";
+    private static final ConditionalCheckFailedException CONDITION_FAILED_EXCEPTION = ConditionalCheckFailedException.builder()
+        .awsErrorDetails(AwsErrorDetails.builder().errorMessage(TEST_CONDITIONAL_CHECK_FAILED_EXCEPTION_MESSAGE).build())
+        .build();
+
+    private static final String TEST_DYNAMODB_EXCEPTION_MESSAGE = "TestDynamoDBError";
+    private static final AwsServiceException DYNAMODB_EXCEPTION = DynamoDbException.builder()
+        .message(TEST_DYNAMODB_EXCEPTION_MESSAGE)
+        .build();
+
     @SuppressWarnings("unchecked")
     @BeforeEach
     void setup() {
@@ -89,12 +99,7 @@ class DynamoDbServiceUserConsentRepositoryTest {
 
         @Test
         void testCreateInvalidConsent() {
-            final Consent incompleteConsent = new Consent()
-                .serviceId(TestConstants.TEST_SERVICE_ID)
-                .userId(TestConstants.TEST_USER_ID)
-                .consentId(TestConstants.TEST_CONSENT_ID)
-                .consentVersion(1);
-
+            final Consent incompleteConsent = buildIncompleteConsent();
             final BadRequestException thrownException = assertThrows(BadRequestException.class, () ->
                 repository.createServiceUserConsent(incompleteConsent));
             assertEquals(ConsentValidator.STATUS_NULL_MESSAGE, thrownException.getMessage());
@@ -103,17 +108,12 @@ class DynamoDbServiceUserConsentRepositoryTest {
         @SuppressWarnings("unchecked")
         @Test
         void testCreateWhenConditionalCheckFailedException() {
-            final String originalExceptionMessage = "TestConditionalCheckFailedException";
-            final ConditionalCheckFailedException conditionFailedException = ConditionalCheckFailedException.builder()
-                .awsErrorDetails(AwsErrorDetails.builder().errorMessage(originalExceptionMessage).build())
-                .build();
-            doThrow(conditionFailedException).when(consentTable).putItem(any(PutItemEnhancedRequest.class));
-
+            doThrow(CONDITION_FAILED_EXCEPTION).when(consentTable).putItem(any(PutItemEnhancedRequest.class));
             final ConflictingResourceException thrownException = assertThrows(ConflictingResourceException.class, () ->
                 repository.createServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ALL_FIELDS));
 
             final String expectedExceptionMessage = String.format(
-                "Failed to create consent, consent with serviceId: '%s', userId: '%s', consentId: '%s' already exists",
+                "Error creating consent with serviceId: '%s', userId: '%s', consentId: '%s', consent already exists",
                 TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID);
             assertEquals(expectedExceptionMessage, thrownException.getMessage());
         }
@@ -121,16 +121,13 @@ class DynamoDbServiceUserConsentRepositoryTest {
         @SuppressWarnings("unchecked")
         @Test
         void testCreateWhenUnexpectedDynamoDbException() {
-            final String originalErrorMessage = "TestDynamoDBError";
-            final AwsServiceException testException = DynamoDbException.builder().message(originalErrorMessage).build();
-            doThrow(testException).when(consentTable).putItem(any(PutItemEnhancedRequest.class));
-
+            doThrow(DYNAMODB_EXCEPTION).when(consentTable).putItem(any(PutItemEnhancedRequest.class));
             final InternalServiceException thrownException = assertThrows(InternalServiceException.class, () ->
                 repository.createServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ALL_FIELDS));
 
             final String expectedErrorMessage = String.format(
                 "Received DynamoDbException creating consent with serviceId: '%s', userId: '%s', consentId: '%s': %s",
-                TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID, originalErrorMessage);
+                TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID, TEST_DYNAMODB_EXCEPTION_MESSAGE);
             assertEquals(expectedErrorMessage, thrownException.getMessage());
         }
 
@@ -146,8 +143,52 @@ class DynamoDbServiceUserConsentRepositoryTest {
     @Nested
     class UpdateServiceUserConsentTest {
         @Test
-        void testUpdateConsent() {
-            assertThrows(UnsupportedOperationException.class, () -> repository.updateServiceUserConsent(null));
+        void testUpdateWithNullConsent() {
+            final BadRequestException thrownException = assertThrows(BadRequestException.class, () ->
+                repository.updateServiceUserConsent(null));
+            assertEquals(ConsentValidator.CONSENT_NULL_MESSAGE, thrownException.getMessage());
+        }
+
+        @Test
+        void testUpdateWithInvalidConsent() {
+            final Consent incompleteConsent = buildIncompleteConsent();
+            final BadRequestException thrownException = assertThrows(BadRequestException.class, () ->
+                repository.updateServiceUserConsent(incompleteConsent));
+            assertEquals(ConsentValidator.STATUS_NULL_MESSAGE, thrownException.getMessage());
+        }
+
+        @SuppressWarnings("unchecked")
+        @Test
+        void testUpdateWhenConditionalCheckFailedException() {
+            doThrow(CONDITION_FAILED_EXCEPTION).when(consentTable).putItem(any(PutItemEnhancedRequest.class));
+            final ConflictingResourceException thrownException = assertThrows(ConflictingResourceException.class, () ->
+                repository.updateServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ALL_FIELDS));
+
+            final String expectedExceptionMessage = String.format(
+                "Error updating consent with serviceId: '%s', userId: '%s', consentId: '%s', consent already exists",
+                TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID);
+            assertEquals(expectedExceptionMessage, thrownException.getMessage());
+        }
+
+        @SuppressWarnings("unchecked")
+        @Test
+        void testUpdateWhenUnexpectedDynamoDbException() {
+            doThrow(DYNAMODB_EXCEPTION).when(consentTable).putItem(any(PutItemEnhancedRequest.class));
+            final InternalServiceException thrownException = assertThrows(InternalServiceException.class, () ->
+                repository.updateServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ALL_FIELDS));
+
+            final String expectedErrorMessage = String.format(
+                "Received DynamoDbException updating consent with serviceId: '%s', userId: '%s', consentId: '%s': %s",
+                TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID, TEST_DYNAMODB_EXCEPTION_MESSAGE);
+            assertEquals(expectedErrorMessage, thrownException.getMessage());
+        }
+
+        @SuppressWarnings("unchecked")
+        @Test
+        void testUpdateConsentWhenDynamoDbPutItemSucceeds() throws BadRequestException, ConflictingResourceException,
+                InternalServiceException, ResourceNotFoundException {
+            doNothing().when(consentTable).putItem(any(PutItemEnhancedRequest.class));
+            repository.updateServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ALL_FIELDS);
         }
     }
 
@@ -158,5 +199,13 @@ class DynamoDbServiceUserConsentRepositoryTest {
             assertThrows(UnsupportedOperationException.class, () ->
                 repository.listServiceUserConsents(TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, null, null));
         }
+    }
+
+    private Consent buildIncompleteConsent() {
+        return new Consent()
+            .serviceId(TestConstants.TEST_SERVICE_ID)
+            .userId(TestConstants.TEST_USER_ID)
+            .consentId(TestConstants.TEST_CONSENT_ID)
+            .consentVersion(1);
     }
 }
