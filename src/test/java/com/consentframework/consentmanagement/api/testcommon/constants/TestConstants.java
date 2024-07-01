@@ -27,6 +27,12 @@ public final class TestConstants {
     public static final String TEST_CONSENT_TYPE = "TestConsentType";
     public static final Integer TEST_PAGE_LIMIT = 2;
     public static final String TEST_PAGE_TOKEN = "1";
+    public static final String TEST_DDB_PAGE_TOKEN = String.format("{\"%s\":\"%s\"}",
+        DynamoDbServiceUserConsent.PARTITION_KEY,
+        TEST_PARTITION_KEY);
+    public static final Map<String, AttributeValue> TEST_DDB_PAGE_TOKEN_ATTRIBUTE_MAP = Map.of(
+        DynamoDbServiceUserConsent.PARTITION_KEY,
+        AttributeValue.fromS(TEST_PARTITION_KEY));
 
     public static final String TEST_CONSENTS_PATH = String.format(
         "/v1/consent-management/services/%s/users/%s/consents",

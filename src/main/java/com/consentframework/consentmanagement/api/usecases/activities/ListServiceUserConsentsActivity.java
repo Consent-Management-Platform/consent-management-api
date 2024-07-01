@@ -46,6 +46,6 @@ public class ListServiceUserConsentsActivity {
         if (paginatedConsents.nextPageToken().isEmpty()) {
             return null;
         }
-        return String.valueOf(paginatedConsents.nextPageToken().getAsInt());
+        return paginatedConsents.nextPageToken().get();
     }
 }

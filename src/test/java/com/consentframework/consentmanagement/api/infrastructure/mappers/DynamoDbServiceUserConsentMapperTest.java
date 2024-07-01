@@ -2,7 +2,6 @@ package com.consentframework.consentmanagement.api.infrastructure.mappers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.consentframework.consentmanagement.api.infrastructure.entities.DynamoDbServiceUserConsent;
 import com.consentframework.consentmanagement.api.models.Consent;

@@ -12,6 +12,7 @@ import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestEx
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
+import com.consentframework.consentmanagement.api.domain.pagination.ListPage;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.domain.validators.ConsentValidator;
 import com.consentframework.consentmanagement.api.infrastructure.entities.DynamoDbServiceUserConsent;
@@ -20,13 +21,22 @@ import com.consentframework.consentmanagement.api.testcommon.constants.TestConst
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import software.amazon.awssdk.awscore.exception.AwsErrorDetails;
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.model.GetItemEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.Page;
+import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 class DynamoDbServiceUserConsentRepositoryTest {
     private DynamoDbTable<DynamoDbServiceUserConsent> consentTable;
@@ -42,11 +52,15 @@ class DynamoDbServiceUserConsentRepositoryTest {
         .message(TEST_DYNAMODB_EXCEPTION_MESSAGE)
         .build();
 
+    @Mock
+    private PageIterable<DynamoDbServiceUserConsent> mockQueryResults;
+
     @SuppressWarnings("unchecked")
     @BeforeEach
     void setup() {
         consentTable = (DynamoDbTable<DynamoDbServiceUserConsent>) mock(DynamoDbTable.class);
         repository = new DynamoDbServiceUserConsentRepository(consentTable);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Nested
@@ -195,9 +209,43 @@ class DynamoDbServiceUserConsentRepositoryTest {
     @Nested
     class ListServiceUserConsentsTest {
         @Test
-        void testUpdateConsent() {
-            assertThrows(UnsupportedOperationException.class, () ->
-                repository.listServiceUserConsents(TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, null, null));
+        void testListConsentWithoutOptionalParametersWhenNullResults() throws BadRequestException {
+            final ListPage<Consent> queryResults = repository.listServiceUserConsents(TestConstants.TEST_SERVICE_ID,
+                TestConstants.TEST_USER_ID, null, null);
+            assertEquals(DynamoDbServiceUserConsentRepository.EMPTY_CONSENTS_PAGE, queryResults);
+        }
+
+        @Test
+        void testListConsentWithOptionalParametersWhenNullResults() throws BadRequestException {
+            final ListPage<Consent> queryResults = repository.listServiceUserConsents(TestConstants.TEST_SERVICE_ID,
+                TestConstants.TEST_USER_ID, 10, TestConstants.TEST_DDB_PAGE_TOKEN);
+            assertEquals(DynamoDbServiceUserConsentRepository.EMPTY_CONSENTS_PAGE, queryResults);
+        }
+
+        @Test
+        void testListConsentWhenEmptyResults() throws BadRequestException {
+            when(mockQueryResults.stream()).thenReturn(Stream.empty());
+            when(consentTable.query(any(QueryEnhancedRequest.class))).thenReturn(mockQueryResults);
+
+            final ListPage<Consent> queryResults = repository.listServiceUserConsents(TestConstants.TEST_SERVICE_ID,
+                TestConstants.TEST_USER_ID, 10, TestConstants.TEST_DDB_PAGE_TOKEN);
+            assertEquals(DynamoDbServiceUserConsentRepository.EMPTY_CONSENTS_PAGE, queryResults);
+        }
+
+        @Test
+        void testListConsentWhenMultiplePages() throws BadRequestException {
+            final List<DynamoDbServiceUserConsent> mockConsents = List.of(TestConstants.TEST_DDB_CONSENT_WITH_ALL_FIELDS);
+            final Page<DynamoDbServiceUserConsent> mockPageConsents = Page.builder(DynamoDbServiceUserConsent.class)
+                .items(mockConsents)
+                .lastEvaluatedKey(TestConstants.TEST_DDB_PAGE_TOKEN_ATTRIBUTE_MAP)
+                .build();
+            when(mockQueryResults.stream()).thenReturn(List.of(mockPageConsents).stream());
+            when(consentTable.query(any(QueryEnhancedRequest.class))).thenReturn(mockQueryResults);
+
+            final ListPage<Consent> queryResults = repository.listServiceUserConsents(TestConstants.TEST_SERVICE_ID,
+                TestConstants.TEST_USER_ID, 10, TestConstants.TEST_DDB_PAGE_TOKEN);
+            assertEquals(List.of(TestConstants.TEST_CONSENT_WITH_ALL_FIELDS), queryResults.resultsOnPage());
+            assertEquals(Optional.of(TestConstants.TEST_DDB_PAGE_TOKEN), queryResults.nextPageToken());
         }
     }
 

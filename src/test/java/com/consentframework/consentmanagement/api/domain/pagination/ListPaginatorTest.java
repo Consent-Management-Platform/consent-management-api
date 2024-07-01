@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.OptionalInt;
+import java.util.Optional;
 
 class ListPaginatorTest {
     private final ListPaginator<String> testPaginator = new ListPaginator<String>();
@@ -45,7 +45,7 @@ class ListPaginatorTest {
         final ListPage<String> pagedResults = testPaginator.getSinglePage(PRESENT_RESULTS, 2, null);
         assertNotNull(pagedResults);
         assertEquals(List.of("a", "b"), pagedResults.resultsOnPage());
-        assertNextPageTokenEquals(limit, pagedResults.nextPageToken());
+        assertNextPageTokenEquals(Integer.toString(limit), pagedResults.nextPageToken());
     }
 
     @Test
@@ -64,7 +64,7 @@ class ListPaginatorTest {
         final ListPage<String> pagedResults = testPaginator.getSinglePage(PRESENT_RESULTS, limit, pageToken);
         assertNotNull(pagedResults);
         assertEquals(List.of("b", "c"), pagedResults.resultsOnPage());
-        assertNextPageTokenEquals(3, pagedResults.nextPageToken());
+        assertNextPageTokenEquals("3", pagedResults.nextPageToken());
     }
 
     @Test
@@ -82,14 +82,14 @@ class ListPaginatorTest {
         assertEmpty(pagedResults.nextPageToken());
     }
 
-    private void assertEmpty(final OptionalInt nextPageToken) {
+    private void assertEmpty(final Optional<String> nextPageToken) {
         assertTrue(nextPageToken.isEmpty(),
             String.format("Expected nextPageToken to be empty but was %s", nextPageToken.toString()));
     }
 
-    private void assertNextPageTokenEquals(final int expectedIntValue, final OptionalInt nextPageToken) {
+    private void assertNextPageTokenEquals(final String expectedValue, final Optional<String> nextPageToken) {
         assertNotNull(nextPageToken);
-        assertEquals(expectedIntValue, nextPageToken.getAsInt(),
-            String.format("Expected nextPageToken to be %d but was %s", expectedIntValue, nextPageToken));
+        assertEquals(expectedValue, nextPageToken.get(),
+            String.format("Expected nextPageToken to be %s but was %s", expectedValue, nextPageToken));
     }
 }

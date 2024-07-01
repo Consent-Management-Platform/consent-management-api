@@ -144,7 +144,7 @@ class InMemoryServiceUserConsentRepositoryTest {
             final ListPage<Consent> results = repository.listServiceUserConsents(TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID,
                 limit, pageToken);
             assertEquals(List.of(secondConsent, thirdConsent), results.resultsOnPage());
-            assertEquals(3, results.nextPageToken().getAsInt());
+            assertEquals("3", results.nextPageToken().get());
         }
 
         @Test

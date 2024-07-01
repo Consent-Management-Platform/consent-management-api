@@ -1,7 +1,7 @@
 package com.consentframework.consentmanagement.api.domain.pagination;
 
 import java.util.List;
-import java.util.OptionalInt;
+import java.util.Optional;
 
 /**
  * Encapsulates logic for retrieving paginated results from a list.
@@ -17,7 +17,7 @@ public class ListPaginator<T> {
      */
     public ListPage<T> getSinglePage(final List<T> allResults, final Integer limit, final Integer pageToken) {
         if (allResults == null || allResults.isEmpty() || !isPageTokenInBounds(allResults, pageToken)) {
-            return new ListPage<T>(List.of(), OptionalInt.empty());
+            return new ListPage<T>(List.of(), Optional.empty());
         }
 
         final int startIndex = (pageToken == null) ? 0 : pageToken;
@@ -26,7 +26,9 @@ public class ListPaginator<T> {
             : Math.min(startIndex + limit, allResults.size());
 
         final List<T> pageOfResults = allResults.subList(startIndex, endIndex);
-        final OptionalInt nextPageToken = (endIndex >= allResults.size()) ? OptionalInt.empty() : OptionalInt.of(endIndex);
+        final Optional<String> nextPageToken = (endIndex >= allResults.size())
+            ? Optional.empty()
+            : Optional.of(Integer.toString(endIndex));
         return new ListPage<T>(pageOfResults, nextPageToken);
     }
 

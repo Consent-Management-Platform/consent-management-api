@@ -9,6 +9,7 @@ import com.consentframework.consentmanagement.api.domain.repositories.ServiceUse
 import com.consentframework.consentmanagement.api.domain.validators.ConsentValidator;
 import com.consentframework.consentmanagement.api.infrastructure.entities.DynamoDbServiceUserConsent;
 import com.consentframework.consentmanagement.api.infrastructure.mappers.DynamoDbServiceUserConsentMapper;
+import com.consentframework.consentmanagement.api.infrastructure.mappers.DynamoDbServiceUserConsentPageTokenMapper;
 import com.consentframework.consentmanagement.api.models.Consent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,9 +17,18 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Expression;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.model.GetItemEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.Page;
+import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * DynamoDB implementation of ServiceUserConsentRepository.
@@ -28,6 +38,7 @@ public class DynamoDbServiceUserConsentRepository implements ServiceUserConsentR
 
     static final String CONSENT_EXISTS_CONDITION = "attribute_exists(id)";
     static final String CONSENT_NOT_EXISTS_CONDITION = "attribute_not_exists(id)";
+    static final ListPage<Consent> EMPTY_CONSENTS_PAGE = new ListPage<Consent>(List.of(), Optional.empty());
 
     private final DynamoDbTable<DynamoDbServiceUserConsent> consentTable;
 
@@ -131,8 +142,32 @@ public class DynamoDbServiceUserConsentRepository implements ServiceUserConsentR
     @Override
     public ListPage<Consent> listServiceUserConsents(final String serviceId, final String userId,
             final Integer limit, final String pageToken) throws BadRequestException {
-        // TODO: implement list operation
-        throw new UnsupportedOperationException("Not yet implemented");
+        final Map<String, AttributeValue> exclusiveStartKey = DynamoDbServiceUserConsentPageTokenMapper.toDynamoDbPageToken(pageToken);
+        final QueryEnhancedRequest queryRequest = QueryEnhancedRequest.builder()
+            .exclusiveStartKey(exclusiveStartKey)
+            .limit(limit)
+            .consistentRead(true)
+            .build();
+
+        final PageIterable<DynamoDbServiceUserConsent> queryResults = consentTable.query(queryRequest);
+        if (queryResults == null) {
+            return EMPTY_CONSENTS_PAGE;
+        }
+        final Optional<Page<DynamoDbServiceUserConsent>> firstPageResults = queryResults
+            .stream()
+            .findFirst();
+        if (!firstPageResults.isPresent()) {
+            return EMPTY_CONSENTS_PAGE;
+        }
+
+        final List<Consent> consents = firstPageResults.get()
+            .items()
+            .stream()
+            .map(ddbConsent -> DynamoDbServiceUserConsentMapper.dynamoDbItemToConsent(ddbConsent))
+            .collect(Collectors.toList());
+        final Map<String, AttributeValue> lastEvaluatedKey = firstPageResults.get().lastEvaluatedKey();
+        final String lastEvaluatedKeyString = DynamoDbServiceUserConsentPageTokenMapper.toJsonStringPageToken(lastEvaluatedKey);
+        return new ListPage<Consent>(consents, Optional.ofNullable(lastEvaluatedKeyString));
     }
 
     private void putConsent(final Consent consent, final String conditionExpression, final String consentContext)
