@@ -49,6 +49,15 @@ public final class ApiQueryStringParameterParser {
         if (pathParameterValue == null || pathParameterValue instanceof Integer) {
             return (Integer) pathParameterValue;
         }
+        if (pathParameterValue instanceof String) {
+            try {
+                return Integer.parseInt((String) pathParameterValue);
+            } catch (final NumberFormatException e) {
+                logger.warn(String.format(PARSE_FAILURE_MESSAGE, parameter.getValue())
+                    + String.format(", value '%s' is not parseable as Integer", pathParameterValue.toString()));
+                throw buildBadRequestException(parameter);
+            }
+        }
         logger.warn(String.format(WRONG_TYPE_LOG_MESSAGE, parameter.getValue(), Integer.class, pathParameterValue.getClass(),
             pathParameterValue.toString()));
         throw buildBadRequestException(parameter);

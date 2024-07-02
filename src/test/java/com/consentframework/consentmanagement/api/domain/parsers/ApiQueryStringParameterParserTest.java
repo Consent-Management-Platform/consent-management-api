@@ -88,7 +88,32 @@ class ApiQueryStringParameterParserTest {
 
         @Test
         void testWhenWrongType() {
-            final ApiRequest request = buildRequest(TestConstants.TEST_PAGINATION_QUERY_PARAMETERS);
+            final Map<String, Object> queryParameters = Map.of(ApiQueryStringParameterName.PAGE_TOKEN.getValue(), Map.of());
+            final ApiRequest request = buildRequest(queryParameters);
+
+            final BadRequestException thrownException = assertThrows(BadRequestException.class, () ->
+                ApiQueryStringParameterParser.parseIntQueryStringParameter(request, ApiQueryStringParameterName.PAGE_TOKEN));
+
+            final String expectedErrorMessage = String.format(ApiQueryStringParameterParser.PARSE_FAILURE_MESSAGE,
+                ApiQueryStringParameterName.PAGE_TOKEN.getValue());
+            assertEquals(expectedErrorMessage, thrownException.getMessage());
+        }
+
+        @Test
+        void testWhenIntegerPassedAsString() throws BadRequestException {
+            final String limitStringValue = "5";
+            final Map<String, Object> queryParameters = Map.of(ApiQueryStringParameterName.LIMIT.getValue(), limitStringValue);
+            final ApiRequest request = buildRequest(queryParameters);
+
+            final Integer parsedParameterValue = ApiQueryStringParameterParser.parseIntQueryStringParameter(request,
+                ApiQueryStringParameterName.LIMIT);
+            assertEquals(5, parsedParameterValue);
+        }
+
+        @Test
+        void testWhenStringNotParseableAsInteger() {
+            final Map<String, Object> queryParameters = Map.of(ApiQueryStringParameterName.PAGE_TOKEN.getValue(), "InvalidPageToken");
+            final ApiRequest request = buildRequest(queryParameters);
 
             final BadRequestException thrownException = assertThrows(BadRequestException.class, () ->
                 ApiQueryStringParameterParser.parseIntQueryStringParameter(request, ApiQueryStringParameterName.PAGE_TOKEN));
