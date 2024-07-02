@@ -213,7 +213,6 @@ public class DynamoDbServiceUserConsentRepository implements ServiceUserConsentR
             .queryConditional(QueryConditional.keyEqualTo(queryKey))
             .exclusiveStartKey(exclusiveStartKey)
             .limit(limit)
-            .consistentRead(true)
             .build();
     }
 
