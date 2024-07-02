@@ -25,6 +25,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import software.amazon.awssdk.awscore.exception.AwsErrorDetails;
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
+import software.amazon.awssdk.core.pagination.sync.SdkIterable;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.model.GetItemEnhancedRequest;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
@@ -53,7 +55,10 @@ class DynamoDbServiceUserConsentRepositoryTest {
         .build();
 
     @Mock
-    private PageIterable<DynamoDbServiceUserConsent> mockQueryResults;
+    private DynamoDbIndex<DynamoDbServiceUserConsent> mockConsentsByServiceUserIndex;
+
+    @Mock
+    private SdkIterable<Page<DynamoDbServiceUserConsent>> mockQueryResults;
 
     @SuppressWarnings("unchecked")
     @BeforeEach
@@ -210,6 +215,9 @@ class DynamoDbServiceUserConsentRepositoryTest {
     class ListServiceUserConsentsTest {
         @Test
         void testListConsentWithoutOptionalParametersWhenNullResults() throws BadRequestException {
+            when(mockConsentsByServiceUserIndex.query(any(QueryEnhancedRequest.class))).thenReturn(null);
+            when(consentTable.index(any(String.class))).thenReturn(mockConsentsByServiceUserIndex);
+
             final ListPage<Consent> queryResults = repository.listServiceUserConsents(TestConstants.TEST_SERVICE_ID,
                 TestConstants.TEST_USER_ID, null, null);
             assertEquals(DynamoDbServiceUserConsentRepository.EMPTY_CONSENTS_PAGE, queryResults);
@@ -217,6 +225,9 @@ class DynamoDbServiceUserConsentRepositoryTest {
 
         @Test
         void testListConsentWithOptionalParametersWhenNullResults() throws BadRequestException {
+            when(mockConsentsByServiceUserIndex.query(any(QueryEnhancedRequest.class))).thenReturn(null);
+            when(consentTable.index(any(String.class))).thenReturn(mockConsentsByServiceUserIndex);
+
             final ListPage<Consent> queryResults = repository.listServiceUserConsents(TestConstants.TEST_SERVICE_ID,
                 TestConstants.TEST_USER_ID, 10, TestConstants.TEST_DDB_PAGE_TOKEN);
             assertEquals(DynamoDbServiceUserConsentRepository.EMPTY_CONSENTS_PAGE, queryResults);
@@ -225,7 +236,8 @@ class DynamoDbServiceUserConsentRepositoryTest {
         @Test
         void testListConsentWhenEmptyResults() throws BadRequestException {
             when(mockQueryResults.stream()).thenReturn(Stream.empty());
-            when(consentTable.query(any(QueryEnhancedRequest.class))).thenReturn(mockQueryResults);
+            when(mockConsentsByServiceUserIndex.query(any(QueryEnhancedRequest.class))).thenReturn(mockQueryResults);
+            when(consentTable.index(any(String.class))).thenReturn(mockConsentsByServiceUserIndex);
 
             final ListPage<Consent> queryResults = repository.listServiceUserConsents(TestConstants.TEST_SERVICE_ID,
                 TestConstants.TEST_USER_ID, 10, TestConstants.TEST_DDB_PAGE_TOKEN);
@@ -240,7 +252,8 @@ class DynamoDbServiceUserConsentRepositoryTest {
                 .lastEvaluatedKey(TestConstants.TEST_DDB_PAGE_TOKEN_ATTRIBUTE_MAP)
                 .build();
             when(mockQueryResults.stream()).thenReturn(List.of(mockPageConsents).stream());
-            when(consentTable.query(any(QueryEnhancedRequest.class))).thenReturn(mockQueryResults);
+            when(mockConsentsByServiceUserIndex.query(any(QueryEnhancedRequest.class))).thenReturn(mockQueryResults);
+            when(consentTable.index(any(String.class))).thenReturn(mockConsentsByServiceUserIndex);
 
             final ListPage<Consent> queryResults = repository.listServiceUserConsents(TestConstants.TEST_SERVICE_ID,
                 TestConstants.TEST_USER_ID, 10, TestConstants.TEST_DDB_PAGE_TOKEN);

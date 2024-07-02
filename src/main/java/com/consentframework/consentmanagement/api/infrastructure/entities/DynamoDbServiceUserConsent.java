@@ -18,6 +18,7 @@ import java.util.Map;
 public interface DynamoDbServiceUserConsent {
     public static final String TABLE_NAME = "ServiceUserConsent";
     public static final String PARTITION_KEY = "id";
+    public static final String CONSENT_BY_SERVICE_USER_GSI_NAME = "ConsentsByServiceUser";
 
     static Builder builder() {
         return new Builder();

@@ -13,6 +13,7 @@ import com.consentframework.consentmanagement.api.infrastructure.mappers.DynamoD
 import com.consentframework.consentmanagement.api.models.Consent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import software.amazon.awssdk.core.pagination.sync.SdkIterable;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Expression;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
@@ -20,6 +21,7 @@ import software.amazon.awssdk.enhanced.dynamodb.model.GetItemEnhancedRequest;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
@@ -142,14 +144,12 @@ public class DynamoDbServiceUserConsentRepository implements ServiceUserConsentR
     @Override
     public ListPage<Consent> listServiceUserConsents(final String serviceId, final String userId,
             final Integer limit, final String pageToken) throws BadRequestException {
-        final Map<String, AttributeValue> exclusiveStartKey = DynamoDbServiceUserConsentPageTokenMapper.toDynamoDbPageToken(pageToken);
-        final QueryEnhancedRequest queryRequest = QueryEnhancedRequest.builder()
-            .exclusiveStartKey(exclusiveStartKey)
-            .limit(limit)
-            .consistentRead(true)
-            .build();
+        final QueryEnhancedRequest queryRequest = buildListServiceUserConsentsQueryRequest(serviceId, userId, limit, pageToken);
 
-        final PageIterable<DynamoDbServiceUserConsent> queryResults = consentTable.query(queryRequest);
+        final SdkIterable<Page<DynamoDbServiceUserConsent>> queryResults = consentTable
+            .index(DynamoDbServiceUserConsent.CONSENT_BY_SERVICE_USER_GSI_NAME)
+            .query(queryRequest);
+
         if (queryResults == null) {
             return EMPTY_CONSENTS_PAGE;
         }
@@ -196,6 +196,23 @@ public class DynamoDbServiceUserConsentRepository implements ServiceUserConsentR
         final Key partitionKey = DynamoDbServiceUserConsentMapper.toServiceUserConsentPartitionKey(serviceId, userId, consentId);
         return GetItemEnhancedRequest.builder()
             .key(partitionKey)
+            .consistentRead(true)
+            .build();
+    }
+
+    private QueryEnhancedRequest buildListServiceUserConsentsQueryRequest(final String serviceId, final String userId, final Integer limit,
+            final String pageToken) throws BadRequestException {
+        final Key queryKey = Key.builder()
+            .partitionValue(userId)
+            .sortValue(serviceId)
+            .build();
+
+        final Map<String, AttributeValue> exclusiveStartKey = DynamoDbServiceUserConsentPageTokenMapper.toDynamoDbPageToken(pageToken);
+
+        return QueryEnhancedRequest.builder()
+            .queryConditional(QueryConditional.keyEqualTo(queryKey))
+            .exclusiveStartKey(exclusiveStartKey)
+            .limit(limit)
             .consistentRead(true)
             .build();
     }
