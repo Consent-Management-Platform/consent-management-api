@@ -8,6 +8,8 @@ import com.consentframework.consentmanagement.api.domain.constants.HttpMethod;
 import com.consentframework.consentmanagement.api.domain.constants.HttpStatusCode;
 import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
+import com.consentframework.consentmanagement.api.infrastructure.entities.DynamoDbServiceUserConsent;
+import com.consentframework.consentmanagement.api.infrastructure.repositories.DynamoDbServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.infrastructure.repositories.InMemoryServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.usecases.activities.CreateServiceUserConsentActivity;
 import com.consentframework.consentmanagement.api.usecases.activities.GetServiceUserConsentActivity;
@@ -20,6 +22,9 @@ import com.consentframework.consentmanagement.api.usecases.requesthandlers.ListS
 import com.consentframework.consentmanagement.api.usecases.requesthandlers.UpdateServiceUserConsentRequestHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +43,10 @@ public class ConsentManagementApiService implements RequestHandler<ApiRequest, M
      * Instantiate API service.
      */
     public ConsentManagementApiService() {
-        consentRepository = new InMemoryServiceUserConsentRepository();
+        final DynamoDbEnhancedClient dynamoDbEnhancedClient = DynamoDbEnhancedClient.create();
+        final DynamoDbTable<DynamoDbServiceUserConsent> dynamoDbTable = dynamoDbEnhancedClient.table(
+            DynamoDbServiceUserConsent.TABLE_NAME, TableSchema.fromImmutableClass(DynamoDbServiceUserConsent.class));
+        consentRepository = new DynamoDbServiceUserConsentRepository(dynamoDbTable);
     }
 
     /**
