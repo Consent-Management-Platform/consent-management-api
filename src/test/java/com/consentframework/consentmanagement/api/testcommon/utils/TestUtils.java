@@ -24,6 +24,7 @@ public final class TestUtils {
             .userId(consent.getUserId())
             .consentId(consent.getConsentId())
             .consentVersion(consent.getConsentVersion())
+            .consentType(consent.getConsentType())
             .consentData(consent.getConsentData() == null ? null : Map.copyOf(consent.getConsentData()))
             .status(consent.getStatus())
             .expiryTime(consent.getExpiryTime());
@@ -39,6 +40,7 @@ public final class TestUtils {
     public static String toUpdateRequestContentString(final Consent consent) throws JsonProcessingException {
         final UpdateServiceUserConsentRequestContent requestContent = new UpdateServiceUserConsentRequestContent()
             .consentVersion(consent.getConsentVersion())
+            .consentType(consent.getConsentType())
             .consentData(consent.getConsentData())
             .status(consent.getStatus())
             .expiryTime(consent.getExpiryTime());
@@ -65,6 +67,7 @@ public final class TestUtils {
      */
     public static CreateServiceUserConsentRequestContent toCreateRequestContent(final Consent consent) {
         return new CreateServiceUserConsentRequestContent()
+            .consentType(consent.getConsentType())
             .consentData(consent.getConsentData())
             .status(consent.getStatus())
             .expiryTime(consent.getExpiryTime());

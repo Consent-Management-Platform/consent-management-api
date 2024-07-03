@@ -43,7 +43,7 @@ dependencies {
     implementation("software.amazon.smithy:smithy-utils:1.49.0")
 
     // Consent service models
-    implementation("com.consentframework.consentmanagement:consentmanagement-api-models:0.2.8")
+    implementation("com.consentframework.consentmanagement:consentmanagement-api-models:0.2.10")
 
     // Immutables
     val immutablesDependency = "org.immutables:value:2.10.1"

@@ -49,6 +49,7 @@ class CreateServiceUserConsentActivityTest {
     void testHandleValidRequest() throws BadRequestException, ConflictingResourceException, InternalServiceException {
         final CreateServiceUserConsentRequestContent requestContent = new CreateServiceUserConsentRequestContent()
             .status(ConsentStatus.ACTIVE)
+            .consentType(TestConstants.TEST_CONSENT_TYPE)
             .consentData(TestConstants.TEST_CONSENT_DATA_MAP)
             .expiryTime(TestConstants.TEST_EXPIRY_TIME);
 
@@ -61,6 +62,7 @@ class CreateServiceUserConsentActivityTest {
             .serviceId(TestConstants.TEST_SERVICE_ID)
             .userId(TestConstants.TEST_USER_ID)
             .consentVersion(1)
+            .consentType(TestConstants.TEST_CONSENT_TYPE)
             .consentData(requestContent.getConsentData())
             .expiryTime(requestContent.getExpiryTime())
             .status(requestContent.getStatus());

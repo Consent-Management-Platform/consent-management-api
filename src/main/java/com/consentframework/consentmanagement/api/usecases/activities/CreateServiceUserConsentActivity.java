@@ -48,6 +48,7 @@ public class CreateServiceUserConsentActivity {
             .userId(userId)
             .consentId(consentId)
             .consentVersion(1)
+            .consentType(request.getConsentType())
             .consentData(request.getConsentData())
             .expiryTime(request.getExpiryTime())
             .status(request.getStatus());

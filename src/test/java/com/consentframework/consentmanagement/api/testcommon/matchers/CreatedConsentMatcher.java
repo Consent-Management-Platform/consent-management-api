@@ -29,6 +29,7 @@ public class CreatedConsentMatcher implements ArgumentMatcher<Consent> {
         return expectedConsent.getServiceId().equals(actualConsent.getServiceId())
             && expectedConsent.getUserId().equals(actualConsent.getUserId())
             && expectedConsent.getConsentVersion().equals(actualConsent.getConsentVersion())
+            && expectedConsent.getConsentType().equals(actualConsent.getConsentType())
             && expectedConsent.getConsentData().equals(actualConsent.getConsentData())
             && expectedConsent.getStatus().equals(actualConsent.getStatus())
             && expectedConsent.getExpiryTime().equals(actualConsent.getExpiryTime());

@@ -10,6 +10,7 @@ public enum DynamoDbServiceUserConsentAttributeName {
     CONSENT_ID("consentId"),
     CONSENT_VERSION("consentVersion"),
     CONSENT_STATUS("consentStatus"),
+    CONSENT_TYPE("consentType"),
     CONSENT_DATA("consentData"),
     EXPIRY_TIME("expiryTime");
 

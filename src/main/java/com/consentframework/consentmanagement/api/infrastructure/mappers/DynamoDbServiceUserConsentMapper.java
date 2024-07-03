@@ -35,6 +35,7 @@ public final class DynamoDbServiceUserConsentMapper {
             .consentId(ddbConsentItem.consentId())
             .consentVersion(ddbConsentItem.consentVersion())
             .status(ddbConsentItem.consentStatus())
+            .consentType(ddbConsentItem.consentType())
             .consentData(ddbConsentItem.consentData());
 
         if (ddbConsentItem.expiryTime() != null) {
@@ -62,6 +63,7 @@ public final class DynamoDbServiceUserConsentMapper {
             .consentId(consent.getConsentId())
             .consentVersion(consent.getConsentVersion())
             .consentStatus(consent.getStatus())
+            .consentType(consent.getConsentType())
             .consentData(consent.getConsentData());
 
         if (consent.getExpiryTime() != null) {
@@ -87,6 +89,7 @@ public final class DynamoDbServiceUserConsentMapper {
             .consentId(parseStringAttribute(ddbConsentItem, DynamoDbServiceUserConsentAttributeName.CONSENT_ID))
             .consentVersion(parseIntegerAttribute(ddbConsentItem, DynamoDbServiceUserConsentAttributeName.CONSENT_VERSION))
             .status(parseConsentStatus(ddbConsentItem))
+            .consentType(parseStringAttribute(ddbConsentItem, DynamoDbServiceUserConsentAttributeName.CONSENT_TYPE))
             .consentData(parseConsentData(ddbConsentItem))
             .expiryTime(parseExpiryTime(ddbConsentItem));
     }

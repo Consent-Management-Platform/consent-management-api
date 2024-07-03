@@ -50,6 +50,7 @@ public class UpdateServiceUserConsentActivity {
             .consentId(consentId)
             .consentVersion(updatedContent.getConsentVersion())
             .status(updatedContent.getStatus())
+            .consentType(updatedContent.getConsentType())
             .consentData(updatedContent.getConsentData())
             .expiryTime(updatedContent.getExpiryTime());
 

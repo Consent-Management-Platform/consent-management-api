@@ -71,6 +71,7 @@ public final class TestConstants {
         .consentId(TEST_CONSENT_ID)
         .consentVersion(TEST_CONSENT_VERSION)
         .status(TEST_CONSENT_STATUS)
+        .consentType(TEST_CONSENT_TYPE)
         .consentData(TEST_CONSENT_DATA_MAP)
         .expiryTime(TEST_EXPIRY_TIME);
 
@@ -87,8 +88,8 @@ public final class TestConstants {
         TEST_DDB_CONSENT_BUILDER_WITH_REQUIRED_FIELDS.build();
 
     public static final DynamoDbServiceUserConsent TEST_DDB_CONSENT_WITH_ALL_FIELDS = TEST_DDB_CONSENT_BUILDER_WITH_REQUIRED_FIELDS
-        .consentData(TEST_CONSENT_DATA_MAP)
         .consentType(TEST_CONSENT_TYPE)
+        .consentData(TEST_CONSENT_DATA_MAP)
         .expiryTime(TEST_EXPIRY_TIME.toString())
         .build();
 
@@ -99,6 +100,7 @@ public final class TestConstants {
         DynamoDbServiceUserConsentAttributeName.CONSENT_ID.getValue(), AttributeValue.fromS(TEST_CONSENT_ID),
         DynamoDbServiceUserConsentAttributeName.CONSENT_VERSION.getValue(), AttributeValue.fromN(TEST_CONSENT_VERSION.toString()),
         DynamoDbServiceUserConsentAttributeName.CONSENT_STATUS.getValue(), AttributeValue.fromS(TEST_CONSENT_STATUS.getValue()),
+        DynamoDbServiceUserConsentAttributeName.CONSENT_TYPE.getValue(), AttributeValue.fromS(TEST_CONSENT_TYPE),
         DynamoDbServiceUserConsentAttributeName.CONSENT_DATA.getValue(), AttributeValue.fromM(TEST_CONSENT_DATA_ATTRIBUTE_MAP),
         DynamoDbServiceUserConsentAttributeName.EXPIRY_TIME.getValue(), AttributeValue.fromS(TEST_EXPIRY_TIME.toString())
     );
