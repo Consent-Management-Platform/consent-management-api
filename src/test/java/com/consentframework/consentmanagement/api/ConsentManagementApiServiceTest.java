@@ -24,6 +24,9 @@ import com.consentframework.consentmanagement.api.usecases.requesthandlers.Reque
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 
 import java.util.Map;
 
@@ -31,15 +34,20 @@ class ConsentManagementApiServiceTest extends RequestHandlerTest {
     private ServiceUserConsentRepository consentRepository;
     private ConsentManagementApiService service;
 
+    @Mock
+    private DynamoDbEnhancedClient mockDynamoDbEnhancedClient;
+
     @BeforeEach
     void setup() {
         consentRepository = spy(new InMemoryServiceUserConsentRepository());
         service = new ConsentManagementApiService(consentRepository);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void testDefaultConstructor() {
-        final ConsentManagementApiService service = new ConsentManagementApiService();
+    void testConstructWithDynamoDbRepository() {
+        consentRepository = ConsentManagementApiService.constructDynamoDbConsentRepository(mockDynamoDbEnhancedClient);
+        final ConsentManagementApiService service = new ConsentManagementApiService(consentRepository);
         assertNotNull(service);
     }
 

@@ -10,7 +10,6 @@ import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.infrastructure.entities.DynamoDbServiceUserConsent;
 import com.consentframework.consentmanagement.api.infrastructure.repositories.DynamoDbServiceUserConsentRepository;
-import com.consentframework.consentmanagement.api.infrastructure.repositories.InMemoryServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.usecases.activities.CreateServiceUserConsentActivity;
 import com.consentframework.consentmanagement.api.usecases.activities.GetServiceUserConsentActivity;
 import com.consentframework.consentmanagement.api.usecases.activities.ListServiceUserConsentsActivity;
@@ -44,9 +43,7 @@ public class ConsentManagementApiService implements RequestHandler<ApiRequest, M
      */
     public ConsentManagementApiService() {
         final DynamoDbEnhancedClient dynamoDbEnhancedClient = DynamoDbEnhancedClient.create();
-        final DynamoDbTable<DynamoDbServiceUserConsent> dynamoDbTable = dynamoDbEnhancedClient.table(
-            DynamoDbServiceUserConsent.TABLE_NAME, TableSchema.fromImmutableClass(DynamoDbServiceUserConsent.class));
-        consentRepository = new DynamoDbServiceUserConsentRepository(dynamoDbTable);
+        consentRepository = ConsentManagementApiService.constructDynamoDbConsentRepository(dynamoDbEnhancedClient);
     }
 
     /**
@@ -105,5 +102,17 @@ public class ConsentManagementApiService implements RequestHandler<ApiRequest, M
         apiErrorResponse.put(ApiResponseParameterName.STATUS_CODE.getValue(), HttpStatusCode.BAD_REQUEST.getValue());
         apiErrorResponse.put(ApiResponseParameterName.BODY.getValue(), String.format(ApiRequestHandler.ERROR_RESPONSE_BODY, errorMessage));
         return apiErrorResponse;
+    }
+
+    /**
+     * Construct a DynamoDbServiceUserConsentRepository instance.
+     *
+     * @param dynamoDbEnhancedClient DynamoDB enhanced client
+     * @return DynamoDB ServiceUserConsent repository
+     */
+    static DynamoDbServiceUserConsentRepository constructDynamoDbConsentRepository(final DynamoDbEnhancedClient dynamoDbEnhancedClient) {
+        final DynamoDbTable<DynamoDbServiceUserConsent> dynamoDbTable = dynamoDbEnhancedClient.table(
+            DynamoDbServiceUserConsent.TABLE_NAME, TableSchema.fromImmutableClass(DynamoDbServiceUserConsent.class));
+        return new DynamoDbServiceUserConsentRepository(dynamoDbTable);
     }
 }
