@@ -1,0 +1,30 @@
+name: Build Consent API
+
+inputs:
+  github-token:
+    description: 'GitHub token for authentication'
+    required: true
+  github-username:
+    description: 'GitHub username for authentication'
+    required: true
+
+outputs:
+  api-artifacts:
+    description: 'Built API artifacts'
+    value: 'build/distributions/consent-management-api.zip'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Check out package
+      uses: actions/checkout@v4
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        distribution: corretto
+        java-version: 21
+    - name: Run gradle build
+      run: gradle wrapper build
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        GITHUB_USERNAME: ${{ inputs.github-username }}
