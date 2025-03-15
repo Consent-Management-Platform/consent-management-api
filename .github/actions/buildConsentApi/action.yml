@@ -25,6 +25,7 @@ runs:
         java-version: 21
     - name: Run gradle build
       run: gradle wrapper build
+      shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
         GITHUB_USERNAME: ${{ inputs.github-username }}
