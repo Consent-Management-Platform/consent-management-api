@@ -22,7 +22,7 @@ jobs:
       - name: Check out package
         uses: actions/checkout@v4
       - name: Build Consent API
-        uses: ./.github/actions/buildConsentApi
+        uses: .github/actions/buildConsentApi
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           github-username: ${{ github.actor }}
