@@ -21,6 +21,7 @@ runs:
       with:
         # Specify repository so this action can be run from other repositories
         repository: Consent-Management-Platform/consent-management-api
+        path: consent-management-api
     - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
@@ -29,6 +30,7 @@ runs:
     - name: Run gradle build
       run: gradle wrapper build
       shell: bash
+      working-directory: consent-management-api
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
         GITHUB_USERNAME: ${{ inputs.github-username }}
