@@ -1,10 +1,6 @@
 package com.consentframework.consentmanagement.api.infrastructure.mappers;
 
-import com.consentframework.consentmanagement.api.JSON;
 import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
-import com.consentframework.consentmanagement.api.infrastructure.entities.DynamoDbServiceUserConsent;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import software.amazon.awssdk.enhanced.dynamodb.document.EnhancedDocument;

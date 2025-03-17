@@ -118,7 +118,7 @@ tasks {
 // Task to download the Checkstyle config files
 tasks.register("downloadCheckstyleConfig", Copy::class.java) {
     val checkstyleConfigDependency = configurations.detachedConfiguration(
-        dependencies.create("com.consentframework.consentmanagement:checkstyle-config:0.0.3")
+        dependencies.create("com.consentframework.consentmanagement:checkstyle-config:0.2.0")
     )
     from(zipTree(checkstyleConfigDependency.singleFile))
     into(project.layout.projectDirectory.file("config/checkstyle"))
