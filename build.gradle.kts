@@ -3,19 +3,12 @@ plugins {
     jacoco
     java
 
-    id("com.consentframework.consentmanagement.checkstyle-config") version "1.0.12"
+    id("com.consentframework.consentmanagement.checkstyle-config") version "1.1.0"
 }
 
 repositories {
     mavenCentral()
     repositories {
-        maven {
-            url = uri("https://maven.pkg.github.com/Consent-Management-Platform/checkstyle-config")
-            credentials {
-                username = project.findProperty("gpr.usr") as String? ?: System.getenv("GITHUB_USERNAME")
-                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
-            }
-        }
         maven {
             url = uri("https://maven.pkg.github.com/Consent-Management-Platform/consent-management-api-models")
             credentials {
