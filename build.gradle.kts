@@ -9,6 +9,13 @@ repositories {
     mavenCentral()
     repositories {
         maven {
+            url = uri("https://maven.pkg.github.com/Consent-Management-Platform/checkstyle-config")
+            credentials {
+                username = project.findProperty("gpr.usr") as String? ?: System.getenv("GITHUB_USERNAME")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+        maven {
             url = uri("https://maven.pkg.github.com/Consent-Management-Platform/consent-management-api-models")
             credentials {
                 username = project.findProperty("gpr.usr") as String? ?: System.getenv("GITHUB_USERNAME")
@@ -21,6 +28,11 @@ repositories {
 checkstyle {
     toolVersion = "10.16.0"
     setIgnoreFailures(false)
+    configFile = project.layout.projectDirectory.file("config/checkstyle/checkstyle.xml").asFile
+    configProperties = mapOf(
+        "checkstyle.config.dir" to project.layout.projectDirectory.file("config/checkstyle").asFile,
+        "checkstyle.suppressions.file" to project.layout.projectDirectory.file("config/checkstyle/suppressions.xml").asFile
+    )
 }
 
 dependencies {
@@ -69,10 +81,12 @@ java {
 }
 
 tasks {
+    withType<Checkstyle> {
+        dependsOn("downloadCheckstyleConfig")
+    }
+
     withType<Test> {
         useJUnitPlatform()
-
-        // Always run jacoco test report after tests
         finalizedBy(jacocoTestReport)
     }
 
@@ -86,10 +100,30 @@ tasks {
         }
     }
 
+    build {
+        dependsOn("packageJar")
+    }
+
     check {
         // Fail build if under min test coverage thresholds
         dependsOn(jacocoTestCoverageVerification)
     }
+
+    clean {
+        // Clean up downloaded Checkstyle config files
+        delete("$rootDir/config/checkstyle")
+    }
+}
+
+// Task to download the Checkstyle config files
+tasks.register("downloadCheckstyleConfig", Copy::class.java) {
+    val checkstyleConfigDependency = configurations.detachedConfiguration(
+        dependencies.create("com.consentframework.consentmanagement:checkstyle-config:0.0.3")
+    )
+    from(zipTree(checkstyleConfigDependency.singleFile))
+    into(project.layout.projectDirectory.file("config/checkstyle"))
+    include("checkstyle.xml")
+    include("suppressions.xml")
 }
 
 // Build jar which will later be consumed to run the API service
@@ -98,8 +132,4 @@ tasks.register<Zip>("packageJar") {
         from(tasks.jar)
         from(configurations.runtimeClasspath)
     }
-}
-
-tasks.build {
-    dependsOn("packageJar")
 }
