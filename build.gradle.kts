@@ -1,8 +1,9 @@
 plugins {
-    java
     application
-    checkstyle
     jacoco
+    java
+
+    id("com.consentframework.consentmanagement.checkstyle-config") version "1.0.12"
 }
 
 repositories {
@@ -23,24 +24,10 @@ repositories {
             }
         }
     }
+    gradlePluginPortal()
 }
-
-checkstyle {
-    toolVersion = "10.16.0"
-    setIgnoreFailures(false)
-    configFile = project.layout.projectDirectory.file("config/checkstyle/checkstyle.xml").asFile
-    configProperties = mapOf(
-        "checkstyle.config.dir" to project.layout.projectDirectory.file("config/checkstyle").asFile,
-        "checkstyle.suppressions.file" to project.layout.projectDirectory.file("config/checkstyle/suppressions.xml").asFile
-    )
-}
-
-// Declare a specific Checkstyle dependency configuration to simplify referencing its config files
-val checkstyleConfig by configurations.creating
 
 dependencies {
-    checkstyleConfig("com.consentframework.consentmanagement:checkstyle-config:0.2.0")
-
     implementation(libs.guava)
     implementation("com.amazonaws:aws-lambda-java-core:1.2.3")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.1")
@@ -86,10 +73,6 @@ java {
 }
 
 tasks {
-    withType<Checkstyle> {
-        dependsOn("downloadCheckstyleConfig")
-    }
-
     withType<Test> {
         useJUnitPlatform()
         finalizedBy(jacocoTestReport)
@@ -113,19 +96,6 @@ tasks {
         // Fail build if under min test coverage thresholds
         dependsOn(jacocoTestCoverageVerification)
     }
-
-    clean {
-        // Clean up downloaded Checkstyle config files
-        delete("$rootDir/config/checkstyle")
-    }
-}
-
-// Task to download the Checkstyle config files
-tasks.register("downloadCheckstyleConfig", Copy::class.java) {
-    from(zipTree(checkstyleConfig.singleFile))
-    into(project.layout.projectDirectory.file("config/checkstyle"))
-    include("checkstyle.xml")
-    include("suppressions.xml")
 }
 
 // Build jar which will later be consumed to run the API service
