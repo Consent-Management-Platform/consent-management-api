@@ -35,7 +35,12 @@ checkstyle {
     )
 }
 
+// Declare a specific Checkstyle dependency configuration to simplify referencing its config files
+val checkstyleConfig by configurations.creating
+
 dependencies {
+    checkstyleConfig("com.consentframework.consentmanagement:checkstyle-config:0.2.0")
+
     implementation(libs.guava)
     implementation("com.amazonaws:aws-lambda-java-core:1.2.3")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.1")
@@ -117,10 +122,7 @@ tasks {
 
 // Task to download the Checkstyle config files
 tasks.register("downloadCheckstyleConfig", Copy::class.java) {
-    val checkstyleConfigDependency = configurations.detachedConfiguration(
-        dependencies.create("com.consentframework.consentmanagement:checkstyle-config:0.2.0")
-    )
-    from(zipTree(checkstyleConfigDependency.singleFile))
+    from(zipTree(checkstyleConfig.singleFile))
     into(project.layout.projectDirectory.file("config/checkstyle"))
     include("checkstyle.xml")
     include("suppressions.xml")
