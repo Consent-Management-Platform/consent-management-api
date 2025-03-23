@@ -38,8 +38,7 @@ public final class DynamoDbServiceUserConsentPageTokenMapper {
         try {
             return EnhancedDocument.fromJson(pageToken).toMap();
         } catch (final IllegalArgumentException | UncheckedIOException e) {
-            logger.error(String.format("Unable to parse String pageToken, expected JSON string but was %s", pageToken), e);
-            e.printStackTrace();
+            logger.error("Unable to parse String pageToken, expected JSON string but was {}, error: {}", pageToken, e.getMessage(), e);
             throw logAndGetInvalidPageTokenException(pageToken);
         }
     }
@@ -59,8 +58,7 @@ public final class DynamoDbServiceUserConsentPageTokenMapper {
         try {
             return EnhancedDocument.fromAttributeValueMap(pageToken).toJson();
         } catch (final IllegalArgumentException | NullPointerException | UncheckedIOException e) {
-            logger.error(String.format("Unable to parse Map<String, AttributeValue> pageToken %s", pageToken.toString()), e);
-            e.printStackTrace();
+            logger.error("Unable to parse Map<String, AttributeValue> pageToken {}, error: {}", pageToken.toString(), e.getMessage(), e);
             throw logAndGetInvalidPageTokenException(pageToken.toString());
         }
     }

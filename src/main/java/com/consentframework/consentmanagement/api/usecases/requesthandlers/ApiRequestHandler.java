@@ -81,8 +81,7 @@ public abstract class ApiRequestHandler {
      * @return 400 Bad Request API error response
      */
     protected Map<String, Object> logAndBuildJsonProcessingErrorResponse(final JsonProcessingException jsonProcessingException) {
-        logger.warn(String.format("Received unexpected JsonProcessingException parsing request body", jsonProcessingException));
-        jsonProcessingException.printStackTrace();
+        logger.warn("Received unexpected JsonProcessingException parsing request body", jsonProcessingException);
         return buildApiErrorResponse(new BadRequestException(REQUEST_PARSE_FAILURE_MESSAGE));
     }
 

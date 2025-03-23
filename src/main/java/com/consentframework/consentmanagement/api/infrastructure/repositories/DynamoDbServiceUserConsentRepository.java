@@ -217,8 +217,7 @@ public class DynamoDbServiceUserConsentRepository implements ServiceUserConsentR
 
     private InternalServiceException logAndGetNormalizedServiceError(final DynamoDbException ddbException, final String exceptionContext) {
         final String errorMessage = String.format("Received DynamoDbException %s: %s", exceptionContext, ddbException.getMessage());
-        logger.error(errorMessage);
-        ddbException.printStackTrace();
+        logger.error(errorMessage, ddbException);
         return new InternalServiceException(errorMessage, ddbException);
     }
 }
