@@ -3,10 +3,10 @@ package com.consentframework.consentmanagement.api.domain.validators;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.testcommon.constants.TestConstants;
 import com.consentframework.consentmanagement.api.testcommon.utils.TestUtils;
+import com.consentframework.shared.api.domain.exceptions.BadRequestException;
 import org.junit.jupiter.api.Test;
 
 class ConsentValidatorTest {

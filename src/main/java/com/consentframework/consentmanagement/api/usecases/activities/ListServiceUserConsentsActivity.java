@@ -1,10 +1,10 @@
 package com.consentframework.consentmanagement.api.usecases.activities;
 
-import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
-import com.consentframework.consentmanagement.api.domain.pagination.ListPage;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.models.ListServiceUserConsentResponseContent;
+import com.consentframework.shared.api.domain.exceptions.BadRequestException;
+import com.consentframework.shared.api.domain.pagination.ListPage;
 
 /**
  * ListServiceUserConsents API activity.

@@ -1,6 +1,6 @@
 package com.consentframework.consentmanagement.api.infrastructure.mappers;
 
-import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
+import com.consentframework.shared.api.domain.exceptions.BadRequestException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import software.amazon.awssdk.enhanced.dynamodb.document.EnhancedDocument;

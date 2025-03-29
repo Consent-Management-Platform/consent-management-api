@@ -1,7 +1,7 @@
 package com.consentframework.consentmanagement.api.domain.validators;
 
-import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.models.CreateServiceUserConsentRequestContent;
+import com.consentframework.shared.api.domain.exceptions.BadRequestException;
 
 /**
  * Validator for CreateServiceUserConsent API request body.

@@ -4,9 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.consentframework.consentmanagement.api.domain.constants.ApiHttpResource;
 import com.consentframework.consentmanagement.api.domain.constants.ApiResponseParameterName;
-import com.consentframework.consentmanagement.api.domain.constants.HttpMethod;
 import com.consentframework.consentmanagement.api.domain.constants.HttpStatusCode;
-import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.infrastructure.entities.DynamoDbServiceUserConsent;
 import com.consentframework.consentmanagement.api.infrastructure.repositories.DynamoDbServiceUserConsentRepository;
@@ -19,6 +17,8 @@ import com.consentframework.consentmanagement.api.usecases.requesthandlers.Creat
 import com.consentframework.consentmanagement.api.usecases.requesthandlers.GetServiceUserConsentRequestHandler;
 import com.consentframework.consentmanagement.api.usecases.requesthandlers.ListServiceUserConsentsRequestHandler;
 import com.consentframework.consentmanagement.api.usecases.requesthandlers.UpdateServiceUserConsentRequestHandler;
+import com.consentframework.shared.api.domain.constants.HttpMethod;
+import com.consentframework.shared.api.domain.entities.ApiRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;

@@ -2,12 +2,12 @@ package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.ApiQueryStringParameterName;
-import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
-import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
-import com.consentframework.consentmanagement.api.domain.parsers.ApiPathParameterParser;
-import com.consentframework.consentmanagement.api.domain.parsers.ApiQueryStringParameterParser;
 import com.consentframework.consentmanagement.api.models.ListServiceUserConsentResponseContent;
 import com.consentframework.consentmanagement.api.usecases.activities.ListServiceUserConsentsActivity;
+import com.consentframework.shared.api.domain.entities.ApiRequest;
+import com.consentframework.shared.api.domain.exceptions.BadRequestException;
+import com.consentframework.shared.api.domain.parsers.ApiPathParameterParser;
+import com.consentframework.shared.api.domain.parsers.ApiQueryStringParameterParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,8 +43,8 @@ public class ListServiceUserConsentsRequestHandler extends ApiRequestHandler {
         final String serviceId;
         final String userId;
         try {
-            serviceId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.SERVICE_ID);
-            userId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.USER_ID);
+            serviceId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.SERVICE_ID.getValue());
+            userId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.USER_ID.getValue());
         } catch (final BadRequestException badRequestException) {
             return logAndBuildMissingPathParamResponse(badRequestException);
         }
@@ -54,8 +54,9 @@ public class ListServiceUserConsentsRequestHandler extends ApiRequestHandler {
         final ListServiceUserConsentResponseContent responseContent;
         final String responseBodyString;
         try {
-            limit = ApiQueryStringParameterParser.parseIntQueryStringParameter(request, ApiQueryStringParameterName.LIMIT);
-            pageToken = ApiQueryStringParameterParser.parseStringQueryStringParameter(request, ApiQueryStringParameterName.PAGE_TOKEN);
+            limit = ApiQueryStringParameterParser.parseIntQueryStringParameter(request, ApiQueryStringParameterName.LIMIT.getValue());
+            pageToken = ApiQueryStringParameterParser.parseStringQueryStringParameter(request,
+                ApiQueryStringParameterName.PAGE_TOKEN.getValue());
 
             logger.info("Retrieving consents for path: " + request.path());
             responseContent = listConsentsActivity.handleRequest(

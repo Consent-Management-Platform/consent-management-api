@@ -2,14 +2,14 @@ package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 
 import com.consentframework.consentmanagement.api.JSON;
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
-import com.consentframework.consentmanagement.api.domain.entities.ApiRequest;
-import com.consentframework.consentmanagement.api.domain.exceptions.BadRequestException;
 import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
-import com.consentframework.consentmanagement.api.domain.parsers.ApiPathParameterParser;
 import com.consentframework.consentmanagement.api.models.CreateServiceUserConsentRequestContent;
 import com.consentframework.consentmanagement.api.models.CreateServiceUserConsentResponseContent;
 import com.consentframework.consentmanagement.api.usecases.activities.CreateServiceUserConsentActivity;
+import com.consentframework.shared.api.domain.entities.ApiRequest;
+import com.consentframework.shared.api.domain.exceptions.BadRequestException;
+import com.consentframework.shared.api.domain.parsers.ApiPathParameterParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,8 +47,8 @@ public class CreateServiceUserConsentRequestHandler extends ApiRequestHandler {
         final String serviceId;
         final String userId;
         try {
-            serviceId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.SERVICE_ID);
-            userId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.USER_ID);
+            serviceId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.SERVICE_ID.getValue());
+            userId = ApiPathParameterParser.parsePathParameter(request, ApiPathParameterName.USER_ID.getValue());
         } catch (final BadRequestException badRequestException) {
             return logAndBuildMissingPathParamResponse(badRequestException);
         }
