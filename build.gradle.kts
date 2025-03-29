@@ -40,7 +40,7 @@ dependencies {
     implementation("software.amazon.smithy:smithy-utils:1.49.0")
 
     // Consent service models
-    implementation("com.consentframework.consentmanagement:consentmanagement-api-models:0.2.10")
+    implementation("com.consentframework.consentmanagement:consentmanagement-api-models:0.3.0")
 
     // Immutables
     val immutablesDependency = "org.immutables:value:2.10.1"
@@ -97,4 +97,9 @@ tasks.register<Zip>("packageJar") {
         from(tasks.jar)
         from(configurations.runtimeClasspath)
     }
+}
+
+tasks.clean {
+  delete("$rootDir/bin")
+  delete("$rootDir/build")
 }
