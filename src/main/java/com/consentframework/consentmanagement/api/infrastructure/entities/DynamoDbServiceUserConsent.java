@@ -1,7 +1,7 @@
 package com.consentframework.consentmanagement.api.infrastructure.entities;
 
-import com.consentframework.consentmanagement.api.infrastructure.annotations.DynamoDbImmutableStyle;
 import com.consentframework.consentmanagement.api.models.ConsentStatus;
+import com.consentframework.shared.api.infrastructure.annotations.DynamoDbImmutableStyle;
 import jakarta.annotation.Nullable;
 import org.immutables.value.Value.Immutable;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbImmutable;
