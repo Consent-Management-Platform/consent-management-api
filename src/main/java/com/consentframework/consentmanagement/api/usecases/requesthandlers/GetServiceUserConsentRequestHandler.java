@@ -32,7 +32,7 @@ public class GetServiceUserConsentRequestHandler extends ApiRequestHandler {
      * @param getConsentActivity GetServiceUserConsent API activity
      */
     public GetServiceUserConsentRequestHandler(final GetServiceUserConsentActivity getConsentActivity) {
-        super(ApiPathParameterName.CONSENT_PATH_PARAMETERS.stream().map(apiParamName -> apiParamName.getValue()).toList());
+        super(ApiPathParameterName.CONSENT_PATH_PARAMETERS);
         this.getConsentActivity = getConsentActivity;
     }
 

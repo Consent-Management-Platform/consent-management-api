@@ -31,7 +31,7 @@ public class UpdateServiceUserConsentRequestHandler extends ApiRequestHandler {
      * @param activity update consent activity
      */
     public UpdateServiceUserConsentRequestHandler(final UpdateServiceUserConsentActivity activity) {
-        super(ApiPathParameterName.CONSENT_PATH_PARAMETERS.stream().map(apiParamName -> apiParamName.getValue()).toList());
+        super(ApiPathParameterName.CONSENT_PATH_PARAMETERS);
         this.activity = activity;
     }
 

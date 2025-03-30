@@ -35,7 +35,7 @@ public class CreateServiceUserConsentRequestHandler extends ApiRequestHandler {
      * @param createConsentActivity CreateServiceUserConsent API activity
      */
     public CreateServiceUserConsentRequestHandler(final CreateServiceUserConsentActivity createConsentActivity) {
-        super(ApiPathParameterName.CONSENTS_PATH_PARAMETERS.stream().map(apiParamName -> apiParamName.getValue()).toList());
+        super(ApiPathParameterName.CONSENTS_PATH_PARAMETERS);
         this.createConsentActivity = createConsentActivity;
     }
 
