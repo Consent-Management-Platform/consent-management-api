@@ -1,9 +1,9 @@
 package com.consentframework.consentmanagement.api.infrastructure.repositories;
 
-import com.consentframework.consentmanagement.api.domain.entities.ServiceUserConsentKey;
-import com.consentframework.consentmanagement.api.domain.entities.ServiceUserKey;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.domain.validators.ConsentValidator;
+import com.consentframework.consentmanagement.api.infrastructure.entities.InMemoryServiceUserConsentKey;
+import com.consentframework.consentmanagement.api.infrastructure.entities.InMemoryServiceUserKey;
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.shared.api.domain.exceptions.BadRequestException;
 import com.consentframework.shared.api.domain.exceptions.ConflictingResourceException;
@@ -22,8 +22,9 @@ import java.util.Map;
 public class InMemoryServiceUserConsentRepository implements ServiceUserConsentRepository {
     public static final String INVALID_PAGE_TOKEN_MESSAGE = "Received invalid pagination token %s, expected an integer value";
 
-    private Map<ServiceUserConsentKey, Consent> inMemoryConsentStore = new HashMap<ServiceUserConsentKey, Consent>();
-    private Map<ServiceUserKey, List<Consent>> inMemoryConsentsByServiceUserIndex = new HashMap<ServiceUserKey, List<Consent>>();
+    private Map<InMemoryServiceUserConsentKey, Consent> inMemoryConsentStore = new HashMap<InMemoryServiceUserConsentKey, Consent>();
+    private Map<InMemoryServiceUserKey, List<Consent>> inMemoryConsentsByServiceUserIndex =
+        new HashMap<InMemoryServiceUserKey, List<Consent>>();
 
     /**
      * Add consent to in-memory store if does not yet exist.
@@ -34,7 +35,8 @@ public class InMemoryServiceUserConsentRepository implements ServiceUserConsentR
      */
     @Override
     public void createServiceUserConsent(final Consent consent) throws BadRequestException, ConflictingResourceException {
-        final ServiceUserConsentKey key = new ServiceUserConsentKey(consent.getServiceId(), consent.getUserId(), consent.getConsentId());
+        final InMemoryServiceUserConsentKey key = new InMemoryServiceUserConsentKey(
+            consent.getServiceId(), consent.getUserId(), consent.getConsentId());
         if (inMemoryConsentStore.containsKey(key)) {
             throw new ConflictingResourceException(String.format(CONSENT_ALREADY_EXISTS_MESSAGE,
                 consent.getServiceId(), consent.getUserId(), consent.getConsentId()));
@@ -55,7 +57,7 @@ public class InMemoryServiceUserConsentRepository implements ServiceUserConsentR
     @Override
     public Consent getServiceUserConsent(final String serviceId, final String userId, final String consentId)
             throws ResourceNotFoundException {
-        final ServiceUserConsentKey key = new ServiceUserConsentKey(serviceId, userId, consentId);
+        final InMemoryServiceUserConsentKey key = new InMemoryServiceUserConsentKey(serviceId, userId, consentId);
         final Consent retrievedConsent = inMemoryConsentStore.get(key);
 
         if (retrievedConsent == null) {
@@ -80,7 +82,8 @@ public class InMemoryServiceUserConsentRepository implements ServiceUserConsentR
         final Consent existingConsent = getServiceUserConsent(consent.getServiceId(), consent.getUserId(), consent.getConsentId());
         ConsentValidator.validateNextConsentVersion(existingConsent, consent);
 
-        final ServiceUserConsentKey key = new ServiceUserConsentKey(consent.getServiceId(), consent.getUserId(), consent.getConsentId());
+        final InMemoryServiceUserConsentKey key = new InMemoryServiceUserConsentKey(
+            consent.getServiceId(), consent.getUserId(), consent.getConsentId());
         storeValidatedConsent(key, consent);
     }
 
@@ -97,16 +100,16 @@ public class InMemoryServiceUserConsentRepository implements ServiceUserConsentR
     @Override
     public ListPage<Consent> listServiceUserConsents(final String serviceId, final String userId,
             final Integer limit, final String pageToken) throws BadRequestException {
-        final List<Consent> allMatchingConsents = inMemoryConsentsByServiceUserIndex.get(new ServiceUserKey(serviceId, userId));
+        final List<Consent> allMatchingConsents = inMemoryConsentsByServiceUserIndex.get(new InMemoryServiceUserKey(serviceId, userId));
 
         final Integer parsedPageToken = parsePageToken(pageToken);
         return new ListPaginator<Consent>().getSinglePage(allMatchingConsents, limit, parsedPageToken);
     }
 
-    private void storeValidatedConsent(final ServiceUserConsentKey key, final Consent consent) {
+    private void storeValidatedConsent(final InMemoryServiceUserConsentKey key, final Consent consent) {
         inMemoryConsentStore.put(key, consent);
 
-        final ServiceUserKey serviceUserIndexKey = new ServiceUserKey(consent.getServiceId(), consent.getUserId());
+        final InMemoryServiceUserKey serviceUserIndexKey = new InMemoryServiceUserKey(consent.getServiceId(), consent.getUserId());
         final List<Consent> serviceUserConsents = inMemoryConsentsByServiceUserIndex.getOrDefault(
             serviceUserIndexKey, new ArrayList<Consent>());
         serviceUserConsents.add(consent);
