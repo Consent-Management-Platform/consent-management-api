@@ -2,13 +2,13 @@ package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 
 import com.consentframework.consentmanagement.api.JSON;
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
-import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.models.CreateServiceUserConsentRequestContent;
 import com.consentframework.consentmanagement.api.models.CreateServiceUserConsentResponseContent;
 import com.consentframework.consentmanagement.api.usecases.activities.CreateServiceUserConsentActivity;
 import com.consentframework.shared.api.domain.entities.ApiRequest;
 import com.consentframework.shared.api.domain.exceptions.BadRequestException;
 import com.consentframework.shared.api.domain.exceptions.ConflictingResourceException;
+import com.consentframework.shared.api.domain.exceptions.InternalServiceException;
 import com.consentframework.shared.api.domain.parsers.ApiPathParameterParser;
 import com.consentframework.shared.api.domain.requesthandlers.ApiRequestHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;

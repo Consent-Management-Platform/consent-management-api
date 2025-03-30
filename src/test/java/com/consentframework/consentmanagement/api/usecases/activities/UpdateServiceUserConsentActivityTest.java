@@ -3,7 +3,6 @@ package com.consentframework.consentmanagement.api.usecases.activities;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.domain.validators.ConsentValidator;
 import com.consentframework.consentmanagement.api.infrastructure.repositories.InMemoryServiceUserConsentRepository;
@@ -13,6 +12,7 @@ import com.consentframework.consentmanagement.api.models.UpdateServiceUserConsen
 import com.consentframework.consentmanagement.api.testcommon.constants.TestConstants;
 import com.consentframework.shared.api.domain.exceptions.BadRequestException;
 import com.consentframework.shared.api.domain.exceptions.ConflictingResourceException;
+import com.consentframework.shared.api.domain.exceptions.InternalServiceException;
 import com.consentframework.shared.api.domain.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

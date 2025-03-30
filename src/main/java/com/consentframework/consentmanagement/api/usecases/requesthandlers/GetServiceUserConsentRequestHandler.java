@@ -2,11 +2,11 @@ package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 
 import com.consentframework.consentmanagement.api.JSON;
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
-import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.models.GetServiceUserConsentResponseContent;
 import com.consentframework.consentmanagement.api.usecases.activities.GetServiceUserConsentActivity;
 import com.consentframework.shared.api.domain.entities.ApiRequest;
 import com.consentframework.shared.api.domain.exceptions.BadRequestException;
+import com.consentframework.shared.api.domain.exceptions.InternalServiceException;
 import com.consentframework.shared.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.shared.api.domain.parsers.ApiPathParameterParser;
 import com.consentframework.shared.api.domain.requesthandlers.ApiRequestHandler;

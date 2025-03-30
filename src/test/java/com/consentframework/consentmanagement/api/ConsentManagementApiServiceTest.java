@@ -8,7 +8,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import com.consentframework.consentmanagement.api.domain.constants.ApiHttpResource;
-import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.infrastructure.repositories.InMemoryServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.models.Consent;
@@ -20,6 +19,7 @@ import com.consentframework.shared.api.domain.constants.HttpStatusCode;
 import com.consentframework.shared.api.domain.entities.ApiRequest;
 import com.consentframework.shared.api.domain.exceptions.BadRequestException;
 import com.consentframework.shared.api.domain.exceptions.ConflictingResourceException;
+import com.consentframework.shared.api.domain.exceptions.InternalServiceException;
 import com.consentframework.shared.api.domain.exceptions.ResourceNotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;

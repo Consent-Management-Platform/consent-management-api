@@ -8,7 +8,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.domain.validators.ConsentValidator;
 import com.consentframework.consentmanagement.api.infrastructure.entities.DynamoDbServiceUserConsent;
@@ -16,6 +15,7 @@ import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.testcommon.constants.TestConstants;
 import com.consentframework.shared.api.domain.exceptions.BadRequestException;
 import com.consentframework.shared.api.domain.exceptions.ConflictingResourceException;
+import com.consentframework.shared.api.domain.exceptions.InternalServiceException;
 import com.consentframework.shared.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.shared.api.domain.pagination.ListPage;
 import org.junit.jupiter.api.BeforeEach;
