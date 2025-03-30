@@ -1,5 +1,6 @@
 package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 
+import com.consentframework.consentmanagement.api.JSON;
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.ApiQueryStringParameterName;
 import com.consentframework.consentmanagement.api.models.ListServiceUserConsentResponseContent;
@@ -8,7 +9,9 @@ import com.consentframework.shared.api.domain.entities.ApiRequest;
 import com.consentframework.shared.api.domain.exceptions.BadRequestException;
 import com.consentframework.shared.api.domain.parsers.ApiPathParameterParser;
 import com.consentframework.shared.api.domain.parsers.ApiQueryStringParameterParser;
+import com.consentframework.shared.api.domain.requesthandlers.ApiRequestHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,6 +22,7 @@ import java.util.Map;
  */
 public class ListServiceUserConsentsRequestHandler extends ApiRequestHandler {
     private static final Logger logger = LogManager.getLogger(ListServiceUserConsentsRequestHandler.class);
+    private static final ObjectMapper objectMapper = new JSON().getMapper();
 
     private ListServiceUserConsentsActivity listConsentsActivity;
 
@@ -28,7 +32,7 @@ public class ListServiceUserConsentsRequestHandler extends ApiRequestHandler {
      * @param listConsentsActivity ListServiceUserConsents API activity
      */
     public ListServiceUserConsentsRequestHandler(final ListServiceUserConsentsActivity listConsentsActivity) {
-        super(ApiPathParameterName.CONSENTS_PATH_PARAMETERS);
+        super(ApiPathParameterName.CONSENTS_PATH_PARAMETERS.stream().map(apiParamName -> apiParamName.getValue()).toList());
         this.listConsentsActivity = listConsentsActivity;
     }
 
@@ -61,7 +65,7 @@ public class ListServiceUserConsentsRequestHandler extends ApiRequestHandler {
             logger.info("Retrieving consents for path: " + request.path());
             responseContent = listConsentsActivity.handleRequest(
                 serviceId, userId, limit, pageToken);
-            responseBodyString = toJsonString(responseContent);
+            responseBodyString = toJsonString(objectMapper, responseContent);
         } catch (final BadRequestException | JsonProcessingException exception) {
             return logAndBuildErrorResponse(exception);
         }

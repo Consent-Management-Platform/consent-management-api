@@ -2,14 +2,15 @@ package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 
 import com.consentframework.consentmanagement.api.JSON;
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
-import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
-import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.models.UpdateServiceUserConsentRequestContent;
 import com.consentframework.consentmanagement.api.usecases.activities.UpdateServiceUserConsentActivity;
 import com.consentframework.shared.api.domain.entities.ApiRequest;
 import com.consentframework.shared.api.domain.exceptions.BadRequestException;
+import com.consentframework.shared.api.domain.exceptions.ConflictingResourceException;
+import com.consentframework.shared.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.shared.api.domain.parsers.ApiPathParameterParser;
+import com.consentframework.shared.api.domain.requesthandlers.ApiRequestHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,7 +31,7 @@ public class UpdateServiceUserConsentRequestHandler extends ApiRequestHandler {
      * @param activity update consent activity
      */
     public UpdateServiceUserConsentRequestHandler(final UpdateServiceUserConsentActivity activity) {
-        super(ApiPathParameterName.CONSENT_PATH_PARAMETERS);
+        super(ApiPathParameterName.CONSENT_PATH_PARAMETERS.stream().map(apiParamName -> apiParamName.getValue()).toList());
         this.activity = activity;
     }
 

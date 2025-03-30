@@ -1,10 +1,10 @@
 package com.consentframework.consentmanagement.api.usecases.activities;
 
 import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
-import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.models.GetServiceUserConsentResponseContent;
+import com.consentframework.shared.api.domain.exceptions.ResourceNotFoundException;
 
 /**
  * GetServiceUserConsent API activity.

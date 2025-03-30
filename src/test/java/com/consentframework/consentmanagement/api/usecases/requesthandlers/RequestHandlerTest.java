@@ -4,9 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.consentframework.consentmanagement.api.domain.constants.ApiResponseParameterName;
-import com.consentframework.consentmanagement.api.domain.constants.HttpStatusCode;
 import com.consentframework.consentmanagement.api.testcommon.constants.TestConstants;
+import com.consentframework.shared.api.domain.constants.ApiResponseParameterName;
+import com.consentframework.shared.api.domain.constants.HttpStatusCode;
+import com.consentframework.shared.api.domain.requesthandlers.ApiRequestHandler;
 
 import java.util.Map;
 

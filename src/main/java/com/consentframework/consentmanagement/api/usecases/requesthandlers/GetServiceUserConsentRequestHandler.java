@@ -1,14 +1,17 @@
 package com.consentframework.consentmanagement.api.usecases.requesthandlers;
 
+import com.consentframework.consentmanagement.api.JSON;
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
-import com.consentframework.consentmanagement.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.consentmanagement.api.models.GetServiceUserConsentResponseContent;
 import com.consentframework.consentmanagement.api.usecases.activities.GetServiceUserConsentActivity;
 import com.consentframework.shared.api.domain.entities.ApiRequest;
 import com.consentframework.shared.api.domain.exceptions.BadRequestException;
+import com.consentframework.shared.api.domain.exceptions.ResourceNotFoundException;
 import com.consentframework.shared.api.domain.parsers.ApiPathParameterParser;
+import com.consentframework.shared.api.domain.requesthandlers.ApiRequestHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,6 +22,7 @@ import java.util.Map;
  */
 public class GetServiceUserConsentRequestHandler extends ApiRequestHandler {
     private static final Logger logger = LogManager.getLogger(GetServiceUserConsentRequestHandler.class);
+    private static final ObjectMapper objectMapper = new JSON().getMapper();
 
     private GetServiceUserConsentActivity getConsentActivity;
 
@@ -28,7 +32,7 @@ public class GetServiceUserConsentRequestHandler extends ApiRequestHandler {
      * @param getConsentActivity GetServiceUserConsent API activity
      */
     public GetServiceUserConsentRequestHandler(final GetServiceUserConsentActivity getConsentActivity) {
-        super(ApiPathParameterName.CONSENT_PATH_PARAMETERS);
+        super(ApiPathParameterName.CONSENT_PATH_PARAMETERS.stream().map(apiParamName -> apiParamName.getValue()).toList());
         this.getConsentActivity = getConsentActivity;
     }
 
@@ -55,7 +59,7 @@ public class GetServiceUserConsentRequestHandler extends ApiRequestHandler {
         final String responseBodyString;
         try {
             final GetServiceUserConsentResponseContent responseContent = getConsentActivity.handleRequest(serviceId, userId, consentId);
-            responseBodyString = toJsonString(responseContent);
+            responseBodyString = toJsonString(objectMapper, responseContent);
         } catch (final InternalServiceException | JsonProcessingException | ResourceNotFoundException exception) {
             return logAndBuildErrorResponse(exception);
         }

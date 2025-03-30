@@ -1,6 +1,5 @@
 package com.consentframework.consentmanagement.api.usecases.activities;
 
-import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
 import com.consentframework.consentmanagement.api.domain.exceptions.InternalServiceException;
 import com.consentframework.consentmanagement.api.domain.repositories.ServiceUserConsentRepository;
 import com.consentframework.consentmanagement.api.domain.validators.CreateServiceUserConsentRequestValidator;
@@ -8,6 +7,7 @@ import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.models.CreateServiceUserConsentRequestContent;
 import com.consentframework.consentmanagement.api.models.CreateServiceUserConsentResponseContent;
 import com.consentframework.shared.api.domain.exceptions.BadRequestException;
+import com.consentframework.shared.api.domain.exceptions.ConflictingResourceException;
 
 import java.util.UUID;
 

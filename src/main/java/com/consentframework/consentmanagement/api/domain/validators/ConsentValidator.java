@@ -1,8 +1,8 @@
 package com.consentframework.consentmanagement.api.domain.validators;
 
-import com.consentframework.consentmanagement.api.domain.exceptions.ConflictingResourceException;
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.shared.api.domain.exceptions.BadRequestException;
+import com.consentframework.shared.api.domain.exceptions.ConflictingResourceException;
 import software.amazon.smithy.utils.StringUtils;
 
 /**
