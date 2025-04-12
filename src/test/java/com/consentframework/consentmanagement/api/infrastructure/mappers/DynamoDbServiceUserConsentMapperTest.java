@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.consentframework.consentmanagement.api.infrastructure.entities.DynamoDbServiceUserConsent;
 import com.consentframework.consentmanagement.api.models.Consent;
+import com.consentframework.consentmanagement.api.models.ConsentStatus;
 import com.consentframework.consentmanagement.api.testcommon.constants.TestConstants;
+import com.consentframework.consentmanagement.api.testcommon.utils.TestUtils;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -59,6 +61,7 @@ class DynamoDbServiceUserConsentMapperTest {
             assertRequiredFieldsEqual(consent, parsedDdbItem);
             assertNull(parsedDdbItem.consentType());
             assertNull(parsedDdbItem.expiryTime());
+            assertNull(parsedDdbItem.activeId());
         }
 
         @Test
@@ -69,6 +72,19 @@ class DynamoDbServiceUserConsentMapperTest {
             assertEquals(consent.getConsentType(), parsedDdbItem.consentType());
             assertEquals(consent.getConsentData(), parsedDdbItem.consentData());
             assertEquals(consent.getExpiryTime().toString(), parsedDdbItem.expiryTime());
+            assertEquals(parsedDdbItem.id(), parsedDdbItem.activeId());
+        }
+
+        @Test
+        void testClearsActiveIdWhenStatusNotActive() {
+            final Consent consent = TestUtils.clone(TestConstants.TEST_CONSENT_WITH_ALL_FIELDS);
+            consent.setStatus(ConsentStatus.REVOKED);
+            final DynamoDbServiceUserConsent parsedDdbItem = DynamoDbServiceUserConsentMapper.toDynamoDbServiceUserConsent(consent);
+            assertRequiredFieldsEqual(consent, parsedDdbItem);
+            assertEquals(consent.getConsentType(), parsedDdbItem.consentType());
+            assertEquals(consent.getConsentData(), parsedDdbItem.consentData());
+            assertEquals(consent.getExpiryTime().toString(), parsedDdbItem.expiryTime());
+            assertNull(parsedDdbItem.activeId());
         }
 
         private void assertRequiredFieldsEqual(final Consent originalConsent, final DynamoDbServiceUserConsent parsedDynamoDbItem) {

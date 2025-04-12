@@ -56,8 +56,9 @@ public final class DynamoDbServiceUserConsentMapper {
             return null;
         }
 
+        final String consentPartitionKey = toDynamoDbId(consent.getServiceId(), consent.getUserId(), consent.getConsentId());
         final DynamoDbServiceUserConsent.Builder dbConsentBuilder = DynamoDbServiceUserConsent.builder()
-            .id(toDynamoDbId(consent.getServiceId(), consent.getUserId(), consent.getConsentId()))
+            .id(consentPartitionKey)
             .serviceId(consent.getServiceId())
             .userId(consent.getUserId())
             .consentId(consent.getConsentId())
@@ -68,6 +69,12 @@ public final class DynamoDbServiceUserConsentMapper {
 
         if (consent.getExpiryTime() != null) {
             dbConsentBuilder.expiryTime(consent.getExpiryTime().toString());
+        }
+
+        if (ConsentStatus.ACTIVE.equals(consent.getStatus()) && consent.getExpiryTime() != null) {
+            dbConsentBuilder.activeId(consentPartitionKey);
+        } else {
+            dbConsentBuilder.activeId(null);
         }
 
         return dbConsentBuilder.build();

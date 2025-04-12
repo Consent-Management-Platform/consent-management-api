@@ -5,6 +5,7 @@ package com.consentframework.consentmanagement.api.infrastructure.constants;
  */
 public enum DynamoDbServiceUserConsentAttributeName {
     ID("id"),
+    ACTIVE_ID("activeId"),
     SERVICE_ID("serviceId"),
     USER_ID("userId"),
     CONSENT_ID("consentId"),
