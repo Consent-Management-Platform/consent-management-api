@@ -1,4 +1,7 @@
 # consent-management-api
+
+[![Gradle build](https://github.com/Consent-Management-Platform/consent-management-api/actions/workflows/test.yml/badge.svg)](https://github.com/Consent-Management-Platform/consent-management-api/actions/workflows/test.yml)
+
 This package defines service code for the Consent Management API.
 
 See [API models here](https://github.com/Consent-Management-Platform/consent-management-api-models).
