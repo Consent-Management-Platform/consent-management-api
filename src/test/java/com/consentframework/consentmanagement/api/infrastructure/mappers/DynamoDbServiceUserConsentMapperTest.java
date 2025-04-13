@@ -3,11 +3,11 @@ package com.consentframework.consentmanagement.api.infrastructure.mappers;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.consentframework.consentmanagement.api.infrastructure.entities.DynamoDbServiceUserConsent;
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.models.ConsentStatus;
 import com.consentframework.consentmanagement.api.testcommon.constants.TestConstants;
 import com.consentframework.consentmanagement.api.testcommon.utils.TestUtils;
+import com.consentframework.shared.api.infrastructure.entities.DynamoDbServiceUserConsent;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -92,7 +92,7 @@ class DynamoDbServiceUserConsentMapperTest {
             assertEquals(originalConsent.getUserId(), parsedDynamoDbItem.userId());
             assertEquals(originalConsent.getConsentId(), parsedDynamoDbItem.consentId());
             assertEquals(originalConsent.getConsentVersion(), parsedDynamoDbItem.consentVersion());
-            assertEquals(originalConsent.getStatus(), parsedDynamoDbItem.consentStatus());
+            assertEquals(originalConsent.getStatus().getValue(), parsedDynamoDbItem.consentStatus());
         }
     }
 

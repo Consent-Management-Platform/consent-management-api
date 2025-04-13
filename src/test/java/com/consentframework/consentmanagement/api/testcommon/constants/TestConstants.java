@@ -3,9 +3,9 @@ package com.consentframework.consentmanagement.api.testcommon.constants;
 import com.consentframework.consentmanagement.api.domain.constants.ApiPathParameterName;
 import com.consentframework.consentmanagement.api.domain.constants.ApiQueryStringParameterName;
 import com.consentframework.consentmanagement.api.infrastructure.constants.DynamoDbServiceUserConsentAttributeName;
-import com.consentframework.consentmanagement.api.infrastructure.entities.DynamoDbServiceUserConsent;
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.models.ConsentStatus;
+import com.consentframework.shared.api.infrastructure.entities.DynamoDbServiceUserConsent;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.time.Instant;
@@ -82,7 +82,7 @@ public final class TestConstants {
             .userId(TEST_USER_ID)
             .consentId(TEST_CONSENT_ID)
             .consentVersion(TEST_CONSENT_VERSION)
-            .consentStatus(TEST_CONSENT_STATUS);
+            .consentStatus(TEST_CONSENT_STATUS.getValue());
 
     public static final DynamoDbServiceUserConsent TEST_DDB_CONSENT_WITH_ONLY_REQUIRED_FIELDS =
         TEST_DDB_CONSENT_BUILDER_WITH_REQUIRED_FIELDS.build();

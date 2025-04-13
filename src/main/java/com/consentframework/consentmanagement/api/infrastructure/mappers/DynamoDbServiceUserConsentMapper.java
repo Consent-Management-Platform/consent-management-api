@@ -1,9 +1,9 @@
 package com.consentframework.consentmanagement.api.infrastructure.mappers;
 
 import com.consentframework.consentmanagement.api.infrastructure.constants.DynamoDbServiceUserConsentAttributeName;
-import com.consentframework.consentmanagement.api.infrastructure.entities.DynamoDbServiceUserConsent;
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.models.ConsentStatus;
+import com.consentframework.shared.api.infrastructure.entities.DynamoDbServiceUserConsent;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
@@ -34,7 +34,7 @@ public final class DynamoDbServiceUserConsentMapper {
             .userId(ddbConsentItem.userId())
             .consentId(ddbConsentItem.consentId())
             .consentVersion(ddbConsentItem.consentVersion())
-            .status(ddbConsentItem.consentStatus())
+            .status(ConsentStatus.fromValue(ddbConsentItem.consentStatus()))
             .consentType(ddbConsentItem.consentType())
             .consentData(ddbConsentItem.consentData());
 
@@ -63,7 +63,7 @@ public final class DynamoDbServiceUserConsentMapper {
             .userId(consent.getUserId())
             .consentId(consent.getConsentId())
             .consentVersion(consent.getConsentVersion())
-            .consentStatus(consent.getStatus())
+            .consentStatus(consent.getStatus().getValue())
             .consentType(consent.getConsentType())
             .consentData(consent.getConsentData());
 
