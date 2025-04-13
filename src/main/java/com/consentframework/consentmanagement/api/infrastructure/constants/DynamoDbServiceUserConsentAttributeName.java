@@ -5,7 +5,6 @@ package com.consentframework.consentmanagement.api.infrastructure.constants;
  */
 public enum DynamoDbServiceUserConsentAttributeName {
     ID("id"),
-    ACTIVE_ID("activeId"),
     SERVICE_ID("serviceId"),
     USER_ID("userId"),
     CONSENT_ID("consentId"),
@@ -13,7 +12,8 @@ public enum DynamoDbServiceUserConsentAttributeName {
     CONSENT_STATUS("consentStatus"),
     CONSENT_TYPE("consentType"),
     CONSENT_DATA("consentData"),
-    EXPIRY_TIME("expiryTime");
+    EXPIRY_TIME("expiryTime"),
+    AUTO_EXPIRE_ID("autoExpireId");
 
     private final String value;
 

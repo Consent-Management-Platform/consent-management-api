@@ -61,7 +61,7 @@ class DynamoDbServiceUserConsentMapperTest {
             assertRequiredFieldsEqual(consent, parsedDdbItem);
             assertNull(parsedDdbItem.consentType());
             assertNull(parsedDdbItem.expiryTime());
-            assertNull(parsedDdbItem.activeId());
+            assertNull(parsedDdbItem.autoExpireId());
         }
 
         @Test
@@ -72,11 +72,11 @@ class DynamoDbServiceUserConsentMapperTest {
             assertEquals(consent.getConsentType(), parsedDdbItem.consentType());
             assertEquals(consent.getConsentData(), parsedDdbItem.consentData());
             assertEquals(consent.getExpiryTime().toString(), parsedDdbItem.expiryTime());
-            assertEquals(parsedDdbItem.id(), parsedDdbItem.activeId());
+            assertEquals(parsedDdbItem.id(), parsedDdbItem.autoExpireId());
         }
 
         @Test
-        void testClearsActiveIdWhenStatusNotActive() {
+        void testClearsAutoExpireIdWhenStatusNotActive() {
             final Consent consent = TestUtils.clone(TestConstants.TEST_CONSENT_WITH_ALL_FIELDS);
             consent.setStatus(ConsentStatus.REVOKED);
             final DynamoDbServiceUserConsent parsedDdbItem = DynamoDbServiceUserConsentMapper.toDynamoDbServiceUserConsent(consent);
@@ -84,7 +84,7 @@ class DynamoDbServiceUserConsentMapperTest {
             assertEquals(consent.getConsentType(), parsedDdbItem.consentType());
             assertEquals(consent.getConsentData(), parsedDdbItem.consentData());
             assertEquals(consent.getExpiryTime().toString(), parsedDdbItem.expiryTime());
-            assertNull(parsedDdbItem.activeId());
+            assertNull(parsedDdbItem.autoExpireId());
         }
 
         private void assertRequiredFieldsEqual(final Consent originalConsent, final DynamoDbServiceUserConsent parsedDynamoDbItem) {

@@ -72,9 +72,9 @@ public final class DynamoDbServiceUserConsentMapper {
         }
 
         if (ConsentStatus.ACTIVE.equals(consent.getStatus()) && consent.getExpiryTime() != null) {
-            dbConsentBuilder.activeId(consentPartitionKey);
+            dbConsentBuilder.autoExpireId(consentPartitionKey);
         } else {
-            dbConsentBuilder.activeId(null);
+            dbConsentBuilder.autoExpireId(null);
         }
 
         return dbConsentBuilder.build();
