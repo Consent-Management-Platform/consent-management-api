@@ -4,6 +4,7 @@ import com.consentframework.consentmanagement.api.infrastructure.constants.Dynam
 import com.consentframework.consentmanagement.api.models.Consent;
 import com.consentframework.consentmanagement.api.models.ConsentStatus;
 import com.consentframework.shared.api.infrastructure.entities.DynamoDbServiceUserConsent;
+import com.consentframework.shared.api.infrastructure.mappers.DynamoDbConsentExpiryTimeConverter;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
@@ -68,13 +69,16 @@ public final class DynamoDbServiceUserConsentMapper {
             .consentData(consent.getConsentData());
 
         if (consent.getExpiryTime() != null) {
-            dbConsentBuilder.expiryTime(consent.getExpiryTime().toString());
+            final String expiryTimeString = DynamoDbConsentExpiryTimeConverter.toExpiryTimeString(consent.getExpiryTime());
+            dbConsentBuilder.expiryTime(expiryTimeString);
         }
 
         if (ConsentStatus.ACTIVE.equals(consent.getStatus()) && consent.getExpiryTime() != null) {
-            dbConsentBuilder.autoExpireId(consentPartitionKey);
+            dbConsentBuilder.expiryHour(DynamoDbConsentExpiryTimeConverter.toExpiryHour(consent.getExpiryTime()));
+            dbConsentBuilder.expiryTimeId(DynamoDbConsentExpiryTimeConverter.toExpiryTimeId(consent.getExpiryTime(), consentPartitionKey));
         } else {
-            dbConsentBuilder.autoExpireId(null);
+            dbConsentBuilder.expiryHour(null);
+            dbConsentBuilder.expiryTimeId(null);
         }
 
         return dbConsentBuilder.build();

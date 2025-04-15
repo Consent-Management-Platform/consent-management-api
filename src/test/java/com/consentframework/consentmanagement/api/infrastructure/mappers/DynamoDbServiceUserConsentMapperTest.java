@@ -8,10 +8,12 @@ import com.consentframework.consentmanagement.api.models.ConsentStatus;
 import com.consentframework.consentmanagement.api.testcommon.constants.TestConstants;
 import com.consentframework.consentmanagement.api.testcommon.utils.TestUtils;
 import com.consentframework.shared.api.infrastructure.entities.DynamoDbServiceUserConsent;
+import com.consentframework.shared.api.infrastructure.mappers.DynamoDbConsentExpiryTimeConverter;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
+import java.time.ZoneOffset;
 import java.util.Map;
 
 class DynamoDbServiceUserConsentMapperTest {
@@ -61,7 +63,8 @@ class DynamoDbServiceUserConsentMapperTest {
             assertRequiredFieldsEqual(consent, parsedDdbItem);
             assertNull(parsedDdbItem.consentType());
             assertNull(parsedDdbItem.expiryTime());
-            assertNull(parsedDdbItem.autoExpireId());
+            assertNull(parsedDdbItem.expiryTimeId());
+            assertNull(parsedDdbItem.expiryHour());
         }
 
         @Test
@@ -71,20 +74,28 @@ class DynamoDbServiceUserConsentMapperTest {
             assertRequiredFieldsEqual(consent, parsedDdbItem);
             assertEquals(consent.getConsentType(), parsedDdbItem.consentType());
             assertEquals(consent.getConsentData(), parsedDdbItem.consentData());
-            assertEquals(consent.getExpiryTime().toString(), parsedDdbItem.expiryTime());
-            assertEquals(parsedDdbItem.id(), parsedDdbItem.autoExpireId());
+            final String expectedExpiryTimeString = DynamoDbConsentExpiryTimeConverter.EXPIRY_TIME_FORMATTER
+                .format(consent.getExpiryTime().withOffsetSameInstant(ZoneOffset.UTC));
+            assertEquals(expectedExpiryTimeString, parsedDdbItem.expiryTime());
+            assertEquals(String.format("%s|%s", expectedExpiryTimeString, TestConstants.TEST_PARTITION_KEY), parsedDdbItem.expiryTimeId());
+            final String expectedExpiryHour = DynamoDbConsentExpiryTimeConverter.EXPIRY_HOUR_FORMATTER
+                .format(consent.getExpiryTime().withOffsetSameInstant(ZoneOffset.UTC));
+            assertEquals(expectedExpiryHour, parsedDdbItem.expiryHour());
         }
 
         @Test
-        void testClearsAutoExpireIdWhenStatusNotActive() {
+        void testClearsAutoExpireGsiAttributesWhenStatusNotActive() {
             final Consent consent = TestUtils.clone(TestConstants.TEST_CONSENT_WITH_ALL_FIELDS);
             consent.setStatus(ConsentStatus.REVOKED);
             final DynamoDbServiceUserConsent parsedDdbItem = DynamoDbServiceUserConsentMapper.toDynamoDbServiceUserConsent(consent);
             assertRequiredFieldsEqual(consent, parsedDdbItem);
             assertEquals(consent.getConsentType(), parsedDdbItem.consentType());
             assertEquals(consent.getConsentData(), parsedDdbItem.consentData());
-            assertEquals(consent.getExpiryTime().toString(), parsedDdbItem.expiryTime());
-            assertNull(parsedDdbItem.autoExpireId());
+            final String expectedExpiryTimeString = DynamoDbConsentExpiryTimeConverter.EXPIRY_TIME_FORMATTER
+                .format(consent.getExpiryTime().withOffsetSameInstant(ZoneOffset.UTC));
+            assertEquals(expectedExpiryTimeString, parsedDdbItem.expiryTime());
+            assertNull(parsedDdbItem.expiryTimeId());
+            assertNull(parsedDdbItem.expiryHour());
         }
 
         private void assertRequiredFieldsEqual(final Consent originalConsent, final DynamoDbServiceUserConsent parsedDynamoDbItem) {
