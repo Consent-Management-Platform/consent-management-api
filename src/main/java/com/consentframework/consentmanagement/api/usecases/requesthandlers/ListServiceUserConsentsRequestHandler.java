@@ -62,7 +62,7 @@ public class ListServiceUserConsentsRequestHandler extends ApiRequestHandler {
             pageToken = ApiQueryStringParameterParser.parseStringQueryStringParameter(request,
                 ApiQueryStringParameterName.PAGE_TOKEN.getValue());
 
-            logger.info("Retrieving consents for path: " + request.path());
+            logger.debug("Retrieving consents for path: {}", request.path());
             responseContent = listConsentsActivity.handleRequest(
                 serviceId, userId, limit, pageToken);
             responseBodyString = toJsonString(objectMapper, responseContent);
@@ -70,8 +70,8 @@ public class ListServiceUserConsentsRequestHandler extends ApiRequestHandler {
             return logAndBuildErrorResponse(exception);
         }
 
-        logger.info(String.format("Successfully retrieved %d consents for path: %s, limit: %d, pageToken: %s",
-            responseContent.getData().size(), request.path(), limit, pageToken));
+        logger.debug("Successfully retrieved {} consents for path: {}, limit: {}, pageToken: {}",
+            responseContent.getData().size(), request.path(), limit, pageToken);
         return buildApiSuccessResponse(responseBodyString);
     }
 }

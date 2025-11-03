@@ -61,7 +61,7 @@ public class CreateServiceUserConsentRequestHandler extends ApiRequestHandler {
             final CreateServiceUserConsentRequestContent requestContent = new JSON().getMapper()
                 .readValue(request.body(), CreateServiceUserConsentRequestContent.class);
 
-            logger.info(String.format("Creating consent for serviceId: %s, userId: %s", serviceId, userId));
+            logger.debug(String.format("Creating consent for serviceId: '{}', userId: '{}'", serviceId, userId));
             final CreateServiceUserConsentResponseContent responseContent = createConsentActivity.handleRequest(
                 serviceId, userId, requestContent);
             responseContentString = toJsonString(objectMapper, responseContent);
@@ -71,7 +71,7 @@ public class CreateServiceUserConsentRequestHandler extends ApiRequestHandler {
             return logAndBuildErrorResponse(exception);
         }
 
-        logger.info(String.format("Successfully created consent for serviceId: %s, userId: %s", serviceId, userId));
+        logger.debug("Successfully created consent for serviceId: '{}', userId: '{}'", serviceId, userId);
         return buildApiSuccessResponse(responseContentString);
     }
 }

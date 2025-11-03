@@ -67,7 +67,7 @@ public class ConsentManagementApiService implements RequestHandler<ApiRequest, M
             return buildUnsupportedOperationResponse(request);
         }
 
-        logger.info("LambdaRequestHandler received request: " + request.toString());
+        logger.debug("LambdaRequestHandler received request: {}", request.toString());
 
         if (ApiHttpResource.SERVICE_USER_CONSENTS.getValue().equals(request.resource())) {
             if (HttpMethod.GET.name().equals(request.httpMethod())) {

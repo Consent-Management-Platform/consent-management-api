@@ -55,7 +55,7 @@ public class GetServiceUserConsentRequestHandler extends ApiRequestHandler {
             return logAndBuildMissingPathParamResponse(badRequestException);
         }
 
-        logger.info("Retrieving consent for path: " + request.path());
+        logger.debug("Retrieving consent for path: {}", request.path());
         final String responseBodyString;
         try {
             final GetServiceUserConsentResponseContent responseContent = getConsentActivity.handleRequest(serviceId, userId, consentId);
@@ -64,7 +64,7 @@ public class GetServiceUserConsentRequestHandler extends ApiRequestHandler {
             return logAndBuildErrorResponse(exception);
         }
 
-        logger.info("Successfully retrieved consent for path: " + request.path());
+        logger.debug("Successfully retrieved consent for path: {}", request.path());
         return buildApiSuccessResponse(responseBodyString);
     }
 }

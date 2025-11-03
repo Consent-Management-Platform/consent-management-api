@@ -63,11 +63,11 @@ public class DynamoDbServiceUserConsentRepository implements ServiceUserConsentR
             InternalServiceException {
         ConsentValidator.validate(consent);
 
-        final String consentContext = String.format("creating consent with serviceId: '%s', userId: '%s', consentId: '%s'",
+        logger.debug("Submitting CreateServiceUserConsent request for serviceId '{}', userId '{}', consentId '{}'",
             consent.getServiceId(), consent.getUserId(), consent.getConsentId());
-        logger.info(String.format("Submitting CreateServiceUserConsent request for %s", consentContext));
-        putConsent(consent, CONSENT_NOT_EXISTS_CONDITION, consentContext);
-        logger.info(String.format("Successfully created %s", consentContext));
+        putConsent(consent, CONSENT_NOT_EXISTS_CONDITION);
+        logger.debug("Successfully created consent with serviceId '{}', userId '{}', consentId '{}'",
+            consent.getServiceId(), consent.getUserId(), consent.getConsentId());
     }
 
     /**
@@ -83,13 +83,13 @@ public class DynamoDbServiceUserConsentRepository implements ServiceUserConsentR
     @Override
     public Consent getServiceUserConsent(final String serviceId, final String userId, final String consentId)
             throws InternalServiceException, ResourceNotFoundException {
-        final String consentContext = String.format("consent with serviceId: '%s', userId: '%s', consentId: '%s'",
+        logger.debug("Submitting GetServiceUserConsent request for serviceId '{}', userId '{}', consentId '{}'",
             serviceId, userId, consentId);
-        logger.info(String.format("Submitting GetServiceUserConsent request for %s", consentContext));
         final GetItemEnhancedRequest getItemRequest = buildGetItemRequest(serviceId, userId, consentId);
-        final DynamoDbServiceUserConsent consentItem = getServiceUserConsent(getItemRequest, serviceId, userId, consentId);
 
-        logger.info(String.format("Successfully retrieved %s, converting to Consent data model", consentContext));
+        final DynamoDbServiceUserConsent consentItem = getServiceUserConsent(getItemRequest, serviceId, userId, consentId);
+        logger.debug("Successfully retrieved consent with serviceId '{}', userId '{}', consentId '{}', converting to Consent data model",
+            serviceId, userId, consentId);
         return DynamoDbServiceUserConsentMapper.dynamoDbItemToConsent(consentItem);
     }
 
@@ -123,11 +123,11 @@ public class DynamoDbServiceUserConsentRepository implements ServiceUserConsentR
             InternalServiceException, ResourceNotFoundException {
         ConsentValidator.validate(consent);
 
-        final String consentContext = String.format("updating consent with serviceId: '%s', userId: '%s', consentId: '%s'",
+        logger.debug("Submitting UpdateServiceUserConsent request for consent with serviceId: '{}', userId: '{}', consentId: '{}'",
             consent.getServiceId(), consent.getUserId(), consent.getConsentId());
-        logger.info(String.format("Submitting UpdateServiceUserConsent request for %s", consentContext));
-        putConsent(consent, CONSENT_EXISTS_CONDITION, consentContext);
-        logger.info(String.format("Successfully updated %s", consentContext));
+        putConsent(consent, CONSENT_EXISTS_CONDITION);
+        logger.debug("Successfully updated consent with serviceId: '{}', userId: '{}', consentId: '{}'",
+            consent.getServiceId(), consent.getUserId(), consent.getConsentId());
     }
 
     /**
@@ -169,16 +169,20 @@ public class DynamoDbServiceUserConsentRepository implements ServiceUserConsentR
         return new ListPage<Consent>(consents, Optional.ofNullable(lastEvaluatedKeyString));
     }
 
-    private void putConsent(final Consent consent, final String conditionExpression, final String consentContext)
+    private void putConsent(final Consent consent, final String conditionExpression)
             throws ConflictingResourceException, InternalServiceException {
         final PutItemEnhancedRequest<DynamoDbServiceUserConsent> putRequest = buildPutRequest(consent, conditionExpression);
         try {
             consentTable.putItem(putRequest);
         } catch (final ConditionalCheckFailedException conditionFailedException) {
-            final String errorMessage = String.format("Error %s, consent already exists", consentContext);
+            final String errorMessage = String.format(
+                "ConditionalCheckFailedException when writing consent with serviceId: '%s', userId: '%s', consentId: '%s'",
+                consent.getServiceId(), consent.getUserId(), consent.getConsentId());
             logger.warn(errorMessage, conditionFailedException);
             throw new ConflictingResourceException(errorMessage);
         } catch (final DynamoDbException ddbException) {
+            final String consentContext = String.format("writing consent with serviceId: '%s', userId: '%s', consentId: '%s'",
+                consent.getServiceId(), consent.getUserId(), consent.getConsentId());
             throw logAndGetNormalizedServiceError(ddbException, consentContext);
         }
     }

@@ -54,7 +54,7 @@ public class UpdateServiceUserConsentRequestHandler extends ApiRequestHandler {
         try {
             final UpdateServiceUserConsentRequestContent updatedContent = new JSON().getMapper()
                 .readValue(request.body(), UpdateServiceUserConsentRequestContent.class);
-            logger.info("Updating consent for path: " + request.path());
+            logger.debug("Updating consent for path: {}", request.path());
             activity.handleRequest(serviceId, userId, consentId, updatedContent);
         } catch (final JsonProcessingException jsonProcessingException) {
             return logAndBuildJsonProcessingErrorResponse(jsonProcessingException);
@@ -63,7 +63,7 @@ public class UpdateServiceUserConsentRequestHandler extends ApiRequestHandler {
             return logAndBuildErrorResponse(conflictException);
         }
 
-        logger.info("Successfully updated consent for path: " + request.path());
+        logger.debug("Successfully updated consent for path: {}", request.path());
         return buildApiSuccessResponse(null);
     }
 }

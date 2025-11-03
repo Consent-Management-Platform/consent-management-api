@@ -131,7 +131,7 @@ class DynamoDbServiceUserConsentRepositoryTest {
                 repository.createServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ALL_FIELDS));
 
             final String expectedExceptionMessage = String.format(
-                "Error creating consent with serviceId: '%s', userId: '%s', consentId: '%s', consent already exists",
+                "ConditionalCheckFailedException when writing consent with serviceId: '%s', userId: '%s', consentId: '%s'",
                 TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID);
             assertEquals(expectedExceptionMessage, thrownException.getMessage());
         }
@@ -144,7 +144,7 @@ class DynamoDbServiceUserConsentRepositoryTest {
                 repository.createServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ALL_FIELDS));
 
             final String expectedErrorMessage = String.format(
-                "Received DynamoDbException creating consent with serviceId: '%s', userId: '%s', consentId: '%s': %s",
+                "Received DynamoDbException writing consent with serviceId: '%s', userId: '%s', consentId: '%s': %s",
                 TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID, TEST_DYNAMODB_EXCEPTION_MESSAGE);
             assertEquals(expectedErrorMessage, thrownException.getMessage());
         }
@@ -183,7 +183,7 @@ class DynamoDbServiceUserConsentRepositoryTest {
                 repository.updateServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ALL_FIELDS));
 
             final String expectedExceptionMessage = String.format(
-                "Error updating consent with serviceId: '%s', userId: '%s', consentId: '%s', consent already exists",
+                "ConditionalCheckFailedException when writing consent with serviceId: '%s', userId: '%s', consentId: '%s'",
                 TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID);
             assertEquals(expectedExceptionMessage, thrownException.getMessage());
         }
@@ -196,7 +196,7 @@ class DynamoDbServiceUserConsentRepositoryTest {
                 repository.updateServiceUserConsent(TestConstants.TEST_CONSENT_WITH_ALL_FIELDS));
 
             final String expectedErrorMessage = String.format(
-                "Received DynamoDbException updating consent with serviceId: '%s', userId: '%s', consentId: '%s': %s",
+                "Received DynamoDbException writing consent with serviceId: '%s', userId: '%s', consentId: '%s': %s",
                 TestConstants.TEST_SERVICE_ID, TestConstants.TEST_USER_ID, TestConstants.TEST_CONSENT_ID, TEST_DYNAMODB_EXCEPTION_MESSAGE);
             assertEquals(expectedErrorMessage, thrownException.getMessage());
         }

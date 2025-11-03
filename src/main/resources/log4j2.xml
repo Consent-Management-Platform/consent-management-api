@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Extra logging related to initialization of Log4j.
- Set to debug or trace if log4j initialization is failing. -->
 <Configuration status="warn">
     <Appenders>
     	<!-- Console appender configuration -->
@@ -8,11 +6,15 @@
             <PatternLayout
                 pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n" />
         </Console>
+        <!-- Async logger that decouples logging process from main app to reduce memory footprint -->
+        <Async name="AsyncConsole">
+            <AppenderRef ref="console"/>
+        </Async>
     </Appenders>
     <Loggers>
     	<!-- Root logger referring to console appender -->
         <Root level="info" additivity="false">
-            <AppenderRef ref="console" />
+            <AppenderRef ref="AsyncConsole" />
         </Root>
     </Loggers>
 </Configuration>
